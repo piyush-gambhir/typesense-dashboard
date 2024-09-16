@@ -1,0 +1,5 @@
+{
+  "tabWidth": 2,
+  "tailwindFunctions": ["clsx"],
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
