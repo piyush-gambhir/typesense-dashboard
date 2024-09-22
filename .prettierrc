@@ -1,5 +1,8 @@
 {
   "tabWidth": 2,
   "tailwindFunctions": ["clsx"],
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports"
+  ]
 }
