@@ -1,14 +1,15 @@
-import Typesense from "typesense";
+import { env } from '@/env';
+import Typesense from 'typesense';
 
 const typesenseClient = new Typesense.Client({
   nodes: [
     {
-      host: "localhost",
-      port: 8108,
-      protocol: "http",
+      host: env.TYPESENSE_HOST,
+      port: env.TYPESENSE_PORT,
+      protocol: env.TYPESENSE_PROTOCOL,
     },
   ],
-  apiKey: "xyz",
+  apiKey: env.TYPESENSE_API_KEY,
   connectionTimeoutSeconds: 2,
 });
 

@@ -1,7 +1,7 @@
-"use client";
-import { useState } from "react";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -17,12 +17,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-
-import { Database, Search, Settings } from "lucide-react";
-
-import { convertUnixTimestamp } from "@/lib/utils/dateTime";
+} from '@/components/ui/table';
+import { convertUnixTimestamp } from '@/lib/utils/dateTime';
+import { Database, Search, Settings } from 'lucide-react';
+import { useState } from 'react';
 
 // Updated component to accept collections as a prop
 export default function TypesenseCollections({
@@ -35,10 +33,10 @@ export default function TypesenseCollections({
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {collections.map((collection) => {
+        {collections?.map((collection) => {
           const { date, time } = convertUnixTimestamp(collection?.created_at);
           return (
-            <Card key={collection.name} className="flex flex-col">
+            <Card key={collection?.name} className="flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Database className="mr-2" />
