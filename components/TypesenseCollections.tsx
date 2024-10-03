@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
+import { convertUnixTimestamp } from "@/lib/utils/dateTime";
+
 // Updated component to accept collections as a prop
 export default function TypesenseCollections({
   collections,
