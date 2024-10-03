@@ -1,4 +1,4 @@
-"use server";
+'use server';
 export const retrieveCollection = async ({
   typesenseHost,
   typesensePort,
@@ -14,13 +14,22 @@ export const retrieveCollection = async ({
 }) => {
   const url = `${typesenseProtocol}://${typesenseHost}:${typesensePort}/collections/${collectionName}`;
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "X-TYPESENSE-API-KEY": typesenseApiKey,
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-TYPESENSE-API-KEY': typesenseApiKey,
+      },
+    });
 
-  const data = await response.json();
-  return data;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error retrieving collection:', error);
+    throw error; // Re-throw the error for the caller to handle
+  }
 };

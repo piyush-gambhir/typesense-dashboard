@@ -1,6 +1,13 @@
 'use client';
+'use client';
+
+import { Database, Search, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { convertUnixTimestamp } from '@/lib/utils/dateTime';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,28 +17,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { convertUnixTimestamp } from '@/lib/utils/dateTime';
-import { Database, Search, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
 // Updated component to accept collections as a prop
 export default function TypesenseCollections({
   collections,
 }: {
-  collections: any[];
+  collections: ReadonlyArray<any>;
 }) {
-  //   const [selectedCollection, setSelectedCollection] = useState(null);
+  const router = useRouter();
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto py-16 px-8 flex flex-col gap-y-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {collections?.map((collection) => {
           const { date, time } = convertUnixTimestamp(collection?.created_at);
@@ -68,64 +65,17 @@ export default function TypesenseCollections({
                 <Button
                   variant="outline"
                   size="sm"
-                  // onClick={() => setSelectedCollection(collection)}
+                  onClick={() => {
+                    router.push(`/collections/${collection.name}`);
+                  }}
                 >
                   <Search className="mr-2 h-4 w-4" /> View Details
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="mr-2 h-4 w-4" /> Settings
                 </Button>
               </CardFooter>
             </Card>
           );
         })}
       </div>
-      {/* {selectedCollection && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Collection Details: {selectedCollection.name}</CardTitle>
-            <CardDescription>
-              Detailed information about the selected collection
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Property</TableHead>
-                  <TableHead>Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Name</TableCell>
-                  <TableCell>{selectedCollection?.name}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    Number of Documents
-                  </TableCell>
-                  <TableCell>{selectedCollection?.num_documents}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    Number of Fields
-                  </TableCell>
-                  <TableCell>{selectedCollection?.fields?.length}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSelectedCollection(null)}
-            >
-              Close Details
-            </Button>
-          </CardFooter>
-        </Card>
-      )} */}
     </div>
   );
 }

@@ -1,11 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil';
 
-import { Button } from "@/components/ui/button";
+import { getClusterHealth } from '@/actions/typesense/get-cluster-health';
+
+import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
+
+import { setLocalStorageData } from '@/lib/utils/localStorage';
+import { typesenseConnectionSchema } from '@/lib/zod/typesenseConnectionSchema';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -13,79 +24,83 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
-import { typesenseConnectionState } from "@/atoms/typesenseConnectionState";
+type FormData = {
+  host: string;
+  port: string;
+  protocol: string;
+  apiKey: string;
+};
 
 export default function TypesenseConnect() {
-  const [formData, setFormData] = useState({
-    host: "",
-    port: "",
-    protocol: "http",
-    apiKey: "",
-  });
+  const setTypesenseConnectionData = useSetRecoilState(
+    typesenseConnectionDataState,
+  );
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
+    'idle' | 'success' | 'error'
+  >('idle');
 
-  const [typesense, setTypesense] = useRecoilState(typesenseConnectionState);
+  const form = useForm<FormData>({
+    resolver: zodResolver(typesenseConnectionSchema),
+    defaultValues: {
+      host: 'localhost',
+      port: '8108',
+      protocol: 'http',
+      apiKey: '',
+    },
+  });
 
-  // Sync Recoil state to formData when component mounts
+  // Load saved connection data from localStorage when component mounts
   useEffect(() => {
-    setFormData({
-      host: typesense.host,
-      port: typesense.port,
-      protocol: typesense.protocol,
-      apiKey: typesense.apiKey,
-    });
-  }, [typesense]);
-
-  // Update localStorage whenever Recoil state changes
-  useEffect(() => {
-    localStorage.setItem("typesenseState", JSON.stringify(typesense));
-  }, [typesense]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setConnectionStatus("idle");
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
-
-      // In a real-world scenario, you'd validate the credentials with an API call
-      setConnectionStatus("success");
-
-      // Store the credentials in Recoil state and localStorage
-      setTypesense({
-        ...formData,
-        isConnected: true,
-      });
-    } catch (error) {
-      setConnectionStatus("error");
-    } finally {
-      setIsLoading(false);
+    const savedData = localStorage.getItem('typesenseConnectionData');
+    if (savedData) {
+      const parsedData: FormData = JSON.parse(savedData);
+      form.reset(parsedData);
     }
-  };
+  }, [form]);
 
-  const handleDisconnect = () => {
-    setTypesense({
-      host: "",
-      port: "",
-      protocol: "http",
-      apiKey: "",
-      isConnected: false,
+  const onSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    setConnectionStatus('idle');
+
+    const clusterHealth = await getClusterHealth({
+      typesenseHost: formData.host,
+      typesensePort: parseInt(formData.port),
+      typesenseProtocol: formData.protocol,
     });
-    localStorage.removeItem("typesenseState");
+    if (clusterHealth.ok) {
+      setConnectionStatus('success');
+      setTypesenseConnectionData({
+        typesenseHost: formData.host,
+        typesensePort: parseInt(formData.port),
+        typesenseProtocol: formData.protocol,
+        typesenseApiKey: formData.apiKey,
+      });
+      setLocalStorageData('typesenseConnectionData', {
+        typesenseHost: formData.host,
+        typesensePort: parseInt(formData.port),
+        typesenseProtocol: formData.protocol,
+        typesenseApiKey: formData.apiKey,
+      });
+      router.push('/metrics');
+    } else {
+      setConnectionStatus('error');
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -98,62 +113,73 @@ export default function TypesenseConnect() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid w-full items-center gap-4">
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="host">Host</Label>
-                <Input
-                  id="host"
-                  name="host"
-                  placeholder="localhost"
-                  value={formData.host}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="port">Port</Label>
-                <Input
-                  id="port"
-                  name="port"
-                  placeholder="8108"
-                  value={formData.port}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="protocol">Protocol</Label>
-                <Input
-                  id="protocol"
-                  name="protocol"
-                  placeholder="http"
-                  value={formData.protocol}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="apiKey">API Key</Label>
-                <Input
-                  id="apiKey"
-                  name="apiKey"
-                  type="password"
-                  placeholder="Enter your API key"
-                  value={formData.apiKey}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-          </form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="host"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Host</FormLabel>
+                    <FormControl>
+                      <Input placeholder="localhost" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="port"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Port</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="8108" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="protocol"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Protocol</FormLabel>
+                    <FormControl>
+                      <Input placeholder="http" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="apiKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>API Key</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your API key"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" disabled={isLoading} className="mt-4">
+                {isLoading ? 'Connecting...' : 'Connect to Typesense'}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-4">
-          <Button type="submit" onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "Connecting..." : "Connect to Typesense"}
-          </Button>
-          {connectionStatus === "success" && (
-            <Alert variant="success">
+          {connectionStatus === 'success' && (
+            <Alert variant="default">
               <CheckCircle2 className="h-4 w-4" />
               <AlertTitle>Success</AlertTitle>
               <AlertDescription>
@@ -161,7 +187,7 @@ export default function TypesenseConnect() {
               </AlertDescription>
             </Alert>
           )}
-          {connectionStatus === "error" && (
+          {connectionStatus === 'error' && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
@@ -171,7 +197,6 @@ export default function TypesenseConnect() {
               </AlertDescription>
             </Alert>
           )}
-          <Button onClick={handleDisconnect}>Disconnect</Button>
         </CardFooter>
       </Card>
     </div>

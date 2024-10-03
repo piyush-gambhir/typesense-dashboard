@@ -1,7 +1,25 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import {
+  Cpu,
+  Database,
+  HardDrive,
+  Network,
+  RefreshCw,
+  Server,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+
+import { getClusterMetrics } from '@/actions/typesense/get-cluster-metrics';
+import { listAllCollections } from '@/actions/typesense/list-all-collections';
+
+import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
+
+import { cn } from '@/lib/utils';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,82 +27,201 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  RefreshCw,
-  Server,
-  Database,
-  Search,
-  Clock,
-  Cpu,
-  BarChart,
-  HardDrive,
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 type ServerMetrics = {
-  status: "online" | "offline";
-  uptime: number;
-  numDocuments: number;
-  numCollections: number;
-  numSearches: number;
-  cpuUsage: number;
-  memoryUsage: number;
-  diskUsage: number;
+  status: 'online' | 'offline';
+  cpuUsage: { [key: string]: number };
+  diskUsage: { total: number; used: number; usagePercentage: number };
+  memoryUsage: {
+    totalMemory: number;
+    usedMemory: number;
+    memoryUsagePercentage: number;
+    totalSwap: number;
+    usedSwap: number;
+    swapUsagePercentage: number;
+  };
+  networkData: { receivedBytes: number; sentBytes: number };
+  typesenseMemoryMetrics: {
+    activeBytes: number;
+    allocatedBytes: number;
+    fragmentationRatio: number;
+    mappedBytes: number;
+    metadataBytes: number;
+    residentBytes: number;
+    retainedBytes: number;
+  };
 };
 
 export default function TypesenseServerMetrics() {
-  const [metrics, setMetrics] = useState<ServerMetrics>({
-    status: "online",
-    uptime: 0,
-    numDocuments: 0,
-    numCollections: 0,
-    numSearches: 0,
-    cpuUsage: 0,
-    memoryUsage: 0,
-    diskUsage: 0,
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const typesenseConnectionData = useRecoilValue(typesenseConnectionDataState);
+  const [clusterMetrics, setClusterMetrics] = useState<ServerMetrics | null>(
+    null,
+  ); // Initialize as `null` to prevent undefined errors
+  const [numCollections, setNumCollections] = useState<number | null>(null);
+  const [numDocuments, setNumDocuments] = useState<number | null>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMetrics = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // In a real application, you would fetch actual data from your Typesense server
-      setMetrics({
-        status: "online",
-        uptime: Math.floor(Math.random() * 1000000),
-        numDocuments: Math.floor(Math.random() * 1000000),
-        numCollections: Math.floor(Math.random() * 100),
-        numSearches: Math.floor(Math.random() * 10000),
-        cpuUsage: Math.random() * 100,
-        memoryUsage: Math.random() * 100,
-        diskUsage: Math.random() * 100,
+      const clusterMetrics = await getClusterMetrics({
+        typesenseHost: typesenseConnectionData.typesenseHost,
+        typesensePort: typesenseConnectionData.typesensePort,
+        typesenseProtocol: typesenseConnectionData.typesenseProtocol,
+        typesenseApiKey: typesenseConnectionData.typesenseApiKey,
       });
+      const collections = await listAllCollections({
+        typesenseHost: typesenseConnectionData.typesenseHost,
+        typesensePort: typesenseConnectionData.typesensePort,
+        typesenseProtocol: typesenseConnectionData.typesenseProtocol,
+        typesenseApiKey: typesenseConnectionData.typesenseApiKey,
+      });
+
+      if (collections.success) {
+        setNumCollections(collections.data.length);
+
+        const numDocuments = collections.data.reduce((acc, collection) => {
+          return acc + collection.num_documents;
+        }, 0);
+        setNumDocuments(numDocuments);
+
+        setNumDocuments(numDocuments);
+      }
+
+      if (clusterMetrics.ok) {
+        const clusterMetricsData = clusterMetrics?.data;
+
+        // Step 1: Dynamically create `cpuUsage` object
+        const cpuUsage = Object.keys(clusterMetricsData)
+          .filter(
+            (key) =>
+              key.startsWith('system_cpu') &&
+              key.endsWith('_active_percentage'),
+          )
+          .reduce((acc, key) => {
+            const cpuName = key.replace('system_', ''); // Remove `system_` prefix
+            acc[cpuName] = parseFloat(clusterMetricsData[key]); // Convert string to number
+            return acc;
+          }, {});
+
+        // Step 2: Calculate Disk Usage
+        const totalDisk = parseFloat(
+          clusterMetricsData.system_disk_total_bytes,
+        );
+        const usedDisk = parseFloat(clusterMetricsData.system_disk_used_bytes);
+        const diskUsage = {
+          total: totalDisk,
+          used: usedDisk,
+          usagePercentage: parseFloat(
+            ((usedDisk / totalDisk) * 100).toFixed(2),
+          ), // Calculate usage percentage
+        };
+
+        // Step 3: Calculate Memory Usage
+        const totalMemory = parseFloat(
+          clusterMetricsData.system_memory_total_bytes,
+        );
+        const usedMemory = parseFloat(
+          clusterMetricsData.system_memory_used_bytes,
+        );
+        const totalSwap = parseFloat(
+          clusterMetricsData.system_memory_total_swap_bytes,
+        );
+        const usedSwap = parseFloat(
+          clusterMetricsData.system_memory_used_swap_bytes,
+        );
+        const memoryUsage = {
+          totalMemory,
+          usedMemory,
+          memoryUsagePercentage: parseFloat(
+            ((usedMemory / totalMemory) * 100).toFixed(2),
+          ),
+          totalSwap,
+          usedSwap,
+          swapUsagePercentage:
+            totalSwap > 0
+              ? parseFloat(((usedSwap / totalSwap) * 100).toFixed(2))
+              : 0,
+        };
+
+        // Step 4: Calculate Network Data
+        const networkData = {
+          receivedBytes: parseInt(
+            clusterMetricsData.system_network_received_bytes,
+            10,
+          ),
+          sentBytes: parseInt(clusterMetricsData.system_network_sent_bytes, 10),
+        };
+
+        // Step 5: Handle Typesense-specific Memory Metrics
+        const typesenseMemoryMetrics = {
+          activeBytes: parseInt(
+            clusterMetricsData.typesense_memory_active_bytes,
+            10,
+          ),
+          allocatedBytes: parseInt(
+            clusterMetricsData.typesense_memory_allocated_bytes,
+            10,
+          ),
+          fragmentationRatio: parseFloat(
+            clusterMetricsData.typesense_memory_fragmentation_ratio,
+          ),
+          mappedBytes: parseInt(
+            clusterMetricsData.typesense_memory_mapped_bytes,
+            10,
+          ),
+          metadataBytes: parseInt(
+            clusterMetricsData.typesense_memory_metadata_bytes,
+            10,
+          ),
+          residentBytes: parseInt(
+            clusterMetricsData.typesense_memory_resident_bytes,
+            10,
+          ),
+          retainedBytes: parseInt(
+            clusterMetricsData.typesense_memory_retained_bytes,
+            10,
+          ),
+        };
+
+        setClusterMetrics({
+          status: 'online',
+          cpuUsage,
+          diskUsage,
+          memoryUsage,
+          networkData,
+          typesenseMemoryMetrics,
+        });
+      } else {
+        setError('Failed to fetch metrics.');
+      }
     } catch (err) {
-      setError("Failed to fetch server metrics. Please try again.");
+      setError('Failed to fetch server metrics. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   useEffect(() => {
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 30000); // Refresh every 30 seconds
+    const interval = setInterval(fetchMetrics, 60000); // Refresh every 60 seconds
     return () => clearInterval(interval);
   }, []);
 
-  const formatUptime = (seconds: number) => {
-    const days = Math.floor(seconds / (3600 * 24));
-    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${days}d ${hours}h ${minutes}m ${remainingSeconds}s`;
-  };
+  if (!clusterMetrics) return null; // Avoid rendering if metrics are not available yet
 
   return (
     <div className="w-full p-4">
@@ -99,6 +236,7 @@ export default function TypesenseServerMetrics() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Server Status */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -107,18 +245,20 @@ export default function TypesenseServerMetrics() {
                 <Server className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {metrics.status === "online" ? (
-                    <span className="text-green-600">Online</span>
-                  ) : (
-                    <span className="text-red-600">Offline</span>
+                <div
+                  className={cn(
+                    'text-2xl font-bold',
+                    clusterMetrics.status === 'online'
+                      ? 'text-green-500'
+                      : 'text-red-500',
                   )}
+                >
+                  {clusterMetrics.status === 'online' ? 'Online' : 'Offline'}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Uptime: {formatUptime(metrics.uptime)}
-                </p>
               </CardContent>
             </Card>
+
+            {/* Total Documents */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -128,29 +268,15 @@ export default function TypesenseServerMetrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metrics.numDocuments.toLocaleString()}
+                  {numDocuments?.toLocaleString() ?? 'N/A'}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Across {metrics.numCollections} collections
+                  Across {numCollections ?? 0} collections
                 </p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Searches
-                </CardTitle>
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {metrics.numSearches.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Since last server restart
-                </p>
-              </CardContent>
-            </Card>
+
+            {/* CPU Usage */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">CPU Usage</CardTitle>
@@ -158,25 +284,38 @@ export default function TypesenseServerMetrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metrics.cpuUsage.toFixed(2)}%
+                  {clusterMetrics.cpuUsage.total?.toFixed(2)}%
                 </div>
-                <Progress value={metrics.cpuUsage} className="mt-2" />
+                <Progress
+                  value={clusterMetrics.cpuUsage.total || 0}
+                  className="mt-2"
+                />
               </CardContent>
             </Card>
+
+            {/* Memory Usage */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Memory Usage
                 </CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metrics.memoryUsage.toFixed(2)}%
+                  {clusterMetrics.memoryUsage.memoryUsagePercentage || 0}%
                 </div>
-                <Progress value={metrics.memoryUsage} className="mt-2" />
+                <p className="text-xs text-muted-foreground">
+                  Used: {formatBytes(clusterMetrics.memoryUsage.usedMemory)} /
+                  Total: {formatBytes(clusterMetrics.memoryUsage.totalMemory)}
+                </p>
+                <Progress
+                  value={clusterMetrics.memoryUsage.memoryUsagePercentage || 0}
+                  className="mt-2"
+                />
               </CardContent>
             </Card>
+
+            {/* Disk Usage */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -186,9 +325,32 @@ export default function TypesenseServerMetrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metrics.diskUsage.toFixed(2)}%
+                  {clusterMetrics.diskUsage.usagePercentage || 0}%
                 </div>
-                <Progress value={metrics.diskUsage} className="mt-2" />
+                <p className="text-xs text-muted-foreground">
+                  Used: {formatBytes(clusterMetrics.diskUsage.used)} / Total:{' '}
+                  {formatBytes(clusterMetrics.diskUsage.total)}
+                </p>
+                <Progress
+                  value={clusterMetrics.diskUsage.usagePercentage || 0}
+                  className="mt-2"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Network Usage */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Network Usage
+                </CardTitle>
+                <Network className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  Rx: {formatBytes(clusterMetrics.networkData.receivedBytes)} |
+                  Tx: {formatBytes(clusterMetrics.networkData.sentBytes)}
+                </div>
               </CardContent>
             </Card>
           </div>
