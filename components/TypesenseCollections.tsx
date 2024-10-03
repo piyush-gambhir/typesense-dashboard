@@ -1,13 +1,10 @@
 'use client';
-'use client';
 
-import { Database, Search, Settings } from 'lucide-react';
+import { Database, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { convertUnixTimestamp } from '@/lib/utils/dateTime';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,7 +16,6 @@ import {
 } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
-import { convertUnixTimestamp } from "@/lib/utils/dateTime";
 
 // Updated component to accept collections as a prop
 export default function TypesenseCollections({

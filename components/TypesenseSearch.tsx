@@ -1,25 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
+import { getCollectionSchema } from '@/lib/typesense/actions/collections';
 import { multiSearch } from '@/lib/typesense/actions/documents';
-
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryParams } from '@/hooks/useQueryParams';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pagination } from '@/components/ui/pagination';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface FacetValue {
   value: string;
@@ -44,38 +36,42 @@ interface TypesenseSearchProps {
   collectionName: string;
 }
 
-export default function TypesenseSearch({
-  collectionName,
-}: TypesenseSearchProps) {
+export default function TypesenseSearch({ collectionName }: TypesenseSearchProps) {
   const [queryParams, setQueryParams] = useQueryParams();
   const [searchQuery, setSearchQuery] = useState<string>(queryParams.q || '');
-  const [currentPage, setCurrentPage] = useState<number>(
-    parseInt(queryParams.page || '1'),
-  );
-  const [sortBy, setSortBy] = useState<string>(
-    queryParams.sort_by || 'relevance',
-  );
-  const [filterBy, setFilterBy] = useState<string[]>(
-    queryParams.filter_by?.split(',') || [],
-  );
-  const [facetValues, setFacetValues] = useState<Record<string, FacetValue[]>>(
-    {},
-  );
+  const [currentPage, setCurrentPage] = useState<number>(parseInt(queryParams.page || '1'));
+  const [sortBy, setSortBy] = useState<string>(queryParams.sort_by || 'relevance');
+  const [filterBy, setFilterBy] = useState<string[]>(queryParams.filter_by?.split(',') || []);
+  const [facetValues, setFacetValues] = useState<Record<string, FacetValue[]>>({});
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
+  const [schemaFields, setSchemaFields] = useState<string[]>([]);
 
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
   const perPage = 10;
 
+  // Fetch schema on mount to initialize facets and filters
+  useEffect(() => {
+    const fetchSchema = async () => {
+      try {
+        const schemaResponse = await getCollectionSchema(collectionName);
+        const fields = schemaResponse?.fields?.map((field: any) => field.name) || [];
+        setSchemaFields(fields);
+      } catch (error) {
+        console.error('Error fetching schema:', error);
+      }
+    };
+    fetchSchema();
+  }, [collectionName]);
+
   // Sync state changes to URL and perform search
   useEffect(() => {
-    const params: Record<string, string> = {
-      q: debouncedSearchQuery,
-      page: currentPage.toString(),
-      sort_by: sortBy,
-    };
+    const params: Record<string, string> = {};
+    if (debouncedSearchQuery) params.q = debouncedSearchQuery;
+    if (currentPage > 1) params.page = currentPage.toString();
+    if (sortBy !== 'relevance') params.sort_by = sortBy;
     if (filterBy.length > 0) params.filter_by = filterBy.join(',');
 
     setQueryParams(params);
@@ -88,13 +84,13 @@ export default function TypesenseSearch({
     const queries = [
       {
         collection: collectionName,
-        q: debouncedSearchQuery,
-        query_by: '', // Specify searchable fields
+        q: debouncedSearchQuery || '*',
+        query_by: schemaFields.join(','),
         page: currentPage,
         per_page: perPage,
         filter_by: filterBy.join(' && '), // Combine filters for Typesense
-        facet_by: '', // Facet by multiple fields
-        highlight_full_fields: '', // Highlight fields in the response
+        facet_by: schemaFields.join(','), // Facet by all schema fields
+        highlight_full_fields: schemaFields.join(','),
         max_facet_values: 10,
         exhaustive_search: true,
       },
@@ -132,14 +128,12 @@ export default function TypesenseSearch({
   };
 
   const handleFilterChange = (value: string, checked: boolean) => {
-    setFilterBy((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value),
-    );
+    setFilterBy((prev) => (checked ? [...prev, value] : prev.filter((item) => item !== value)));
     setCurrentPage(1);
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-16 px-8 flex flex-col gap-y-8">
       <h1 className="text-3xl font-bold mb-6">Search Documents</h1>
 
       {/* Search Form */}
@@ -166,28 +160,15 @@ export default function TypesenseSearch({
             <CardContent>
               {Object.keys(facetValues).map((field) => (
                 <div key={field} className="mb-4">
-                  <Label>
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
-                  </Label>
+                  <Label>{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
                   {facetValues[field]?.map((facet) => (
-                    <div
-                      key={facet.value}
-                      className="flex items-center space-x-2"
-                    >
+                    <div key={facet.value} className="flex items-center space-x-2">
                       <Checkbox
                         id={facet.value}
                         checked={filterBy.includes(`${field}:${facet.value}`)}
-                        onCheckedChange={(checked) =>
-                          handleFilterChange(
-                            `${field}:${facet.value}`,
-                            checked as boolean,
-                          )
-                        }
+                        onCheckedChange={(checked) => handleFilterChange(`${field}:${facet.value}`, checked as boolean)}
                       />
-                      <label
-                        htmlFor={facet.value}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
+                      <label htmlFor={facet.value} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {facet.value} ({facet.count})
                       </label>
                     </div>
@@ -226,11 +207,7 @@ export default function TypesenseSearch({
           ))}
 
           {/* Pagination Component */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {/* <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} /> */}
         </div>
       </div>
     </div>
