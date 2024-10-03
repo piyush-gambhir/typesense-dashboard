@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import { getCollections } from "@/lib/typesense/actions/get-collections";
+import { getCollections } from '@/lib/typesense/actions/collections';
 
-import TypesenseCollections from "@/components/TypesenseCollections";
+import TypesenseCollections from '@/components/TypesenseCollections';
 
 export default async function page() {
   const collections = await getCollections();
 
-  return <TypesenseCollections collections={collections} />;
+  return <TypesenseCollections collections={collections ?? []} />;
 }

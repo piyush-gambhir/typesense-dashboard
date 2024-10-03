@@ -1,4 +1,5 @@
 "use server";
+
 export const createCollection = async ({
   typesenseHost,
   typesensePort,
