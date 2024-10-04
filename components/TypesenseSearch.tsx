@@ -16,13 +16,6 @@ import { Label } from '@/components/ui/label';
 import { Pagination } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CloudCog } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface FacetValue {
   value: string;
@@ -126,8 +119,7 @@ export default function TypesenseSearch({
 
     try {
       const response = await multiSearch(queries);
-      const response = await multiSearch(queries);
-      console.log(response);
+      
       if (response && response.results.length > 0) {
         const [documentsResponse] = response.results;
         console.log(documentsResponse);
