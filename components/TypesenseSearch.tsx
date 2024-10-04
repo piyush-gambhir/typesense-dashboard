@@ -14,6 +14,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pagination } from '@/components/ui/pagination';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CloudCog } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -86,6 +88,8 @@ export default function TypesenseSearch({
 
         setFacetFields(facetFields);
         setSchemaFields(fields);
+        const facetFields = fields.filter((field: string) => schemaResponse?.fields?.find((f: any) => f.name === field)?.facet === true);
+        setFacetFields(facetFields);
       } catch (error) {
         console.error('Error fetching schema:', error);
       }
@@ -111,28 +115,26 @@ export default function TypesenseSearch({
     const queries = [
       {
         collection: collectionName,
-        q: debouncedSearchQuery || '*',
+        q: "debouncedSearchQuery" || '*',
         query_by: schemaFields.join(','),
         page: currentPage,
         per_page: perPage,
-        filter_by: filterBy.join(' && '), // Combine filters for Typesense
-        facet_by: schemaFields.join(','), // Facet by all schema fields
-        highlight_full_fields: schemaFields.join(','),
-        max_facet_values: 10,
+        facet_by: facetFields.join(','), // Facet by all schema 
         exhaustive_search: true,
       },
     ];
 
     try {
       const response = await multiSearch(queries);
+      const response = await multiSearch(queries);
       console.log(response);
       if (response && response.results.length > 0) {
         const [documentsResponse] = response.results;
-
+        console.log(documentsResponse);
         // Update search results
-        setSearchResults(documentsResponse.hits.map((hit) => hit.document));
-        setTotalResults(documentsResponse.found);
-        setTotalPages(Math.ceil(documentsResponse.found / perPage));
+        setSearchResults(documentsResponse?.hits.map((hit) => hit.document));
+        setTotalResults(documentsResponse?.found);
+        setTotalPages(Math.ceil(documentsResponse?.found / perPage));
 
         // Update facet values
         setFacetValues(documentsResponse.facet_counts || {});

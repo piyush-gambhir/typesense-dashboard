@@ -5,9 +5,9 @@ import Typesense from 'typesense';
 const typesenseClient = new Typesense.Client({
   nodes: [
     {
-      host: 'localhost',
+      host: "localhost",
       port: 8108,
-      protocol: 'http',
+      protocol: "http",
     },
   ],
   apiKey: 'xyz',
