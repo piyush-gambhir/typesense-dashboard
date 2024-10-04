@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pagination } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CloudCog } from 'lucide-react';
 
 interface FacetValue {
   value: string;
@@ -48,7 +49,7 @@ export default function TypesenseSearch({ collectionName }: TypesenseSearchProps
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
   const [schemaFields, setSchemaFields] = useState<string[]>([]);
-
+  const [facetFields, setFacetFields] = useState<string[]>([]);
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
   const perPage = 10;
 
@@ -56,9 +57,12 @@ export default function TypesenseSearch({ collectionName }: TypesenseSearchProps
   useEffect(() => {
     const fetchSchema = async () => {
       try {
+
         const schemaResponse = await getCollectionSchema(collectionName);
         const fields = schemaResponse?.fields?.map((field: any) => field.name) || [];
         setSchemaFields(fields);
+        const facetFields = fields.filter((field: string) => schemaResponse?.fields?.find((f: any) => f.name === field)?.facet === true);
+        setFacetFields(facetFields);
       } catch (error) {
         console.error('Error fetching schema:', error);
       }
@@ -84,27 +88,24 @@ export default function TypesenseSearch({ collectionName }: TypesenseSearchProps
     const queries = [
       {
         collection: collectionName,
-        q: debouncedSearchQuery || '*',
+        q: "debouncedSearchQuery" || '*',
         query_by: schemaFields.join(','),
         page: currentPage,
         per_page: perPage,
-        filter_by: filterBy.join(' && '), // Combine filters for Typesense
-        facet_by: schemaFields.join(','), // Facet by all schema fields
-        highlight_full_fields: schemaFields.join(','),
-        max_facet_values: 10,
+        facet_by: facetFields.join(','), // Facet by all schema 
         exhaustive_search: true,
       },
     ];
 
     try {
-      const response: MultiSearchResponse = await multiSearch(queries);
+      const response = await multiSearch(queries);
       if (response && response.results.length > 0) {
         const [documentsResponse] = response.results;
-
+        console.log(documentsResponse);
         // Update search results
-        setSearchResults(documentsResponse.hits.map((hit) => hit.document));
-        setTotalResults(documentsResponse.found);
-        setTotalPages(Math.ceil(documentsResponse.found / perPage));
+        setSearchResults(documentsResponse?.hits.map((hit) => hit.document));
+        setTotalResults(documentsResponse?.found);
+        setTotalPages(Math.ceil(documentsResponse?.found / perPage));
 
         // Update facet values
         setFacetValues(documentsResponse.facet_counts || {});
