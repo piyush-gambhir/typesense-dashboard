@@ -162,15 +162,3 @@ export async function deleteDocument(
   }
 }
 
-export async function getCollectionSchema(collectionName: string) {
-  try {
-    const schema = await typesenseClient.collections(collectionName).retrieve();
-    return schema;
-  } catch (error) {
-    console.error(
-      `Error fetching schema for collection "${collectionName}":`,
-      error,
-    );
-    return null;
-  }
-}

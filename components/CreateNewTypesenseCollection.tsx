@@ -98,7 +98,6 @@ export default function CreateCollectionForm() {
 
   const onSubmit = (data: FormData) => {
     // Here you would typically send the data to your backend
-    console.log(data);
     toast({
       title: 'Collection Created',
       description: `Collection "${data.name}" has been created successfully.`,

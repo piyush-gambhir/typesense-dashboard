@@ -6,6 +6,5 @@ import TypesenseApiSettings from '@/components/TypesenseApiSettings';
 
 export default async function page() {
   const apiKeys = await getApiKeys();
-  console.log(apiKeys)
   return <TypesenseApiSettings initialApiKeys={apiKeys ?? []} />;
 }
