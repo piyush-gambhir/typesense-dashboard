@@ -35,16 +35,16 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "recoil": "^0.7.7",
-    "tailwind-merge": "^2.5.2",
+    "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "typesense": "^1.8.2",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.7.4",
+    "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
+    "@types/react-dom": "^18.3.1",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.13",
     "husky": "^9.1.6",
@@ -52,7 +52,7 @@
     "postcss": "^8.4.47",
     "prettier": "3.3.3",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

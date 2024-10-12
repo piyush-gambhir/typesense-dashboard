@@ -1,5 +1,6 @@
 'use client';
 
+import { CloudCog } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getCollection } from '@/lib/typesense/actions/collections';
@@ -14,13 +15,19 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pagination } from '@/components/ui/pagination';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CloudCog } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface FacetValue {
   value: string;
   count: number;
 }
+
 interface MultiSearchResponse {
   results: Array<{
     hits: Array<{ document: SearchResult }>;
@@ -31,8 +38,7 @@ interface MultiSearchResponse {
 
 interface SearchResult {
   id: string;
-  title: string;
-  content: string;
+  [key: string]: any; // To accommodate dynamic fields
 }
 
 interface TypesenseSearchProps {
@@ -65,7 +71,7 @@ export default function TypesenseSearch({
   const [facetFields, setFacetFields] = useState<string[]>([]);
 
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
-  const perPage = 10;
+  const perPage = 12; // Updated per_page to match your payload
 
   // Fetch schema on mount to initialize facets and filters
   useEffect(() => {
@@ -74,15 +80,14 @@ export default function TypesenseSearch({
         const schemaResponse = await getCollection(collectionName);
         const fields = schemaResponse?.fields?.map((field) => field.name) || [];
 
-        const facetFields =
+        // Get fields that are marked as facet
+        const facets =
           schemaResponse?.fields
             ?.filter((field) => field.facet === true)
             .map((field) => field.name) || [];
 
-        setFacetFields(facetFields);
         setSchemaFields(fields);
-        const facetFields = fields.filter((field: string) => schemaResponse?.fields?.find((f: any) => f.name === field)?.facet === true);
-        setFacetFields(facetFields);
+        setFacetFields(facets);
       } catch (error) {
         console.error('Error fetching schema:', error);
       }
@@ -95,31 +100,41 @@ export default function TypesenseSearch({
     const params: Record<string, string> = {};
     if (debouncedSearchQuery) params.q = debouncedSearchQuery;
     if (currentPage > 1) params.page = currentPage.toString();
-    if (sortBy !== 'relevance') params.sort_by = sortBy;
+    if (sortBy && sortBy !== 'relevance') params.sort_by = sortBy;
     if (filterBy.length > 0) params.filter_by = filterBy.join(',');
 
     setQueryParams(params);
     performMultiSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchQuery, currentPage, sortBy, filterBy]);
 
   // Perform multi-search with updated parameters
   const performMultiSearch = async () => {
     setLoading(true);
+
+    // Build filter_by string from selected filters
+    const filterString = filterBy.join(' && ');
+
+    // Build the multi-search query dynamically using schema fields
     const queries = [
       {
         collection: collectionName,
-        q: "debouncedSearchQuery" || '*',
+        q: debouncedSearchQuery || '*',
         query_by: schemaFields.join(','),
         page: currentPage,
         per_page: perPage,
-        facet_by: facetFields.join(','), // Facet by all schema 
+        facet_by: facetFields.join(','),
+        filter_by: filterString,
+        highlight_full_fields: schemaFields.join(','),
+        sort_by: sortBy !== 'relevance' ? sortBy : undefined,
         exhaustive_search: true,
+        max_facet_values: 10,
       },
     ];
 
     try {
       const response = await multiSearch(queries);
-      
+      console.log(response);
       if (response && response.results.length > 0) {
         const [documentsResponse] = response.results;
         console.log(documentsResponse);
@@ -149,9 +164,16 @@ export default function TypesenseSearch({
     performMultiSearch();
   };
 
-  const handleFilterChange = (value: string, checked: boolean) => {
+  const handleFilterChange = (
+    field: string,
+    value: string,
+    checked: boolean,
+  ) => {
+    const filterExpression = `${field}:=[${JSON.stringify(value)}]`;
     setFilterBy((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value),
+      checked
+        ? [...prev, filterExpression]
+        : prev.filter((item) => item !== filterExpression),
     );
     setCurrentPage(1);
   };
@@ -182,7 +204,7 @@ export default function TypesenseSearch({
               <CardTitle>Filters</CardTitle>
             </CardHeader>
             <CardContent>
-              {Object.keys(facetValues).map((field) => (
+              {facetFields.map((field) => (
                 <div key={field} className="mb-4">
                   <Label>
                     {field.charAt(0).toUpperCase() + field.slice(1)}
@@ -193,17 +215,20 @@ export default function TypesenseSearch({
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        id={facet.value}
-                        checked={filterBy.includes(`${field}:${facet.value}`)}
+                        id={`${field}:${facet.value}`}
+                        checked={filterBy.includes(
+                          `${field}:=[${JSON.stringify(facet.value)}]`,
+                        )}
                         onCheckedChange={(checked) =>
                           handleFilterChange(
-                            `${field}:${facet.value}`,
+                            field,
+                            facet.value,
                             checked as boolean,
                           )
                         }
                       />
                       <label
-                        htmlFor={facet.value}
+                        htmlFor={`${field}:${facet.value}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {facet.value} ({facet.count})
@@ -226,19 +251,35 @@ export default function TypesenseSearch({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="relevance">Relevance</SelectItem>
-                <SelectItem value="title:asc">Title (A-Z)</SelectItem>
-                <SelectItem value="title:desc">Title (Z-A)</SelectItem>
+                {/* Dynamically create sort options based on schema fields */}
+                {schemaFields.map((field) => (
+                  <SelectItem key={`${field}:asc`} value={`${field}:asc`}>
+                    {`${field.charAt(0).toUpperCase() + field.slice(1)} (A-Z)`}
+                  </SelectItem>
+                ))}
+                {schemaFields.map((field) => (
+                  <SelectItem key={`${field}:desc`} value={`${field}:desc`}>
+                    {`${field.charAt(0).toUpperCase() + field.slice(1)} (Z-A)`}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
-          {searchResults.map((result: any) => (
+          {searchResults.map((result: SearchResult) => (
             <Card key={result.id} className="mb-4">
               <CardHeader>
-                <CardTitle dangerouslySetInnerHTML={{ __html: result.title }} />
+                <CardTitle>
+                  {result.title || result.name || 'No Title'}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p dangerouslySetInnerHTML={{ __html: result.content }} />
+                {/* Display some of the result fields dynamically */}
+                {schemaFields.map((field) => (
+                  <p key={field}>
+                    <strong>{field}:</strong> {JSON.stringify(result[field])}
+                  </p>
+                ))}
               </CardContent>
             </Card>
           ))}
