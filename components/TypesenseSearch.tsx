@@ -30,8 +30,7 @@ interface FacetValue {
 
 interface SearchResult {
   id: string;
-  title: string;
-  content: string;
+  [key: string]: any; // To accommodate dynamic fields
 }
 
 interface TypesenseSearchProps {
@@ -140,7 +139,8 @@ export default function TypesenseSearch({
       try {
         const schemaResponse = await getCollection(collectionName);
 
-        const facetFields =
+        // Get fields that are marked as facet
+        const facets =
           schemaResponse?.fields
             ?.filter((field) => field.facet === true)
             .map((field) => field.name) || [];
@@ -206,7 +206,7 @@ export default function TypesenseSearch({
     const params: Record<string, string> = {};
     if (debouncedSearchQuery) params.q = debouncedSearchQuery;
     if (currentPage > 1) params.page = currentPage.toString();
-    if (sortBy !== 'relevance') params.sort_by = sortBy;
+    if (sortBy && sortBy !== 'relevance') params.sort_by = sortBy;
     if (filterBy.length > 0) params.filter_by = filterBy.join(',');
 
     setQueryParams(params);
@@ -224,6 +224,11 @@ export default function TypesenseSearch({
   // Perform search and handle results
   const performMultiSearch = async () => {
     setLoading(true);
+
+    // Build filter_by string from selected filters
+    const filterString = filterBy.join(' && ');
+
+    // Build the multi-search query dynamically using schema fields
     const queries = [
       {
         collection: collectionName,
@@ -365,7 +370,9 @@ export default function TypesenseSearch({
   // Handle filter changes
   const handleFilterChange = (value: string, checked: boolean) => {
     setFilterBy((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value),
+      checked
+        ? [...prev, filterExpression]
+        : prev.filter((item) => item !== filterExpression),
     );
     setCurrentPage(1);
   };
