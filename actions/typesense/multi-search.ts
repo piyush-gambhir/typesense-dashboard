@@ -16,7 +16,7 @@ export const multiSearchDocuments = async ({
     filterBy?: string;
   }>;
 }) => {
-  const url = `${typesenseProtocol}://${typesenseHost}:${typesensePort}/multi_search?query_by=name`;
+  const url = `${typesenseProtocol}://${typesenseHost}:${typesensePort}/multi_search`;
 
   const response = await fetch(url, {
     method: "POST",

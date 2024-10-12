@@ -24,14 +24,14 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        'bg-blck flex h-max flex-col border-r bg-background transition-all duration-200 ease-in-out',
+        'flex flex-col border-r bg-background transition-all duration-200 ease-in-out',
         isSidebarOpen
           ? 'w-[240px] opacity-100 lg:w-[300px]'
           : 'w-[80px] opacity-0 lg:opacity-100',
       )}
     >
-      <ScrollArea className="flex-1">
-        <nav className="flex flex-col gap-2 p-4">
+      <ScrollArea className="flex-1 h-full">
+        <nav className="flex flex-col gap-2 p-4 h-full">
           {sidebarItems.map((item) => (
             <Link
               key={item.name}

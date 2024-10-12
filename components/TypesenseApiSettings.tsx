@@ -77,7 +77,6 @@ export default function ApiSettingsDashboard({
 }: {
   initialApiKeys: ApiKey[];
 }) {
-  // Ensure `initialApiKeys` is always an array
   const [apiKeys, setApiKeys] = useState<ApiKey[]>(
     Array.isArray(initialApiKeys) ? initialApiKeys : [],
   );
@@ -150,14 +149,14 @@ export default function ApiSettingsDashboard({
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <Card>
+    <div className="container h-full overflow-hidden mx-auto">
+      <Card className="h-full flex flex-col border-none shadow-none">
         <CardHeader>
           <CardTitle>API Settings</CardTitle>
           <CardDescription>Manage your Typesense API keys</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[400px]">
+        <CardContent className="flex-grow overflow-hidden">
+          <ScrollArea className="h-full">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -168,8 +167,7 @@ export default function ApiSettingsDashboard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {/* Ensure `apiKeys` is an array before mapping */}
-                {(apiKeys || []).map((key) => (
+                {apiKeys.map((key) => (
                   <TableRow key={key.id}>
                     <TableCell>{key.description}</TableCell>
                     <TableCell>{key.actions.join(', ')}</TableCell>
@@ -196,64 +194,69 @@ export default function ApiSettingsDashboard({
             <DialogTrigger asChild>
               <Button>Create New API Key</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-hidden flex flex-col">
               <DialogHeader>
                 <DialogTitle>Create New API Key</DialogTitle>
                 <DialogDescription>
                   Create a new API key with specific permissions.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="description" className="text-right">
-                    Description
-                  </Label>
-                  <Input
-                    id="description"
-                    value={newKeyDescription}
-                    onChange={(e) => setNewKeyDescription(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="collections" className="text-right">
-                    Collections
-                  </Label>
-                  <Input
-                    id="collections"
-                    value={newKeyCollections}
-                    onChange={(e) => setNewKeyCollections(e.target.value)}
-                    placeholder="collection1, collection2"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label className="text-right">Actions</Label>
-                  <div className="col-span-3 space-y-2">
-                    {availableActions.map((action) => (
-                      <div key={action} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={action}
-                          checked={newKeyActions.includes(action)}
-                          onCheckedChange={(checked) => {
-                            setNewKeyActions(
-                              checked
-                                ? [...newKeyActions, action]
-                                : newKeyActions.filter((a) => a !== action),
-                            );
-                          }}
-                        />
-                        <label
-                          htmlFor={action}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              <ScrollArea className="flex-grow">
+                <div className="grid gap-4 py-4 px-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="description" className="text-right">
+                      Description
+                    </Label>
+                    <Input
+                      id="description"
+                      value={newKeyDescription}
+                      onChange={(e) => setNewKeyDescription(e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="collections" className="text-right">
+                      Collections
+                    </Label>
+                    <Input
+                      id="collections"
+                      value={newKeyCollections}
+                      onChange={(e) => setNewKeyCollections(e.target.value)}
+                      placeholder="collection1, collection2"
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-start gap-4">
+                    <Label className="text-right">Actions</Label>
+                    <div className="col-span-3 space-y-2">
+                      {availableActions.map((action) => (
+                        <div
+                          key={action}
+                          className="flex items-center space-x-2"
                         >
-                          {action}
-                        </label>
-                      </div>
-                    ))}
+                          <Checkbox
+                            id={action}
+                            checked={newKeyActions.includes(action)}
+                            onCheckedChange={(checked) => {
+                              setNewKeyActions(
+                                checked
+                                  ? [...newKeyActions, action]
+                                  : newKeyActions.filter((a) => a !== action),
+                              );
+                            }}
+                          />
+                          <label
+                            htmlFor={action}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {action}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollArea>
               <DialogFooter>
                 <Button
                   type="submit"

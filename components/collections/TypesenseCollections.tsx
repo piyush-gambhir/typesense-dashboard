@@ -2,7 +2,7 @@
 
 import { Database, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
+import Link from 'next/link';
 import { convertUnixTimestamp } from '@/lib/utils/dateTime';
 
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
-
 // Updated component to accept collections as a prop
 export default function TypesenseCollections({
   collections,
@@ -26,17 +25,22 @@ export default function TypesenseCollections({
   const router = useRouter();
 
   return (
-    <div className="container mx-auto py-16 px-8 flex flex-col gap-y-8">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="container mx-auto flex flex-col gap-y-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 p-8">
         {collections?.map((collection) => {
           const { date, time } = convertUnixTimestamp(collection?.created_at);
           return (
-            <Card key={collection?.name} className="flex flex-col">
+            <Card key={collection?.name} className="flex flex-col shadow-none ">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Database className="mr-2" />
-                  {collection?.name}
-                </CardTitle>
+                <div className="flex justify-between">
+                  <CardTitle className="flex items-center">
+                    <Database className="mr-2" />
+                    {collection?.name}
+                  </CardTitle>
+                  <Link href={`/collections/${collection.name}/search`}>
+                    <Button variant="outline">Search Collection</Button>
+                  </Link>
+                </div>
                 <CardDescription>Collection details</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
@@ -60,6 +64,32 @@ export default function TypesenseCollections({
                 </Table>
               </CardContent>
               <CardFooter className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      router.push(
+                        `/collections/${collection.name}/documents/import`,
+                      );
+                    }}
+                  >
+                    Import
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      router.push(
+                        `/collections/${collection.name}/documents/export`,
+                      );
+                    }}
+                  >
+                    Export
+                  </Button>
+                </div>
+
                 <Button
                   variant="outline"
                   size="sm"

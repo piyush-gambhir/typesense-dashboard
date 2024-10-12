@@ -2,7 +2,7 @@ import React from 'react';
 
 import { getCollection } from '@/lib/typesense/actions/collections';
 
-import TypesenseCollectionDetails from '@/components/TypesenseCollectionDetails';
+import TypesenseCollectionDetails from '@/components/collections/TypesenseCollectionDetails';
 
 export default async function page({
   params,

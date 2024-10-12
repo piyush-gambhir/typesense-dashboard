@@ -154,8 +154,8 @@ export default function CollectionDetails({
   };
 
   return (
-    <div className="container mx-auto py-16 px-8 flex flex-col gap-y-8">
-      <Card>
+    <div className="container mx-auto p-8 flex flex-col gap-y-8">
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>{collection.name}</CardTitle>
         </CardHeader>
@@ -213,7 +213,7 @@ export default function CollectionDetails({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Fields</CardTitle>
           <div className="flex items-center space-x-2">
