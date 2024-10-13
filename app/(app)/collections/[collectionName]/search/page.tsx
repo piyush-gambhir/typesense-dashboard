@@ -7,13 +7,13 @@ export default function page({
   params,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
-  params: { collection_name: string };
+  params: { collectionName: string };
 }) {
-  const { collection_name } = params;
+  const { collectionName } = params;
 
   return (
     <TypesenseSearch
-      collectionName={collection_name}
+      collectionName={collectionName}
       searchParams={searchParams}
     />
   );

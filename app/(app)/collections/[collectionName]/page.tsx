@@ -7,8 +7,8 @@ import TypesenseCollectionDetails from '@/components/collections/TypesenseCollec
 export default async function page({
   params,
 }: {
-  params: { collection_name: string };
+  params: { collectionName: string };
 }) {
-  const collection = await getCollection(params.collection_name);
+  const collection = await getCollection(params.collectionName);
   return <TypesenseCollectionDetails initialCollection={collection} />;
 }

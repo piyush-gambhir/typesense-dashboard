@@ -26,7 +26,7 @@ export default function Sidebar() {
       className={cn(
         'flex flex-col border-r bg-background transition-all duration-200 ease-in-out',
         isSidebarOpen
-          ? 'w-[240px] opacity-100 lg:w-[300px]'
+          ? 'w-[200px] opacity-100 lg:w-[240px]'
           : 'w-[80px] opacity-0 lg:opacity-100',
       )}
     >

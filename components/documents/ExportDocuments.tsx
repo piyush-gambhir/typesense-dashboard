@@ -33,8 +33,7 @@ export default function ExportDocuments({
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
-    const collectionData = await exportCollection(collectionName);
-    console.log('Collection Data', collectionData);
+    const collectionData = await exportCollection({ collectionName });
     if (!selectedFormat) {
       toast({
         title: 'Error',

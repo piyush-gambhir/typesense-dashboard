@@ -9,8 +9,6 @@ import { multiSearch } from '@/lib/typesense/actions/documents';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryParams } from '@/hooks/useQueryParams';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -43,6 +41,7 @@ export default function TypesenseSearch({
 }: TypesenseSearchProps) {
   const [queryParams, setQueryParams] = useQueryParams();
 
+  const [collectionSchema, setCollectionSchema] = useState<any>(null);
   const [indexFields, setIndexFields] = useState<string[]>([]);
   const [facetFields, setFacetFields] = useState<string[]>([]);
   const [sortFields, setSortFields] = useState<string[]>([]);
@@ -192,10 +191,10 @@ export default function TypesenseSearch({
             ?.filter((field) => field.sort === true)
             .map((field) => field.name) ?? [];
 
+        setCollectionSchema(schemaResponse);
         setFacetFields(facetFields);
         setIndexFields(indexFields);
         setSortFields(sortFields);
-
         setSortDropdownOptions(
           sortFields.flatMap((field) => {
             const words = field
@@ -225,11 +224,11 @@ export default function TypesenseSearch({
     fetchSchema();
 
     setCountDropdownOptions([
-      { label: '10', value: 10 },
-      { label: '20', value: 20 },
-      { label: '50', value: 50 },
-      { label: '100', value: 100 },
-      { label: '200', value: 200 },
+      { label: '12', value: 12 },
+      { label: '24', value: 24 },
+      { label: '48', value: 48 },
+      { label: '96', value: 96 },
+      { label: '192', value: 192 },
     ]);
   }, [collectionName]);
 
@@ -274,7 +273,7 @@ export default function TypesenseSearch({
   };
 
   return (
-    <div className="container mx-auto py-12 px-6 flex flex-col gap-y-4">
+    <div className="container mx-auto p-8 flex flex-col gap-y-4">
       <h1 className="text-3xl font-bold mb-6">Search Documents</h1>
 
       {/* Loading state when both filters and documents are loading */}
@@ -283,10 +282,11 @@ export default function TypesenseSearch({
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12">
           {/* Filters Sidebar */}
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <Filter
+              collectionSchema={collectionSchema}
               facetValues={facetValues}
               filterBy={filterBy}
               onFilterChange={handleFilterChange}
@@ -294,7 +294,7 @@ export default function TypesenseSearch({
           </div>
 
           {/* Search Results Section */}
-          <div className="md:col-span-3">
+          <div className="md:col-span-3 lg:col-span-4">
             <div className="flex justify-end items-center mb-4 gap-x-4">
               <Select
                 value={perPage.toString()}
@@ -333,7 +333,7 @@ export default function TypesenseSearch({
                 No documents found.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {searchResults.map((result) => (
                   <DocumentCard key={result.id} result={result} />
                 ))}

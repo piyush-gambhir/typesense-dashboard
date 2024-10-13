@@ -1,15 +1,28 @@
 'use client';
 
+import { Edit, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { validateURL } from '@/lib/zod/validation';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface DocumentCardProps {
   result: Record<string, any>;
+  collectionName: string;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
 }
 
 const isImageUrl = (url: string): boolean => {
@@ -88,7 +101,15 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
   );
 };
 
-const DocumentCard: React.FC<DocumentCardProps> = ({ result }) => {
+const DocumentCard: React.FC<DocumentCardProps> = ({
+  result,
+  collectionName,
+  onEdit,
+  onDelete,
+}) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const sortedEntries = Object.entries(result).sort(([keyA], [keyB]) => {
     if (keyA === 'id') return -1;
     if (keyB === 'id') return 1;
@@ -110,16 +131,84 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ result }) => {
     return 0;
   });
 
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await onDelete(result.id);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
   return (
-    <Card className="w-full">
-      <CardContent className="p-8">
-        <div className="space-y-2">
-          {sortedEntries.map(([key, value]) => (
-            <ResultField key={key} field={key} value={value} />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <Card className="w-full flex flex-col justify-between">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="mb-4">
+              <span className="font-semibold text-base block mb-2">ID</span>
+              <div>{result.id}</div>
+            </div>
+            {sortedEntries.map(
+              ([key, value]) =>
+                key !== 'id' && (
+                  <ResultField key={key} field={key} value={value} />
+                ),
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end space-x-2 pt-4 border-t">
+          <Link
+            href={`/collections/${collectionName}/document/${result.id}`}
+            className="w-full"
+          >
+            <Button variant="outline" size="sm">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          </Link>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Are you sure you want to delete this document?
+            </DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the
+              document and remove its data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

@@ -21,7 +21,6 @@ export async function multiSearch({
 }: {
   searchQueries: SearchQuery[];
 }) {
-  console.log('Search Queries', searchQueries);
   try {
     const multiSearchRequests = searchQueries.map((query) => ({
       collection: query.collection,
@@ -49,3 +48,83 @@ export async function multiSearch({
   }
 }
 
+// Create a document in a collection
+export async function createDocument(
+  collectionName: string,
+  document: Record<string, any>,
+) {
+  try {
+    const createdDocument = await typesenseClient
+      .collections(collectionName)
+      .documents()
+      .create(document);
+    return createdDocument;
+  } catch (error) {
+    console.error(
+      `Error creating document in collection "${collectionName}":`,
+      error,
+    );
+    return null;
+  }
+}
+
+// Retrieve a specific document by ID
+export async function getDocumentById(
+  collectionName: string,
+  documentId: string,
+) {
+  try {
+    const document = await typesenseClient
+      .collections(collectionName)
+      .documents(documentId)
+      .retrieve();
+    return document;
+  } catch (error) {
+    console.error(
+      `Error retrieving document "${documentId}" from collection "${collectionName}":`,
+      error,
+    );
+    return null;
+  }
+}
+
+// Update a specific document by ID
+export async function updateDocument(
+  collectionName: string,
+  documentId: string,
+  document: Record<string, any>,
+) {
+  try {
+    const updatedDocument = await typesenseClient
+      .collections(collectionName)
+      .documents(documentId)
+      .update(document);
+    return updatedDocument;
+  } catch (error) {
+    console.error(
+      `Error updating document "${documentId}" in collection "${collectionName}":`,
+      error,
+    );
+    return null;
+  }
+}
+
+// Delete a specific document by ID
+export async function deleteDocument(
+  collectionName: string,
+  documentId: string,
+) {
+  try {
+    const deleteResult = await typesenseClient
+      .collections(collectionName)
+      .documents(documentId)
+      .delete();
+    return deleteResult;
+  } catch (error) {
+    console.error(
+      `Error deleting document "${documentId}" from collection "${collectionName}":`,
+      error,
+    );
+    return null;
+  }
+}

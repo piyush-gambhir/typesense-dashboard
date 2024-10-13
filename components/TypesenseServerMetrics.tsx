@@ -224,7 +224,7 @@ export default function TypesenseServerMetrics() {
   if (!clusterMetrics) return null; // Avoid rendering if metrics are not available yet
 
   return (
-    <div className="w-full p-4">
+    <div className="container h-full overflow-hidden mx-auto">
       <Card className="border-none shadow-none">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">

@@ -5,7 +5,7 @@ import ExportDocuments from '@/components/documents/ExportDocuments';
 export default function page({
   params,
 }: {
-  params: { collection_name: string };
+  params: { collectionName: string };
 }) {
-  return <ExportDocuments collectionName={params.collection_name} />;
+  return <ExportDocuments collectionName={params.collectionName} />;
 }
