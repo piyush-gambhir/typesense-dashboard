@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   typesense-dashboard:
     container_name: typesense-dashboard

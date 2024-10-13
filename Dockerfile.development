@@ -10,9 +10,6 @@ WORKDIR /app
 # Copy package.json file
 COPY package.json ./
 
-# Set the working directory inside the container
-WORKDIR /app
-
 # Install dependencies using pnpm
 RUN pnpm install
 
