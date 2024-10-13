@@ -3,6 +3,8 @@
 import { Download, FileDown } from 'lucide-react';
 import { useState } from 'react';
 
+import { exportCollection } from '@/lib/typesense/actions/collections';
+
 import { toast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
@@ -22,11 +24,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function ExportDocuments() {
+export default function ExportDocuments({
+  collectionName,
+}: {
+  collectionName: string;
+}) {
   const [selectedFormat, setSelectedFormat] = useState<string>('');
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
+    const collectionData = await exportCollection(collectionName);
+    console.log('Collection Data', collectionData);
     if (!selectedFormat) {
       toast({
         title: 'Error',

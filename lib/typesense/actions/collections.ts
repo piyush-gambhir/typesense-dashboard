@@ -162,3 +162,34 @@ export async function deleteDocument(
   }
 }
 
+export async function exportCollection({
+  collectionName,
+  includeFields,
+  excludeFields,
+}: {
+  collectionName: string;
+  includeFields?: string;
+  excludeFields?: string;
+}) {
+  const collection = await typesenseClient
+    .collections(collectionName)
+    .documents()
+    .export({
+      ...(includeFields && { include_fields: includeFields }),
+      ...(excludeFields && { exclude_fields: excludeFields }),
+    });
+  return collection;
+}
+
+export async function importCollection(
+  collectionName: string,
+  documents: Record<string, any>[],
+) {
+  const importedCollection = await typesenseClient
+    .collections(collectionName)
+    .documents()
+    .import(documents, {
+      action: 'create',
+    });
+  return importedCollection;
+}

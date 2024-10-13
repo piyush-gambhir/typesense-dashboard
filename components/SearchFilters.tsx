@@ -18,6 +18,7 @@ const Filter: React.FC<FilterProps> = ({
   filterBy,
   onFilterChange,
 }) => {
+  console.log('Facet Values', facetValues);
   return (
     <>
       {Object.entries(facetValues).map(([field, values]) => {
