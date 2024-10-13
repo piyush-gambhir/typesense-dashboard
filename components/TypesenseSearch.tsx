@@ -10,6 +10,13 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryParams } from '@/hooks/useQueryParams';
 
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -46,9 +53,8 @@ export default function TypesenseSearch({
   const [facetFields, setFacetFields] = useState<string[]>([]);
   const [sortFields, setSortFields] = useState<string[]>([]);
 
-  const [searchQuery, setSearchQuery] = useState<string>(queryParams.q ?? '');
   const [perPage, setPerPage] = useState<number>(
-    parseInt(queryParams.perPage ?? '10'),
+    parseInt(queryParams.perPage ?? '12'),
   );
   const [currentPage, setCurrentPage] = useState<number>(
     parseInt(queryParams.page ?? '1'),
@@ -69,7 +75,7 @@ export default function TypesenseSearch({
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
 
-  const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce<string>(queryParams.q ?? '', 300);
 
   const [sortDropdownOptions, setSortDropdownOptions] = useState<
     { label: string; value: string }[]
@@ -78,20 +84,19 @@ export default function TypesenseSearch({
     { label: string; value: number }[]
   >([]);
 
-  // Perform search for documents (without refreshing facets)
   const performMultiSearch = async () => {
     setLoadingDocuments(true);
     const queries = [
       {
         collection: collectionName,
         q: queryParams.q ?? '*',
-        queryBy: indexFields.join(','), // dynamic index fields
+        queryBy: indexFields.join(','),
         highlightFullFields: indexFields.join(','),
         page: currentPage,
         perPage,
         exhaustiveSearch: true,
         sortBy: queryParams?.sort_by ?? '',
-        filterBy: filterBy.join(','), // dynamic filters
+        filterBy: filterBy.join(','),
       },
     ];
 
@@ -120,7 +125,6 @@ export default function TypesenseSearch({
     }
   };
 
-  // Fetch the facets (only once)
   useEffect(() => {
     const fetchFacets = async () => {
       setLoadingFilters(true);
@@ -128,10 +132,10 @@ export default function TypesenseSearch({
         const queries = [
           {
             collection: collectionName,
-            q: '*', // Fetch all documents to get facet counts
-            facetBy: facetFields.join(','), // Fetch facets only
+            q: '*',
+            facetBy: facetFields.join(','),
             maxFacetValues: 10,
-            perPage: 0, // Don't fetch any documents, just facet counts
+            perPage: 0,
           },
         ];
 
@@ -167,7 +171,6 @@ export default function TypesenseSearch({
     }
   }, [facetFields, collectionName]);
 
-  // Fetch Schema for Collection
   useEffect(() => {
     const fetchSchema = async () => {
       try {
@@ -207,11 +210,11 @@ export default function TypesenseSearch({
             const label = capitalizedWords.join(' ');
             return [
               {
-                label: `${label} (Asc)`,
+                label: `${label} (Ascending)`,
                 value: `${field}:asc`,
               },
               {
-                label: `${label} (Desc)`,
+                label: `${label} (Descending)`,
                 value: `${field}:desc`,
               },
             ];
@@ -232,7 +235,6 @@ export default function TypesenseSearch({
     ]);
   }, [collectionName]);
 
-  // Handle search whenever query parameters change (excluding facets)
   useEffect(() => {
     const params: Record<string, string> = {};
     if (debouncedSearchQuery) params.q = debouncedSearchQuery;
@@ -241,7 +243,7 @@ export default function TypesenseSearch({
     if (filterBy.length > 0) params.filter_by = filterBy.join(',');
 
     setQueryParams(params);
-    performMultiSearch(); // Only fetch search results
+    performMultiSearch();
   }, [
     debouncedSearchQuery,
     currentPage,
@@ -251,10 +253,16 @@ export default function TypesenseSearch({
     sortFields,
   ]);
 
-  // Handle filter changes
-  const handleFilterChange = (value: string, checked: boolean) => {
+  const handleFilterChange = (
+    field: string,
+    value: string,
+    checked: boolean,
+  ) => {
+    const filterString = `${field}:=${value}`;
     setFilterBy((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value),
+      checked
+        ? [...prev, filterString]
+        : prev.filter((item) => item !== filterString),
     );
     setCurrentPage(1);
   };
@@ -274,83 +282,93 @@ export default function TypesenseSearch({
 
   return (
     <div className="container mx-auto p-8 flex flex-col gap-y-4">
-      <h1 className="text-3xl font-bold mb-6">Search Documents</h1>
-
-      {/* Loading state when both filters and documents are loading */}
-      {loadingDocuments || loadingFilters ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12">
-          {/* Filters Sidebar */}
-          <div className="col-span-1">
-            <Filter
-              collectionSchema={collectionSchema}
-              facetValues={facetValues}
-              filterBy={filterBy}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-
-          {/* Search Results Section */}
-          <div className="md:col-span-3 lg:col-span-4">
-            <div className="flex justify-end items-center mb-4 gap-x-4">
-              <Select
-                value={perPage.toString()}
-                onValueChange={(value) => handlePerPageChange(parseInt(value))}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue>Results per page</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {countDropdownOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value.toString()}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={sortBy} onValueChange={handleSortByChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue>Sort by</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {sortDropdownOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <Card className="border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="">Search Documents</CardTitle>
+          <CardDescription>
+            Search for documents in the {collectionName} collection.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingDocuments || loadingFilters ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin" />
             </div>
-
-            {searchResults.length === 0 && !loadingDocuments ? (
-              <div className="text-center text-gray-500">
-                No documents found.
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12">
+              <div className="col-span-1">
+                <Filter
+                  collectionSchema={collectionSchema}
+                  facetValues={facetValues}
+                  filterBy={filterBy}
+                  onFilterChange={handleFilterChange}
+                />
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {searchResults.map((result) => (
-                  <DocumentCard key={result.id} result={result} />
-                ))}
-              </div>
-            )}
 
-            {/* Only show pagination if there are documents and loading is complete */}
-            {!loadingDocuments && totalResults > 0 && (
-              <PaginationComponent
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            )}
-          </div>
-        </div>
-      )}
+              <div className="md:col-span-3 lg:col-span-4">
+                <div className="flex justify-end items-center mb-4 gap-x-4">
+                  <Select
+                    value={perPage.toString()}
+                    onValueChange={(value) =>
+                      handlePerPageChange(parseInt(value))
+                    }
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue>Results per page</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countDropdownOptions.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value.toString()}
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={sortBy} onValueChange={handleSortByChange}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue>Sort by</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sortDropdownOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {searchResults.length === 0 && !loadingDocuments ? (
+                  <div className="text-center text-gray-500">
+                    No documents found.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {searchResults.map((result) => (
+                      <DocumentCard
+                        key={result.id}
+                        result={result}
+                        collectionName={collectionName}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {!loadingDocuments && totalResults > 0 && (
+                  <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -227,7 +227,7 @@ export default function TypesenseServerMetrics() {
     <div className="container h-full overflow-hidden mx-auto">
       <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="">
             Typesense Server Status & Metrics
           </CardTitle>
           <CardDescription>

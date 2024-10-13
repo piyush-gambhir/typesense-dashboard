@@ -1,0 +1,115 @@
+import { useEffect, useState } from 'react';
+
+import { getCollection } from '@/lib/typesense/actions/collections';
+import { multiSearch } from '@/lib/typesense/actions/documents';
+
+interface FacetValue {
+  value: string;
+  count: number;
+}
+
+export const useCollectionSearchOptions = ({
+  collectionName,
+}: {
+  collectionName: string;
+}) => {
+  const [facetValues, setFacetValues] = useState<Record<string, FacetValue[]>>(
+    {},
+  );
+  const [loadingFilters, setLoadingFilters] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sortFields, setSortFields] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [perPageOptions] = useState<number[]>([10, 20, 50, 100]);
+
+  useEffect(() => {
+    const fetchSchema = async () => {
+      try {
+        const schemaResponse = await getCollection(collectionName);
+
+        if (schemaResponse?.fields) {
+          // Filter for sort fields
+          const sortFields = schemaResponse.fields
+            .filter((field) => field.sort === true)
+            .map((field) => ({
+              label: `${field.name} (Ascending)`,
+              value: `${field.name}:asc`,
+            }))
+            .concat(
+              schemaResponse.fields
+                .filter((field) => field.sort === true)
+                .map((field) => ({
+                  label: `${field.name} (Descending)`,
+                  value: `${field.name}:desc`,
+                })),
+            );
+          setSortFields(sortFields);
+
+          // Filter for facet fields
+          const facetFields = schemaResponse.fields
+            .filter((field) => field.facet === true)
+            .map((field) => field.name);
+
+          if (facetFields.length > 0) {
+            fetchFacets(facetFields);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching schema:', error);
+        setError('Error fetching schema');
+      }
+    };
+
+    const fetchFacets = async (facetFields: string[]) => {
+      setLoadingFilters(true);
+      try {
+        const queries = [
+          {
+            collection: collectionName,
+            q: '*',
+            facetBy: facetFields.join(','),
+            maxFacetValues: 10,
+            perPage: 0,
+          },
+        ];
+
+        const response = await multiSearch({
+          searchQueries: queries,
+        });
+
+        if (response && response.results && response.results.length > 0) {
+          const [documentsResponse] = response.results;
+          setFacetValues(
+            documentsResponse.facet_counts?.reduce(
+              (acc: Record<string, FacetValue[]>, facet: any) => {
+                acc[facet.field_name] =
+                  facet.counts?.map((count: any) => ({
+                    value: count.value,
+                    count: count.count,
+                  })) ?? [];
+                return acc;
+              },
+              {},
+            ) ?? {},
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching facet values:', error);
+        setError('Error fetching filters');
+      } finally {
+        setLoadingFilters(false);
+      }
+    };
+
+    fetchSchema();
+  }, [collectionName]);
+
+  return {
+    facetValues,
+    loadingFilters,
+    error,
+    sortFields,
+    perPageOptions,
+  };
+};
