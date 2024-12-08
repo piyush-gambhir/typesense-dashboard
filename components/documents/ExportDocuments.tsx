@@ -24,6 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { ProgressBar } from '@/components/ProgressBar';
+
 const jsonToCsv = (jsonData: any[]) => {
   const keys = Object.keys(jsonData[0]);
   const csvRows = [
@@ -53,12 +55,12 @@ const parseJsonl = (jsonlString: string) => {
 
 export default function ExportDocuments({
   collectionName,
-}: {
+}: Readonly<{
   collectionName: string;
-}) {
+}>) {
   const [selectedFormat, setSelectedFormat] = useState<string>('');
   const [isExporting, setIsExporting] = useState(false);
-
+  const [progress, setProgress] = useState(0);
   const handleExport = async () => {
     if (!selectedFormat) {
       toast({
@@ -72,6 +74,7 @@ export default function ExportDocuments({
     setIsExporting(true);
 
     try {
+      setProgress(10);
       const response = await exportCollection({
         collectionName,
       });
@@ -83,7 +86,7 @@ export default function ExportDocuments({
       let blob;
       let fileName = `${collectionName}-collection-export`;
 
-      // Parse the JSONL response to get an array of objects
+      setProgress(50);
       const collectionData = parseJsonl(response);
 
       if (selectedFormat === 'json') {
@@ -118,7 +121,7 @@ export default function ExportDocuments({
         throw new Error('Unsupported export format');
       }
 
-      // Create a download link and trigger the download
+      setProgress(100);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -169,7 +172,16 @@ export default function ExportDocuments({
             </div>
           </div>
         </CardContent>
-        <CardFooter>
+
+        <CardFooter className="flex flex-col gap-6 items-start justify-start">
+          <ProgressBar
+            isLoading={isExporting}
+            progress={progress}
+            title="Exporting..."
+            loadingMessage="Please wait while we export your data."
+            completeMessage="Export complete! Downloading..."
+          />
+
           <Button onClick={handleExport} disabled={isExporting}>
             {isExporting ? (
               <>

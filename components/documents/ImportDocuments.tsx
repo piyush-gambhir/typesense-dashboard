@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -30,7 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// components/ImportDocuments.tsx
+import { ProgressBar } from '@/components/ProgressBar';
 
 export default function ImportDocuments({
   collectionName,
@@ -205,7 +204,13 @@ export default function ImportDocuments({
             </div>
 
             {isImporting && (
-              <Progress value={progress} className="w-full mt-4" />
+              <ProgressBar
+                isLoading={isImporting}
+                progress={progress}
+                title="Importing..."
+                loadingMessage="Please wait while we import your data."
+                completeMessage="Import complete! Processing final steps..."
+              />
             )}
           </div>
         </CardContent>
