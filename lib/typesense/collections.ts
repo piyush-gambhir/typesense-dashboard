@@ -1,3 +1,5 @@
+import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
+
 import typesenseClient from '@/lib/typesense/typesense-client';
 
 export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
@@ -24,7 +26,9 @@ export async function getCollection(collectionName: string) {
 
 export async function createCollection(schema: Record<string, any>) {
   try {
-    const newCollection = await typesenseClient.collections().create(schema);
+    const newCollection = await typesenseClient
+      .collections()
+      .create(schema as CollectionCreateSchema);
     return newCollection;
   } catch (error) {
     return null;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { createApiKey, deleteApiKey } from '@/lib/typesense/api-keys';
 
@@ -38,8 +38,8 @@ import {
 } from '@/components/ui/table';
 
 interface ApiKey {
-  id: string;
-  description: string;
+  id: string | number;
+  description: string | undefined;
   actions: string[];
   collections: string[];
   value?: string;
@@ -74,9 +74,9 @@ const availableActions = [
 
 export default function ApiSettingsDashboard({
   initialApiKeys,
-}: {
-  initialApiKeys: ApiKey[];
-}) {
+}: Readonly<{
+  initialApiKeys: any;
+}>) {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>(
     Array.isArray(initialApiKeys) ? initialApiKeys : [],
   );
@@ -110,7 +110,16 @@ export default function ApiSettingsDashboard({
     );
 
     if (newKey) {
-      setApiKeys([...apiKeys, newKey]);
+      setApiKeys([
+        ...apiKeys,
+        {
+          id: newKey.id.toString(),
+          description: newKey.description,
+          actions: newKey.actions,
+          collections: newKey.collections,
+          value: newKey.value,
+        },
+      ]);
       setIsCreateDialogOpen(false);
       setNewKeyDescription('');
       setNewKeyActions([]);
@@ -118,7 +127,7 @@ export default function ApiSettingsDashboard({
       toast({
         title: 'Success',
         description: `New API key created: ${newKey.value}`,
-        variant: 'success',
+        variant: 'default',
       });
     } else {
       toast({
@@ -175,7 +184,7 @@ export default function ApiSettingsDashboard({
                     <TableCell>
                       <Button
                         variant="destructive"
-                        onClick={() => handleDeleteKey(key.id)}
+                        onClick={() => handleDeleteKey(key.id.toString())}
                       >
                         Delete
                       </Button>

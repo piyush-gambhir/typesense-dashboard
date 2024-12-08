@@ -55,7 +55,7 @@ const passwordSchema = z
   });
 
 // Image file validation schema
-const createImageFileSchema = (maxFileSize, allowedTypes) =>
+const createImageFileSchema = (maxFileSize: number, allowedTypes: string[]) =>
   z.object({
     type: z.string().refine((type) => allowedTypes.includes(type), {
       message: `Invalid image type. Only ${allowedTypes.join(", ")} are allowed.`,
@@ -66,7 +66,10 @@ const createImageFileSchema = (maxFileSize, allowedTypes) =>
   });
 
 // Video file validation schema
-const createVideoFileSchema = (maxFileSize, allowedTypes) =>
+const createVideoFileSchema = (
+  maxFileSize: number,
+  allowedTypes: string[],
+) =>  
   z.object({
     type: z.string().refine((type) => allowedTypes.includes(type), {
       message: `Invalid video type. Only ${allowedTypes.join(", ")} are allowed.`,
@@ -77,7 +80,10 @@ const createVideoFileSchema = (maxFileSize, allowedTypes) =>
   });
 
 // Audio file validation schema
-const createAudioFileSchema = (maxFileSize, allowedTypes) =>
+const createAudioFileSchema = (
+  maxFileSize: number,
+  allowedTypes: string[],
+) =>
   z.object({
     type: z.string().refine((type) => allowedTypes.includes(type), {
       message: `Invalid audio type. Only ${allowedTypes.join(", ")} are allowed.`,
@@ -88,7 +94,7 @@ const createAudioFileSchema = (maxFileSize, allowedTypes) =>
   });
 
 // PDF file validation schema
-const createPDFFileSchema = (maxFileSize, allowedTypes) =>
+const createPDFFileSchema = (maxFileSize: number, allowedTypes: string[]  ) =>
   z.object({
     type: z.string().refine((type) => allowedTypes.includes(type), {
       message: `Invalid PDF type. Only ${allowedTypes.join(", ")} are allowed.`,
@@ -105,106 +111,140 @@ export const signUpSchema = z.object({
 });
 
 // Function to validate email
-export function validateEmail(email) {
+export function validateEmail(email: string) {
   try {
     emailSchema.parse(email);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate URL
-export function validateURL(url) {
+export function validateURL(url: string) {
   try {
     urlSchema.parse(url);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate string
-export function validateString(str) {
+export function validateString(str: string) {
   try {
     stringSchema.parse(str);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate number
-export function validateNumber(num) {
+export function validateNumber(num: number) {
   try {
     numberSchema.parse(num);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate integer
-export function validateInteger(num) {
+export function validateInteger(num: number) {
   try {
     integerSchema.parse(num);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate date
-export function validateDate(date) {
+export function validateDate(date: Date) {
   try {
     dateSchema.parse(date);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate array of strings
-export function validateStringArray(arr) {
+export function validateStringArray(arr: string[]) {
   try {
     stringArraySchema.parse(arr);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate password
-export function validatePassword(password) {
+export function validatePassword(password: string) {
   try {
     passwordSchema.parse(password);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
 // Function to validate sign in credentials
-export function validateSignUpCredentials(credentials) {
-  try {
-    signInSchema.parse(credentials);
-    return { valid: true, message: "" };
-  } catch (e) {
-    return { valid: false, message: e.errors[0].message };
-  }
-}
+// export function validateSignUpCredentials(credentials: {
+//   email: string;
+//   password: string;
+// }) {
+//   try {
+//     signInSchema.parse(credentials);  
+//     return { valid: true, message: '' };
+//   } catch (e) {
+//     return { valid: false, message: e.errors[0].message };
+//   }
+// }
 
 // Function to validate image file
 export function validateImageFile({
   imageFile,
   maxFileSize = 5 * 1024 * 1024,
   allowedTypes = imageFileTypes,
+}: {
+  imageFile: { type: string; size: number };
+  maxFileSize?: number;
+  allowedTypes?: string[];
 }) {
   try {
     createImageFileSchema(maxFileSize, allowedTypes).parse(imageFile);
-    return { valid: true, message: "" };
+    return { valid: true, message: '' };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
@@ -213,12 +253,19 @@ export function validateVideoFile({
   videoFile,
   maxFileSize = 100 * 1024 * 1024,
   allowedTypes = ["video/mp4", "video/webm", "video/ogg"],
+}: {
+  videoFile: { type: string; size: number };
+  maxFileSize?: number;
+  allowedTypes?: string[];
 }) {
   try {
     createVideoFileSchema(maxFileSize, allowedTypes).parse(videoFile);
     return { valid: true, message: "" };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
@@ -227,12 +274,19 @@ export function validatePDFFile({
   pdfFile,
   maxFileSize = 10 * 1024 * 1024,
   allowedTypes = ["application/pdf"],
+}: {
+  pdfFile: { type: string; size: number };
+  maxFileSize?: number;
+  allowedTypes?: string[];
 }) {
   try {
     createPDFFileSchema(maxFileSize, allowedTypes).parse(pdfFile);
     return { valid: true, message: "" };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }
 
@@ -241,11 +295,18 @@ export function validateAudioFile({
   audioFile,
   maxFileSize = 50 * 1024 * 1024,
   allowedTypes = audioFileTypes,
+}: {
+  audioFile: { type: string; size: number };
+  maxFileSize?: number;
+  allowedTypes?: string[];
 }) {
   try {
     createAudioFileSchema(maxFileSize, allowedTypes).parse(audioFile);
     return { valid: true, message: "" };
   } catch (e) {
-    return { valid: false, message: e.errors[0].message };
+    if (e instanceof z.ZodError) {
+      return { valid: false, message: e.errors[0].message };
+    }
+    return { valid: false, message: 'An error occurred during validation' };
   }
 }

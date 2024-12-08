@@ -1,11 +1,11 @@
 'use client';
 
 import { RecoilRootProvider } from '@/providers/RecoilRootProvider';
-import { ThemeProvider } from '@/providers/ThemeProvider';
+
+import { ThemeProvider as NextThemeProvider } from 'next-themes';
+import React from 'react';
 
 import { Toaster } from '@/components/ui/toaster';
-
-import React from 'react';
 
 export function Providers({
   children,
@@ -13,7 +13,7 @@ export function Providers({
   children: React.ReactNode;
 }>) {
   return (
-    <ThemeProvider
+    <NextThemeProvider
       attribute="class"
       defaultTheme="light"
       enableSystem
@@ -21,6 +21,6 @@ export function Providers({
     >
       <RecoilRootProvider>{children}</RecoilRootProvider>
       <Toaster />
-    </ThemeProvider>
+    </NextThemeProvider>
   );
 }

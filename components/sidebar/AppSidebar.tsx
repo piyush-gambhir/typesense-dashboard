@@ -2,12 +2,12 @@
 
 import {
   ArrowLeftRight,
+  ChartBar,
   Frame,
   ListFilter,
-  SquareTerminal,
-  ChartBar,
   Search,
   Settings2,
+  SquareTerminal,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -27,7 +27,9 @@ import { TeamSwitcher } from '@/components/sidebar/TeamSwitcher';
 export default function AppSidebar({
   collections,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: Readonly<{
+  collections: any;
+}>) {
   const data = {
     navMain: [
       {
@@ -90,7 +92,7 @@ export default function AppSidebar({
         ],
       },
     ],
-    collections: collections.map((collection) => ({
+    collections: collections.map((collection: any) => ({
       name: collection.name,
       url: `/collections/${collection.name}`,
       icon: Frame,

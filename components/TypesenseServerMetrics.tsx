@@ -1,5 +1,7 @@
 'use client';
 
+import { cn } from '@/utils/utils';
+
 import {
   Cpu,
   Database,
@@ -15,8 +17,6 @@ import { getClusterMetrics } from '@/actions/typesense/get-cluster-metrics';
 import { listAllCollections } from '@/actions/typesense/list-all-collections';
 
 import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
-
-import { cn } from '@/utils/utils';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -54,7 +54,11 @@ type ServerMetrics = {
   };
 };
 
-export default function TypesenseServerMetrics() {
+export default function TypesenseServerMetrics({
+  metrics,
+}: Readonly<{
+  metrics: any;
+}>) {
   const typesenseConnectionData = useRecoilValue(typesenseConnectionDataState);
   const [clusterMetrics, setClusterMetrics] = useState<ServerMetrics | null>(
     null,
@@ -85,9 +89,12 @@ export default function TypesenseServerMetrics() {
       if (collections.success) {
         setNumCollections(collections.data.length);
 
-        const numDocuments = collections.data.reduce((acc, collection) => {
-          return acc + collection.num_documents;
-        }, 0);
+        const numDocuments = collections.data.reduce(
+          (acc: any, collection: any) => {
+            return acc + collection.num_documents;
+          },
+          0,
+        );
         setNumDocuments(numDocuments);
 
         setNumDocuments(numDocuments);
@@ -103,7 +110,7 @@ export default function TypesenseServerMetrics() {
               key.startsWith('system_cpu') &&
               key.endsWith('_active_percentage'),
           )
-          .reduce((acc, key) => {
+          .reduce((acc: any, key: any) => {
             const cpuName = key.replace('system_', ''); // Remove `system_` prefix
             acc[cpuName] = parseFloat(clusterMetricsData[key]); // Convert string to number
             return acc;
@@ -227,9 +234,7 @@ export default function TypesenseServerMetrics() {
     <div className="container h-full overflow-hidden mx-auto">
       <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle className="">
-            Typesense Server Status & Metrics
-          </CardTitle>
+          <CardTitle className="">Typesense Server Status & Metrics</CardTitle>
           <CardDescription>
             Real-time overview of your Typesense server
           </CardDescription>

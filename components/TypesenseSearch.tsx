@@ -41,11 +41,13 @@ interface SearchResult {
 
 interface TypesenseSearchProps {
   collectionName: string;
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default function TypesenseSearch({
   collectionName,
-}: TypesenseSearchProps) {
+  searchParams,
+}: Readonly<TypesenseSearchProps>) {
   const [queryParams, setQueryParams] = useQueryParams();
 
   const [collectionSchema, setCollectionSchema] = useState<any>(null);
@@ -107,11 +109,18 @@ export default function TypesenseSearch({
 
       if (response && response.results && response.results.length > 0) {
         const [documentsResponse] = response.results;
-        setSearchResults(
-          documentsResponse.hits?.map((hit) => hit.document) ?? [],
-        );
-        setTotalResults(documentsResponse?.found ?? 0);
-        const totalPages = Math.ceil((documentsResponse?.found ?? 0) / perPage);
+        type SearchHit = {
+          document: any;
+        };
+        type SearchResponse = {
+          hits?: SearchHit[];
+          found?: number;
+        };
+        const typedResponse = documentsResponse as SearchResponse;
+
+        setSearchResults(typedResponse.hits?.map((hit) => hit.document) ?? []);
+        setTotalResults(typedResponse.found ?? 0);
+        const totalPages = Math.ceil((typedResponse.found ?? 0) / perPage);
         setTotalPages(totalPages);
       } else {
         setSearchResults([]);
@@ -145,9 +154,20 @@ export default function TypesenseSearch({
 
         if (response && response.results && response.results.length > 0) {
           const [documentsResponse] = response.results;
+          type FacetCount = {
+            field_name: string;
+            counts: Array<{
+              value: string;
+              count: number;
+            }>;
+          };
+          type SearchResponseWithFacets = {
+            facet_counts?: FacetCount[];
+          };
+          const typedResponse = documentsResponse as SearchResponseWithFacets;
           setFacetValues(
-            documentsResponse.facet_counts?.reduce(
-              (acc, facet) => {
+            typedResponse.facet_counts?.reduce(
+              (acc: Record<string, FacetValue[]>, facet: FacetCount) => {
                 acc[facet.field_name] =
                   facet.counts?.map((count) => ({
                     value: count.value,
@@ -300,8 +320,19 @@ export default function TypesenseSearch({
                 <Filter
                   collectionSchema={collectionSchema}
                   facetValues={facetValues}
-                  filterBy={filterBy}
-                  onFilterChange={handleFilterChange}
+                  filterBy={Object.fromEntries(
+                    filterBy.map((filter) => {
+                      const [field, value] = filter.split(':=');
+                      return [field, [value]];
+                    }),
+                  )}
+                  onFilterChange={(
+                    field: string,
+                    value: string | number | boolean,
+                    checked: boolean,
+                  ) => {
+                    handleFilterChange(field, String(value), checked);
+                  }}
                 />
               </div>
 
@@ -352,6 +383,8 @@ export default function TypesenseSearch({
                         key={result.id}
                         result={result}
                         collectionName={collectionName}
+                        onEdit={() => {}}
+                        onDelete={() => {}}
                       />
                     ))}
                   </div>

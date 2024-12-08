@@ -29,12 +29,12 @@ interface FilterProps {
   ) => void;
 }
 
-const Filter: React.FC<FilterProps> = ({
+const Filter = ({
   collectionSchema,
   facetValues,
   filterBy,
   onFilterChange,
-}) => {
+}: Readonly<FilterProps>) => {
   const getFieldType = (field: string): string => {
     const schemaField = collectionSchema.fields.find(
       (f) => f.name === field && f.facet,

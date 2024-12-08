@@ -14,7 +14,7 @@ export async function getApiKeys() {
 // Retrieve a specific API key by its ID
 export async function getApiKeyById(apiKeyId: string) {
   try {
-    const apiKey = await typesenseClient.keys(apiKeyId).retrieve();
+    const apiKey = await typesenseClient.keys(Number(apiKeyId)).retrieve();
     return apiKey;
   } catch (error) {
     console.error(`Error fetching API key "${apiKeyId}":`, error);
@@ -44,7 +44,7 @@ export async function createApiKey(
 // Delete an API key by its ID
 export async function deleteApiKey(apiKeyId: string) {
   try {
-    const deleteResult = await typesenseClient.keys(apiKeyId).delete();
+    const deleteResult = await typesenseClient.keys(Number(apiKeyId)).delete();
     return deleteResult;
   } catch (error) {
     console.error(`Error deleting API key "${apiKeyId}":`, error);

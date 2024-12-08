@@ -18,9 +18,9 @@ type SearchQuery = {
 
 export async function multiSearch({
   searchQueries,
-}: {
-  searchQueries: SearchQuery[];
-}) {
+}: Readonly<{
+  searchQueries: any[];
+}>) {
   try {
     const multiSearchRequests = searchQueries.map((query) => ({
       collection: query.collection,

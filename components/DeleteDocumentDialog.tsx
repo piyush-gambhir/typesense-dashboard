@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,27 +14,21 @@ interface DeleteDocumentDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
-  isDeleting: boolean;
 }
 
 const DeleteDocumentDialog: React.FC<DeleteDocumentDialogProps> = ({
   isOpen,
   onClose,
   onDelete,
-  isDeleting,
 }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
 
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await onDelete(result.id);
+      await onDelete();
     } finally {
       setIsDeleting(false);
-      setIsDeleteDialogOpen(false);
     }
   };
 

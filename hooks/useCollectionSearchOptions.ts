@@ -81,7 +81,7 @@ export const useCollectionSearchOptions = ({
         if (response && response.results && response.results.length > 0) {
           const [documentsResponse] = response.results;
           setFacetValues(
-            documentsResponse.facet_counts?.reduce(
+            (documentsResponse as any)?.facets?.reduce(
               (acc: Record<string, FacetValue[]>, facet: any) => {
                 acc[facet.field_name] =
                   facet.counts?.map((count: any) => ({

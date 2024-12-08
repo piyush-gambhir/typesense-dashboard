@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { useToast } from '@/hooks/useToast';
+import { toast, useToast } from '@/hooks/useToast';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -47,10 +47,10 @@ const formSchema = z.object({
 export default function EditDocumentPage({
   collectionName,
   documentId,
-}: {
+}: Readonly<{
   collectionName: string;
   documentId: string;
-}) {
+}>) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -81,7 +81,7 @@ export default function EditDocumentPage({
       title: 'Document updated',
       description: 'Your document has been successfully updated.',
     });
-    router.push('/documents'); // Redirect to documents list
+    router.push(`/collections/${collectionName}`); // Redirect to documents list
   }
 
   return (

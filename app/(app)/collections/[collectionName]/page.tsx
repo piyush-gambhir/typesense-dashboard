@@ -10,5 +10,8 @@ export default async function page({
   params: { collectionName: string };
 }) {
   const collection = await getCollection(params.collectionName);
+  if (!collection) {
+    throw new Error('Collection not found');
+  }
   return <TypesenseCollectionDetails initialCollection={collection} />;
 }

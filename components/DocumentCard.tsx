@@ -1,11 +1,11 @@
 'use client';
 
+import { validateURL } from '@/utils/zod/validation';
+
 import { Edit, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-
-import { validateURL } from '@/utils/zod/validation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -19,10 +19,11 @@ import {
 } from '@/components/ui/dialog';
 
 interface DocumentCardProps {
+  key: string;
   result: Record<string, any>;
   collectionName: string;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => void;
 }
 
 const isImageUrl = (url: string): boolean => {
@@ -101,12 +102,12 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
   );
 };
 
-const DocumentCard: React.FC<DocumentCardProps> = ({
+const DocumentCard = ({
   result,
   collectionName,
   onEdit,
   onDelete,
-}) => {
+}: Readonly<DocumentCardProps>) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -134,7 +135,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await onDelete(result.id);
+      // await onDelete(result.id);
     } finally {
       setIsDeleting(false);
       setIsDeleteDialogOpen(false);

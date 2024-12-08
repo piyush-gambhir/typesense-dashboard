@@ -71,9 +71,9 @@ const fieldTypes = [
 
 export default function CollectionDetails({
   initialCollection,
-}: {
-  initialCollection: CollectionDetails;
-}) {
+}: Readonly<{
+  initialCollection: any;
+}>) {
   const router = useRouter();
   const [collection, setCollection] =
     useState<CollectionDetails>(initialCollection);
