@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import { validateURL } from '@/lib/zod/validation';
+import { validateURL } from '@/utils/zod/validation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';

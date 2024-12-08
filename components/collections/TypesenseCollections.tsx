@@ -3,7 +3,7 @@
 import { Database, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { convertUnixTimestamp } from '@/lib/utils/dateTime';
+import { convertUnixTimestamp } from '@/utils/date-time';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -23,7 +23,7 @@ export default function TypesenseCollections({
   collections: ReadonlyArray<any>;
 }) {
   const router = useRouter();
-
+  
   return (
     <div className="container mx-auto flex flex-col gap-y-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 p-8">

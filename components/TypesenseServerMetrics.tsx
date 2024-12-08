@@ -16,7 +16,7 @@ import { listAllCollections } from '@/actions/typesense/list-all-collections';
 
 import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/utils';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';

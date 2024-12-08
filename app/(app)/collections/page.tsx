@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getCollections } from '@/lib/typesense/actions/collections';
+import { getCollections } from '@/lib/typesense/collections';
 
 import TypesenseCollections from '@/components/collections/TypesenseCollections';
 

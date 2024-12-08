@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { getCollection } from '@/lib/typesense/actions/collections';
-import { multiSearch } from '@/lib/typesense/actions/documents';
+import { getCollection } from '@/lib/typesense/collections';
+import { multiSearch } from '@/lib/typesense/documents';
 
 interface FacetValue {
   value: string;

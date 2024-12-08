@@ -4,7 +4,7 @@ import {
   imageFileTypes,
   videoFileTypes,
   audioFileTypes,
-} from "@/lib/zod/fileTypes";
+} from "@/utils/zod/file-types";
 
 // Email validation schema
 const emailSchema = z.string().email({ message: "Invalid email address" });

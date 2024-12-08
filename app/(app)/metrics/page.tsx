@@ -1,6 +1,6 @@
 import TypesenseServerMetrics from "@/components/TypesenseServerMetrics";
 
-import { getTypesenseMetrics } from "@/lib/typesense/actions/get-cluster-metrics";
+import { getTypesenseMetrics } from "@/lib/typesense/get-cluster-metrics";
 
 export default async function page() {
   const metrics = await getTypesenseMetrics({

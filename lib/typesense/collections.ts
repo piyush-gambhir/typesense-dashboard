@@ -1,17 +1,16 @@
-import typesenseClient from '@/lib/typesense/typesenseClient';
+import typesenseClient from '@/lib/typesense/typesense-client';
 
-// Retrieve all collections
+export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
+
 export async function getCollections() {
   try {
     const collections = await typesenseClient.collections().retrieve();
     return collections;
   } catch (error) {
-    console.error('Error fetching collections:', error);
     return null;
   }
 }
 
-// Retrieve a single collection by its name
 export async function getCollection(collectionName: string) {
   try {
     const collection = await typesenseClient
@@ -19,23 +18,19 @@ export async function getCollection(collectionName: string) {
       .retrieve();
     return collection;
   } catch (error) {
-    console.error(`Error fetching collection "${collectionName}":`, error);
     return null;
   }
 }
 
-// Create a new collection
 export async function createCollection(schema: Record<string, any>) {
   try {
     const newCollection = await typesenseClient.collections().create(schema);
     return newCollection;
   } catch (error) {
-    console.error('Error creating collection:', error);
     return null;
   }
 }
 
-// Update a collection's schema (useful for schema modification)
 export async function updateCollection(
   collectionName: string,
   schema: Record<string, any>,
@@ -46,12 +41,10 @@ export async function updateCollection(
       .update(schema);
     return updatedCollection;
   } catch (error) {
-    console.error(`Error updating collection "${collectionName}":`, error);
     return null;
   }
 }
 
-// Delete a collection by its name
 export async function deleteCollection(collectionName: string) {
   try {
     const deleteResult = await typesenseClient
@@ -59,12 +52,10 @@ export async function deleteCollection(collectionName: string) {
       .delete();
     return deleteResult;
   } catch (error) {
-    console.error(`Error deleting collection "${collectionName}":`, error);
     return null;
   }
 }
 
-// List all documents in a collection
 export async function listDocuments(collectionName: string) {
   try {
     const documents = await typesenseClient
@@ -73,42 +64,57 @@ export async function listDocuments(collectionName: string) {
       .export();
     return documents;
   } catch (error) {
-    console.error(
-      `Error fetching documents from collection "${collectionName}":`,
-      error,
-    );
     return null;
   }
 }
 
 export async function exportCollection({
   collectionName,
-  includeFields,
+  includeFields = '*',
   excludeFields,
 }: {
   collectionName: string;
   includeFields?: string;
   excludeFields?: string;
 }) {
-  const collection = await typesenseClient
-    .collections(collectionName)
-    .documents()
-    .export({
-      ...(includeFields && { include_fields: includeFields }),
-      ...(excludeFields && { exclude_fields: excludeFields }),
-    });
-  return collection;
+  try {
+    const response = await typesenseClient
+      .collections(collectionName)
+      .documents()
+      .export({
+        include_fields: includeFields,
+        ...(excludeFields && { exclude_fields: excludeFields }),
+      });
+    return response;
+  } catch (error) {
+    console.error('Error exporting collection:', error);
+    throw error;
+  }
 }
 
 export async function importCollection(
   collectionName: string,
+  action: importAction,
   documents: Record<string, any>[],
 ) {
-  const importedCollection = await typesenseClient
-    .collections(collectionName)
-    .documents()
-    .import(documents, {
-      action: 'create',
-    });
-  return importedCollection;
+  try {
+    const importedCollection = await typesenseClient
+      .collections(collectionName)
+      .documents()
+      .import(documents, { action });
+
+    return {
+      log: importedCollection,
+      successCount: importedCollection.filter((result) => result.success)
+        .length,
+      failureCount: importedCollection.filter((result) => !result.success)
+        .length,
+      errors: importedCollection
+        .filter((result) => !result.success)
+        .map((result) => result.error),
+    };
+  } catch (error) {
+    console.error('Error importing collection:', error);
+    throw error;
+  }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getApiKeys } from '@/lib/typesense/actions/api-keys';
+import { getApiKeys } from '@/lib/typesense/api-keys';
 
 import TypesenseApiSettings from '@/components/TypesenseApiSettings';
 

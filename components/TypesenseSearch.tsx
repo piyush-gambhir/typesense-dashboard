@@ -3,8 +3,8 @@
 import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
-import { getCollection } from '@/lib/typesense/actions/collections';
-import { multiSearch } from '@/lib/typesense/actions/documents';
+import { getCollection } from '@/lib/typesense/collections';
+import { multiSearch } from '@/lib/typesense/documents';
 
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryParams } from '@/hooks/useQueryParams';

@@ -1,4 +1,4 @@
-import typesenseClient from '@/lib/typesense/typesenseClient';
+import typesenseClient from '@/lib/typesense/typesense-client';
 
 type SearchQuery = {
   collection: string;

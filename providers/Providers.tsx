@@ -1,8 +1,11 @@
-"use client";
-import React from "react";
+'use client';
 
-import { ThemeProvider } from "@/providers/ThemeProvider";
-import { RecoilRootProvider } from "@/providers/RecoilRootProvider";
+import { RecoilRootProvider } from '@/providers/RecoilRootProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+
+import { Toaster } from '@/components/ui/toaster';
+
+import React from 'react';
 
 export function Providers({
   children,
@@ -17,6 +20,7 @@ export function Providers({
       disableTransitionOnChange
     >
       <RecoilRootProvider>{children}</RecoilRootProvider>
+      <Toaster />
     </ThemeProvider>
   );
 }

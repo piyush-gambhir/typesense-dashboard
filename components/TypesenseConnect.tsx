@@ -12,8 +12,8 @@ import { getClusterHealth } from '@/actions/typesense/get-cluster-health';
 
 import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
 
-import { setLocalStorageData } from '@/lib/utils/localStorage';
-import { typesenseConnectionSchema } from '@/lib/zod/typesenseConnectionSchema';
+import { setLocalStorageData } from '@/utils/local-storage';
+import { typesenseConnectionSchema } from '@/utils/zod/typesense-collection-schema';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';

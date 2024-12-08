@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 
-import { getLocalStorageData } from '@/lib/utils/localStorage';
+import { getLocalStorageData } from '@/utils/local-storage';
 
 const getInitialTypesenseConnectionState = () => {
   if (typeof window !== 'undefined') {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
-import { Providers } from "@/providers/provider";
+import { Providers } from "@/providers/Providers";
 
 export const metadata: Metadata = {
   title: "Typesese Dashboard",

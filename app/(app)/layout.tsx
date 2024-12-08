@@ -1,21 +1,24 @@
-// import Footer from "@/components/Footer";
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import { getCollections } from '@/lib/typesense/collections';
 
-export default function RootLayout({
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+
+import Header from '@/components/Header';
+import AppSidebar from '@/components/sidebar/AppSidebar';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex h-full min-h-screen flex-col">
-      <Header />
-      <div className="flex h-full flex-row">
-        <Sidebar />
-        {children}
-      </div>
+  const collections = await getCollections();
 
-      {/* <Footer /> */}
-    </div>
+  return (
+    <SidebarProvider>
+      <AppSidebar collections={collections} />
+      <SidebarInset>
+        <Header />
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

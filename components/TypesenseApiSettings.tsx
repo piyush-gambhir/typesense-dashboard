@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
-import { createApiKey, deleteApiKey } from '@/lib/typesense/actions/api-keys';
+import { createApiKey, deleteApiKey } from '@/lib/typesense/api-keys';
 
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 
 import { Button } from '@/components/ui/button';
 import {
