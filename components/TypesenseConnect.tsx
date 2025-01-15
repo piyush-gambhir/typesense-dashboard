@@ -1,5 +1,7 @@
 'use client';
 
+import { setLocalStorageData } from '@/utils/local-storage';
+import { typesenseConnectionSchema } from '@/utils/zod/typesense-collection-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -11,9 +13,6 @@ import { useSetRecoilState } from 'recoil';
 import { getClusterHealth } from '@/actions/typesense/get-cluster-health';
 
 import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
-
-import { setLocalStorageData } from '@/utils/local-storage';
-import { typesenseConnectionSchema } from '@/utils/zod/typesense-collection-schema';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -38,7 +37,7 @@ import { Input } from '@/components/ui/input';
 type FormData = {
   host: string;
   port: string;
-  protocol: string;
+  protocol: 'http' | 'https';
   apiKey: string;
 };
 
@@ -63,7 +62,7 @@ export default function TypesenseConnect() {
     },
   });
 
-  // Load saved connection data from localStorage when component mounts
+  // Load saved connection data from local storage on mount
   useEffect(() => {
     const savedData = localStorage.getItem('typesenseConnectionData');
     if (savedData) {
@@ -78,23 +77,21 @@ export default function TypesenseConnect() {
 
     const clusterHealth = await getClusterHealth({
       typesenseHost: formData.host,
-      typesensePort: parseInt(formData.port),
+      typesensePort: parseInt(formData.port, 10),
       typesenseProtocol: formData.protocol,
+      typesenseApiKey: formData.apiKey,
     });
+
     if (clusterHealth.ok) {
       setConnectionStatus('success');
-      setTypesenseConnectionData({
+      const connectionData = {
         typesenseHost: formData.host,
-        typesensePort: parseInt(formData.port),
+        typesensePort: parseInt(formData.port, 10),
         typesenseProtocol: formData.protocol,
         typesenseApiKey: formData.apiKey,
-      });
-      setLocalStorageData('typesenseConnectionData', {
-        typesenseHost: formData.host,
-        typesensePort: parseInt(formData.port),
-        typesenseProtocol: formData.protocol,
-        typesenseApiKey: formData.apiKey,
-      });
+      };
+      setTypesenseConnectionData(connectionData);
+      setLocalStorageData('typesenseConnectionData', connectionData);
       router.push('/metrics');
     } else {
       setConnectionStatus('error');

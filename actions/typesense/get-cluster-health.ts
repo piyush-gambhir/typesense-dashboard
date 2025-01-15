@@ -4,14 +4,20 @@ export const getClusterHealth = async ({
   typesenseHost,
   typesensePort,
   typesenseProtocol,
+  typesenseApiKey,
 }: {
   typesenseHost: string;
   typesensePort: number;
   typesenseProtocol: string;
+  typesenseApiKey: string;
 }) => {
   try {
     const url = `${typesenseProtocol}://${typesenseHost}:${typesensePort}/health`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${typesenseApiKey}`,
+      },
+    });
 
     if (!response.ok) {
       // Check if the response was unsuccessful

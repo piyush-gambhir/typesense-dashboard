@@ -133,6 +133,15 @@ export default function CollectionDetails({
     });
   };
 
+  const handleDeleteField = (index: number) => {
+    const updatedFields = [...collection.fields];
+    updatedFields.splice(index, 1);
+    setCollection({
+      ...collection,
+      fields: updatedFields,
+    });
+  };
+
   const handleDefaultSortingFieldChange = (value: string) => {
     setCollection({ ...collection, default_sorting_field: value });
   };
@@ -245,6 +254,7 @@ export default function CollectionDetails({
                   <TableHead>Optional</TableHead>
                   <TableHead>Sort</TableHead>
                   <TableHead>Store</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -322,6 +332,15 @@ export default function CollectionDetails({
                         }
                         aria-label={`Toggle store for ${field.name}`}
                       />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteField(index)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

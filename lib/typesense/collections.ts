@@ -24,11 +24,9 @@ export async function getCollection(collectionName: string) {
   }
 }
 
-export async function createCollection(schema: Record<string, any>) {
+export async function createCollection(schema: CollectionCreateSchema) {
   try {
-    const newCollection = await typesenseClient
-      .collections()
-      .create(schema as CollectionCreateSchema);
+    const newCollection = await typesenseClient.collections().create(schema);
     return newCollection;
   } catch (error) {
     return null;

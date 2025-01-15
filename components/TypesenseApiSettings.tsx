@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { createApiKey, deleteApiKey } from '@/lib/typesense/api-keys';
+import { getCollections } from '@/lib/typesense/collections';
 
 import { toast } from '@/hooks/useToast';
 
@@ -28,6 +29,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -72,10 +80,10 @@ const availableActions = [
   'aliases:*',
 ];
 
-export default function ApiSettingsDashboard({
+export default function TypesenseApiSettings({
   initialApiKeys,
 }: Readonly<{
-  initialApiKeys: any;
+  initialApiKeys: ApiKey[];
 }>) {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>(
     Array.isArray(initialApiKeys) ? initialApiKeys : [],
@@ -83,11 +91,24 @@ export default function ApiSettingsDashboard({
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newKeyDescription, setNewKeyDescription] = useState('');
   const [newKeyActions, setNewKeyActions] = useState<string[]>([]);
-  const [newKeyCollections, setNewKeyCollections] = useState('');
+  const [newKeyCollections, setNewKeyCollections] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [availableCollections, setAvailableCollections] = useState<string[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const collections = await getCollections();
+      if (collections) {
+        setAvailableCollections(collections.map((c) => c.name));
+      }
+    };
+    fetchCollections();
+  }, []);
 
   const handleCreateKey = async () => {
-    if (!newKeyDescription || !newKeyCollections) {
+    if (!newKeyDescription || newKeyCollections.length === 0) {
       toast({
         title: 'Error',
         description: 'Description and collections cannot be empty',
@@ -98,15 +119,10 @@ export default function ApiSettingsDashboard({
 
     setIsCreating(true);
 
-    const collections = newKeyCollections
-      .split(',')
-      .map((c) => c.trim())
-      .filter(Boolean);
-
     const newKey = await createApiKey(
       newKeyDescription,
       newKeyActions,
-      collections,
+      newKeyCollections,
     );
 
     if (newKey) {
@@ -123,7 +139,7 @@ export default function ApiSettingsDashboard({
       setIsCreateDialogOpen(false);
       setNewKeyDescription('');
       setNewKeyActions([]);
-      setNewKeyCollections('');
+      setNewKeyCollections([]);
       toast({
         title: 'Success',
         description: `New API key created: ${newKey.value}`,
@@ -141,7 +157,7 @@ export default function ApiSettingsDashboard({
   };
 
   const handleDeleteKey = async (keyId: string) => {
-    const result = await deleteApiKey(keyId);
+    const result = await deleteApiKey(Number(keyId));
     if (result) {
       setApiKeys(apiKeys.filter((key) => key.id !== keyId));
       toast({
@@ -166,33 +182,39 @@ export default function ApiSettingsDashboard({
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
           <ScrollArea className="h-full">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Actions</TableHead>
-                  <TableHead>Collections</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {apiKeys.map((key) => (
-                  <TableRow key={key.id}>
-                    <TableCell>{key.description}</TableCell>
-                    <TableCell>{key.actions.join(', ')}</TableCell>
-                    <TableCell>{key.collections.join(', ')}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDeleteKey(key.id.toString())}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+            {apiKeys.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No API keys available. Create one to get started.
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Actions</TableHead>
+                    <TableHead>Collections</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {apiKeys.map((key) => (
+                    <TableRow key={key.id}>
+                      <TableCell>{key.description}</TableCell>
+                      <TableCell>{key.actions.join(', ')}</TableCell>
+                      <TableCell>{key.collections.join(', ')}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDeleteKey(key.id.toString())}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </ScrollArea>
         </CardContent>
         <CardFooter>
@@ -223,17 +245,36 @@ export default function ApiSettingsDashboard({
                       className="col-span-3"
                     />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="collections" className="text-right">
-                      Collections
-                    </Label>
-                    <Input
-                      id="collections"
-                      value={newKeyCollections}
-                      onChange={(e) => setNewKeyCollections(e.target.value)}
-                      placeholder="collection1, collection2"
-                      className="col-span-3"
-                    />
+                  <div className="grid grid-cols-4 items-start gap-4">
+                    <Label className="text-right">Collections</Label>
+                    <div className="col-span-3 space-y-2">
+                      {availableCollections.map((collection) => (
+                        <div
+                          key={collection}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={collection}
+                            checked={newKeyCollections.includes(collection)}
+                            onCheckedChange={(checked) => {
+                              setNewKeyCollections(
+                                checked
+                                  ? [...newKeyCollections, collection]
+                                  : newKeyCollections.filter(
+                                      (c) => c !== collection,
+                                    ),
+                              );
+                            }}
+                          />
+                          <label
+                            htmlFor={collection}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {collection}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className="grid grid-cols-4 items-start gap-4">
                     <Label className="text-right">Actions</Label>

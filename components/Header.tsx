@@ -24,7 +24,7 @@ export default function Header() {
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
-          <BreadcrumbList key={pathname}>
+          <BreadcrumbList key={pathname + Math.random()}>
             {pathname
               .split('/')
               .filter(Boolean)
