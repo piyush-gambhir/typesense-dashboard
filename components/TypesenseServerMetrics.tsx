@@ -1,7 +1,5 @@
 'use client';
 
-import { cn } from '@/utils/utils';
-
 import {
   Cpu,
   Database,
@@ -10,13 +8,10 @@ import {
   RefreshCw,
   Server,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { getClusterMetrics } from '@/actions/typesense/get-cluster-metrics';
-import { listAllCollections } from '@/actions/typesense/list-all-collections';
-
-import { typesenseConnectionDataState } from '@/atoms/typesenseConnectionDataState';
+import { cn } from '@/utils/utils';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -54,94 +49,81 @@ type ServerMetrics = {
   };
 };
 
+type Collection = {
+  created_at: number;
+  default_sorting_field: string;
+  enable_nested_fields: boolean;
+  fields: any[];
+  name: string;
+  num_documents: number;
+  symbols_to_index: string[];
+  token_separators: string[];
+};
+
 export default function TypesenseServerMetrics({
   metrics,
+  collections,
 }: Readonly<{
   metrics: any;
+  collections: any;
 }>) {
-  const typesenseConnectionData = useRecoilValue(typesenseConnectionDataState);
+  const router = useRouter();
+
   const [clusterMetrics, setClusterMetrics] = useState<ServerMetrics | null>(
     null,
-  ); // Initialize as `null` to prevent undefined errors
+  );
   const [numCollections, setNumCollections] = useState<number | null>(null);
   const [numDocuments, setNumDocuments] = useState<number | null>(null);
-
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMetrics = async () => {
-    setIsLoading(true);
-    setError(null);
+  useEffect(() => {
     try {
-      const clusterMetrics = await getClusterMetrics({
-        typesenseHost: typesenseConnectionData.typesenseHost,
-        typesensePort: typesenseConnectionData.typesensePort,
-        typesenseProtocol: typesenseConnectionData.typesenseProtocol,
-        typesenseApiKey: typesenseConnectionData.typesenseApiKey,
-      });
-      const collections = await listAllCollections({
-        typesenseHost: typesenseConnectionData.typesenseHost,
-        typesensePort: typesenseConnectionData.typesensePort,
-        typesenseProtocol: typesenseConnectionData.typesenseProtocol,
-        typesenseApiKey: typesenseConnectionData.typesenseApiKey,
-      });
-
-      if (collections.success) {
-        setNumCollections(collections.data.length);
-
-        const numDocuments = collections.data.reduce(
-          (acc: any, collection: any) => {
+      if (collections?.success) {
+        const collectionsData = collections.data as Collection[];
+        setNumCollections(collectionsData.length);
+        const totalDocs = collectionsData.reduce(
+          (acc: number, collection: Collection) => {
             return acc + collection.num_documents;
           },
           0,
         );
-        setNumDocuments(numDocuments);
-
-        setNumDocuments(numDocuments);
+        setNumDocuments(totalDocs);
       }
 
-      if (clusterMetrics.ok) {
-        const clusterMetricsData = clusterMetrics?.data;
+      if (metrics) {
+        const metricsData = metrics;
 
         // Step 1: Dynamically create `cpuUsage` object
-        const cpuUsage = Object.keys(clusterMetricsData)
+        const cpuUsage = Object.keys(metricsData)
           .filter(
             (key) =>
               key.startsWith('system_cpu') &&
               key.endsWith('_active_percentage'),
           )
           .reduce((acc: any, key: any) => {
-            const cpuName = key.replace('system_', ''); // Remove `system_` prefix
-            acc[cpuName] = parseFloat(clusterMetricsData[key]); // Convert string to number
+            const cpuName = key.replace('system_', '');
+            acc[cpuName] = parseFloat(metricsData[key]);
             return acc;
           }, {});
 
         // Step 2: Calculate Disk Usage
-        const totalDisk = parseFloat(
-          clusterMetricsData.system_disk_total_bytes,
-        );
-        const usedDisk = parseFloat(clusterMetricsData.system_disk_used_bytes);
+        const totalDisk = parseFloat(metricsData.system_disk_total_bytes);
+        const usedDisk = parseFloat(metricsData.system_disk_used_bytes);
         const diskUsage = {
           total: totalDisk,
           used: usedDisk,
           usagePercentage: parseFloat(
             ((usedDisk / totalDisk) * 100).toFixed(2),
-          ), // Calculate usage percentage
+          ),
         };
 
         // Step 3: Calculate Memory Usage
-        const totalMemory = parseFloat(
-          clusterMetricsData.system_memory_total_bytes,
-        );
-        const usedMemory = parseFloat(
-          clusterMetricsData.system_memory_used_bytes,
-        );
+        const totalMemory = parseFloat(metricsData.system_memory_total_bytes);
+        const usedMemory = parseFloat(metricsData.system_memory_used_bytes);
         const totalSwap = parseFloat(
-          clusterMetricsData.system_memory_total_swap_bytes,
+          metricsData.system_memory_total_swap_bytes,
         );
-        const usedSwap = parseFloat(
-          clusterMetricsData.system_memory_used_swap_bytes,
-        );
+        const usedSwap = parseFloat(metricsData.system_memory_used_swap_bytes);
         const memoryUsage = {
           totalMemory,
           usedMemory,
@@ -159,39 +141,33 @@ export default function TypesenseServerMetrics({
         // Step 4: Calculate Network Data
         const networkData = {
           receivedBytes: parseInt(
-            clusterMetricsData.system_network_received_bytes,
+            metricsData.system_network_received_bytes,
             10,
           ),
-          sentBytes: parseInt(clusterMetricsData.system_network_sent_bytes, 10),
+          sentBytes: parseInt(metricsData.system_network_sent_bytes, 10),
         };
 
         // Step 5: Handle Typesense-specific Memory Metrics
         const typesenseMemoryMetrics = {
-          activeBytes: parseInt(
-            clusterMetricsData.typesense_memory_active_bytes,
-            10,
-          ),
+          activeBytes: parseInt(metricsData.typesense_memory_active_bytes, 10),
           allocatedBytes: parseInt(
-            clusterMetricsData.typesense_memory_allocated_bytes,
+            metricsData.typesense_memory_allocated_bytes,
             10,
           ),
           fragmentationRatio: parseFloat(
-            clusterMetricsData.typesense_memory_fragmentation_ratio,
+            metricsData.typesense_memory_fragmentation_ratio,
           ),
-          mappedBytes: parseInt(
-            clusterMetricsData.typesense_memory_mapped_bytes,
-            10,
-          ),
+          mappedBytes: parseInt(metricsData.typesense_memory_mapped_bytes, 10),
           metadataBytes: parseInt(
-            clusterMetricsData.typesense_memory_metadata_bytes,
+            metricsData.typesense_memory_metadata_bytes,
             10,
           ),
           residentBytes: parseInt(
-            clusterMetricsData.typesense_memory_resident_bytes,
+            metricsData.typesense_memory_resident_bytes,
             10,
           ),
           retainedBytes: parseInt(
-            clusterMetricsData.typesense_memory_retained_bytes,
+            metricsData.typesense_memory_retained_bytes,
             10,
           ),
         };
@@ -204,15 +180,11 @@ export default function TypesenseServerMetrics({
           networkData,
           typesenseMemoryMetrics,
         });
-      } else {
-        setError('Failed to fetch metrics.');
       }
     } catch (err) {
-      setError('Failed to fetch server metrics. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setError('Failed to process metrics data.');
     }
-  };
+  }, [metrics, collections]);
 
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -222,13 +194,7 @@ export default function TypesenseServerMetrics({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  useEffect(() => {
-    fetchMetrics();
-    const interval = setInterval(fetchMetrics, 60000); // Refresh every 60 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  if (!clusterMetrics) return null; // Avoid rendering if metrics are not available yet
+  if (!clusterMetrics) return null;
 
   return (
     <div className="container h-full overflow-hidden mx-auto">
@@ -361,7 +327,7 @@ export default function TypesenseServerMetrics({
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button onClick={fetchMetrics} disabled={isLoading}>
+          <Button onClick={() => window.location.reload()} disabled={false}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh Metrics
           </Button>

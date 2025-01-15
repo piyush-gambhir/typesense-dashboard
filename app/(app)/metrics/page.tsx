@@ -1,12 +1,19 @@
-import TypesenseServerMetrics from "@/components/TypesenseServerMetrics";
+import { getCollections } from '@/lib/typesense/collections';
+import { getTypesenseMetrics } from '@/lib/typesense/get-cluster-metrics';
 
-import { getTypesenseMetrics } from "@/lib/typesense/get-cluster-metrics";
+import TypesenseServerMetrics from '@/components/TypesenseServerMetrics';
 
 export default async function page() {
   const metrics = await getTypesenseMetrics({
-    host: "http://localhost:8108",
-    apiKey: "xyz",
+    typesenseHost: process.env.TYPESENSE_HOST ?? 'localhost',
+    typesensePort: parseInt(process.env.TYPESENSE_PORT ?? '8108'),
+    typesenseProtocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
+    typesenseApiKey: process.env.TYPESENSE_API_KEY ?? '',
   });
 
-  return <TypesenseServerMetrics metrics={metrics} />;
+  const collections = await getCollections();
+  console.log(collections);
+  return (
+    <TypesenseServerMetrics metrics={metrics} collections={collections} />
+  );
 }
