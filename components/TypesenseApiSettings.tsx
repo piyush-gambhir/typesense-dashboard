@@ -180,7 +180,7 @@ export default function TypesenseApiSettings({
           <CardTitle>API Settings</CardTitle>
           <CardDescription>Manage your Typesense API keys</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow overflow-hidden">
+        <CardContent className="grow overflow-hidden">
           <ScrollArea className="h-full">
             {apiKeys.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
@@ -232,7 +232,7 @@ export default function TypesenseApiSettings({
                   Create a new API key with specific permissions.
                 </DialogDescription>
               </DialogHeader>
-              <ScrollArea className="flex-grow">
+              <ScrollArea className="grow">
                 <div className="grid gap-4 py-4 px-4">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="description" className="text-right">

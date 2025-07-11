@@ -29,7 +29,7 @@ const SearchComponent = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search..."
-          className="flex-grow"
+          className="grow"
         />
         <Button onClick={handleSearch}>Search</Button>
       </div>

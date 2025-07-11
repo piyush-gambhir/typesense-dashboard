@@ -43,7 +43,7 @@ export default function TypesenseCollections({
                 </div>
                 <CardDescription>Collection details</CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow">
+              <CardContent className="grow">
                 <Table>
                   <TableBody>
                     <TableRow>
