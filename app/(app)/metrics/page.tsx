@@ -1,8 +1,8 @@
-import { getClusterHealth } from '@/actions/typesense/get-cluster-health';
+import { getClusterHealth } from '@/lib/typesense/cluster-health';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-import TypesenseServerMetrics from '@/components/TypesenseServerMetrics';
+import TypesenseServerMetrics from '@/components/features/analytics/TypesenseServerMetrics';
 
 export default async function page() {
   const clusterData = await getClusterHealth();

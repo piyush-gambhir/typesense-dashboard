@@ -1,20 +1,18 @@
 import React from 'react';
 
-import TypesenseSearch from '@/components/TypesenseSearch';
+import NLSearchWrapper from '@/components/features/search/NLSearchWrapper';
 
-export default function page({
-  searchParams,
+export default async function page({
   params,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
-  params: { collectionName: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  params: Promise<{ collectionName: string }>;
 }) {
-  const { collectionName } = params;
+  const { collectionName } = await params;
 
   return (
-    <TypesenseSearch
+    <NLSearchWrapper
       collectionName={collectionName}
-      searchParams={searchParams}
     />
   );
 }

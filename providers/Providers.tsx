@@ -1,7 +1,5 @@
 'use client';
 
-import { RecoilRootProvider } from '@/providers/RecoilRootProvider';
-
 import { ThemeProvider as NextThemeProvider } from 'next-themes';
 import React from 'react';
 
@@ -15,11 +13,12 @@ export function Providers({
   return (
     <NextThemeProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      storageKey="typesense-dashboard-theme"
     >
-      <RecoilRootProvider>{children}</RecoilRootProvider>
+      {children}
       <Toaster />
     </NextThemeProvider>
   );

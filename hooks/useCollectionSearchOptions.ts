@@ -78,21 +78,23 @@ export const useCollectionSearchOptions = ({
           searchQueries: queries,
         });
 
-        if (response && response.results && response.results.length > 0) {
-          const [documentsResponse] = response.results;
-          setFacetValues(
-            (documentsResponse as any)?.facets?.reduce(
-              (acc: Record<string, FacetValue[]>, facet: any) => {
-                acc[facet.field_name] =
-                  facet.counts?.map((count: any) => ({
-                    value: count.value,
-                    count: count.count,
-                  })) ?? [];
-                return acc;
-              },
-              {},
-            ) ?? {},
-          );
+        if (response && response.results && Array.isArray(response.results) && response.results.length > 0) {
+          const documentsResponse = response.results[0];
+          if (documentsResponse) {
+            setFacetValues(
+              (documentsResponse as any)?.facets?.reduce(
+                (acc: Record<string, FacetValue[]>, facet: any) => {
+                  acc[facet.field_name] =
+                    facet.counts?.map((count: any) => ({
+                      value: count.value,
+                      count: count.count,
+                    })) ?? [];
+                  return acc;
+                },
+                {},
+              ) ?? {},
+            );
+          }
         }
       } catch (error) {
         console.error('Error fetching facet values:', error);

@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
-import NLSearchTest from '@/components/NLSearchTest';
+import React from 'react';
+import NLSearchTest from '@/components/features/search/NLSearchTest';
 
 export const metadata: Metadata = {
   title: 'Natural Language Search Test - Typesense Dashboard',

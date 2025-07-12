@@ -1,14 +1,13 @@
 import React from 'react';
 
-import EditDocumentPage from '@/components/EditDocument';
+import EditDocumentPage from '@/components/features/documents/EditDocument';
 
-export default function page({
+export default async function page({
   params,
 }: {
-  params: { collectionName: string; documentId: string };
+  params: Promise<{ collectionName: string; documentId: string }>;
 }) {
-  const collectionName = params.collectionName;
-  const documentId = params.documentId;
+  const { collectionName, documentId } = await params;
 
   return (
     <EditDocumentPage collectionName={collectionName} documentId={documentId} />

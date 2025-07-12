@@ -116,7 +116,7 @@ export function validateEmail(email: string) {
     emailSchema.parse(email);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -129,7 +129,7 @@ export function validateURL(url: string) {
     urlSchema.parse(url);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -142,7 +142,7 @@ export function validateString(str: string) {
     stringSchema.parse(str);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -155,7 +155,7 @@ export function validateNumber(num: number) {
     numberSchema.parse(num);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -168,7 +168,7 @@ export function validateInteger(num: number) {
     integerSchema.parse(num);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -181,7 +181,7 @@ export function validateDate(date: Date) {
     dateSchema.parse(date);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -194,7 +194,7 @@ export function validateStringArray(arr: string[]) {
     stringArraySchema.parse(arr);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -207,7 +207,7 @@ export function validatePassword(password: string) {
     passwordSchema.parse(password);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -241,7 +241,7 @@ export function validateImageFile({
     createImageFileSchema(maxFileSize, allowedTypes).parse(imageFile);
     return { valid: true, message: '' };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -262,7 +262,7 @@ export function validateVideoFile({
     createVideoFileSchema(maxFileSize, allowedTypes).parse(videoFile);
     return { valid: true, message: "" };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -283,7 +283,7 @@ export function validatePDFFile({
     createPDFFileSchema(maxFileSize, allowedTypes).parse(pdfFile);
     return { valid: true, message: "" };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };
@@ -304,7 +304,7 @@ export function validateAudioFile({
     createAudioFileSchema(maxFileSize, allowedTypes).parse(audioFile);
     return { valid: true, message: "" };
   } catch (e) {
-    if (e instanceof z.ZodError) {
+    if (e instanceof z.ZodError && 'errors' in e && Array.isArray(e.errors) && e.errors.length > 0) {
       return { valid: false, message: e.errors[0].message };
     }
     return { valid: false, message: 'An error occurred during validation' };

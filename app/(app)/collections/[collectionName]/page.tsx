@@ -2,16 +2,17 @@ import React from 'react';
 
 import { getCollection } from '@/lib/typesense/collections';
 
-import TypesenseCollectionDetails from '@/components/collections/TypesenseCollectionDetails';
+import TypesenseCollectionDetails from '@/components/features/collections/TypesenseCollectionDetails';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 
 export default async function page({
   params,
 }: {
-  params: { collectionName: string };
+  params: Promise<{ collectionName: string }>;
 }) {
-  const collectionResult = await getCollection(params.collectionName);
+  const { collectionName } = await params;
+  const collectionResult = await getCollection(collectionName);
 
   if (!collectionResult || !collectionResult.success) {
     return (
@@ -20,7 +21,7 @@ export default async function page({
           <Terminal className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
-            {collectionResult?.error || `Collection '${params.collectionName}' not found.`}
+            {collectionResult?.error || `Collection '${collectionName}' not found.`}
           </AlertDescription>
         </Alert>
       </div>

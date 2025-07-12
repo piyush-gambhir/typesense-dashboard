@@ -1,11 +1,11 @@
-import CreateDocumentPage from '@/components/CreateDocument';
+import CreateDocumentPage from '@/components/features/documents/CreateDocument';
 
-export default function AddDocumentPage({
+export default async function AddDocumentPage({
   params,
 }: {
-  params: { collectionName: string };
+  params: Promise<{ collectionName: string }>;
 }) {
-  const collectionName = params.collectionName;
+  const { collectionName } = await params;
 
   return (
     <div className="container mx-auto p-8">

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { listApiKeys } from '@/lib/typesense/api-keys';
 
-import TypesenseApiSettings from '@/components/TypesenseApiSettings';
+import TypesenseApiSettings from '@/components/features/settings/TypesenseApiSettings';
 
 export default async function page() {
   const apiKeysResponse = await listApiKeys();
