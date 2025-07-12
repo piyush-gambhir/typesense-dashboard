@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -19,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 import PaginationComponent from '@/components/common/Pagination';
 import DocumentCard from '@/components/features/documents/DocumentCard';
@@ -53,9 +55,6 @@ export default function TypesenseSearch({
         useState<CollectionSchema | null>(null);
     const [indexFields, setIndexFields] = useState<string[]>([]);
     const [facetFields, setFacetFields] = useState<string[]>([]);
-    const [nonBooleanFacetFields, setNonBooleanFacetFields] = useState<
-        string[]
-    >([]);
 
     // Initialize state from URL params
     const [searchQuery, setSearchQuery] = useState<string>(
@@ -149,6 +148,7 @@ export default function TypesenseSearch({
     const [countDropdownOptions, setCountDropdownOptions] = useState<
         { label: string; value: number }[]
     >([]);
+    const [showFacetDebugger, setShowFacetDebugger] = useState<boolean>(false);
 
     // Ref to prevent infinite loops
     const isSearching = useRef(false);
@@ -393,7 +393,7 @@ export default function TypesenseSearch({
                     collection: collectionName,
                     q: '*',
                     queryBy: '*', // Use * to ensure we get all documents for facet counting
-                    maxFacetValues: 50, // Increase max facet values to get more options
+                    maxFacetValues: 100, // Increase max facet values to get more options
                     perPage: 0,
                 };
 
@@ -407,7 +407,6 @@ export default function TypesenseSearch({
 
                 console.log('[fetchFacets] Debug info:', {
                     facetFields,
-                    nonBooleanFacetFields,
                     facetByString: facetFields.join(','),
                     query: queries[0],
                     // Add specific debugging for int fields
@@ -514,7 +513,16 @@ export default function TypesenseSearch({
                             '[fetchFacets] Processed facet values:',
                             newFacetValues,
                         );
-                        setFacetValues(newFacetValues);
+
+                        // Merge with existing facet values to preserve any manually added ones
+                        setFacetValues((prev) => {
+                            const merged = { ...prev, ...newFacetValues };
+                            console.log(
+                                '[fetchFacets] Merged facet values:',
+                                merged,
+                            );
+                            return merged;
+                        });
 
                         // Add boolean facets separately
                         addBooleanFacets();
@@ -566,6 +574,7 @@ export default function TypesenseSearch({
             );
 
             booleanFields.forEach((field) => {
+                // Always provide both true and false options for boolean fields
                 booleanFacets[field.name] = [
                     { value: true, count: 0 },
                     { value: false, count: 0 },
@@ -576,7 +585,11 @@ export default function TypesenseSearch({
                 '[addBooleanFacets] Boolean facets to add:',
                 booleanFacets,
             );
-            setFacetValues((prev) => ({ ...prev, ...booleanFacets }));
+            setFacetValues((prev) => {
+                const merged = { ...prev, ...booleanFacets };
+                console.log('[addBooleanFacets] Merged with existing:', merged);
+                return merged;
+            });
         };
 
         const addIntFieldFallbacks = (
@@ -605,16 +618,44 @@ export default function TypesenseSearch({
             if (intFields.length > 0) {
                 const intFieldFallbacks: Record<string, FacetValue[]> = {};
                 intFields.forEach((field) => {
-                    intFieldFallbacks[field.name] = [
-                        { value: 0, count: 0 }, // Add a placeholder value
-                    ];
+                    // For integer fields, provide a range of common values
+                    const fieldType = field.type;
+                    let defaultValues: FacetValue[] = [];
+
+                    if (fieldType === 'int32' || fieldType === 'int64') {
+                        defaultValues = [
+                            { value: 0, count: 0 },
+                            { value: 1, count: 0 },
+                            { value: 10, count: 0 },
+                            { value: 100, count: 0 },
+                        ];
+                    } else if (
+                        fieldType === 'float' ||
+                        fieldType === 'double'
+                    ) {
+                        defaultValues = [
+                            { value: 0.0, count: 0 },
+                            { value: 1.0, count: 0 },
+                            { value: 10.0, count: 0 },
+                            { value: 100.0, count: 0 },
+                        ];
+                    }
+
+                    intFieldFallbacks[field.name] = defaultValues;
                 });
 
                 console.log(
                     '[addIntFieldFallbacks] Adding fallback values:',
                     intFieldFallbacks,
                 );
-                setFacetValues((prev) => ({ ...prev, ...intFieldFallbacks }));
+                setFacetValues((prev) => {
+                    const merged = { ...prev, ...intFieldFallbacks };
+                    console.log(
+                        '[addIntFieldFallbacks] Merged with existing:',
+                        merged,
+                    );
+                    return merged;
+                });
             }
         };
 
@@ -646,21 +687,14 @@ export default function TypesenseSearch({
                         })),
                     );
 
-                    // Filter facet fields to exclude boolean fields that might cause issues
-                    const facetFields =
-                        schemaResponse.data.fields
-                            ?.filter(
-                                (field) =>
-                                    field.facet === true &&
-                                    field.type !== 'bool',
-                            )
-                            .map((field) => field.name) ?? [];
-
-                    // Store all facetable fields including booleans for UI rendering
+                    // Store all facetable fields for UI rendering
                     const allFacetFields =
                         schemaResponse.data.fields
                             ?.filter((field) => field.facet === true)
                             .map((field) => field.name) ?? [];
+
+                    // For facet queries, include all facetable fields including booleans and integers
+                    const facetFields = allFacetFields;
 
                     console.log('[fetchSchema] Filtered fields:', {
                         facetFields,
@@ -711,9 +745,6 @@ export default function TypesenseSearch({
                     );
                     setFacetFields(allFacetFields); // Use all facet fields for UI
                     setIndexFields(indexFields);
-
-                    // Store non-boolean facet fields separately for queries
-                    setNonBooleanFacetFields(facetFields);
 
                     // Set dropdown options - add sort direction for numeric fields
                     const sortOptions = [
@@ -824,13 +855,11 @@ export default function TypesenseSearch({
 
     const handleFilterChange = (
         field: string,
-        value: string | boolean,
+        value: string | boolean | number,
         checked: boolean,
     ) => {
-        let filterString = '';
-
         // Convert all values to strings for consistent filter format
-        // Typesense expects string values even for boolean fields
+        // Typesense expects string values even for boolean and number fields
         let stringValue: string;
         if (typeof value === 'boolean') {
             stringValue = value ? 'true' : 'false';
@@ -841,7 +870,7 @@ export default function TypesenseSearch({
         }
 
         // Use := for all field types to ensure proper string comparison
-        filterString = `${field}:=${stringValue}`;
+        const filterString = `${field}:=${stringValue}`;
 
         setFilterBy((prev) => {
             let newFilters: string[];
@@ -863,13 +892,26 @@ export default function TypesenseSearch({
                 JSON.stringify(newFilters.sort()) !==
                 JSON.stringify(prev.sort())
             ) {
+                console.log('[handleFilterChange] Filters changed:', {
+                    prev: prev,
+                    new: newFilters,
+                    checked: checked,
+                    field: field,
+                    value: value,
+                });
+
                 // Update URL immediately using proper hook functions
                 if (newFilters.length > 0) {
-                    setQueryParams({
+                    const newParams = {
                         ...queryParams,
                         filter_by: newFilters.join(','),
                         page: '1',
-                    });
+                    };
+                    console.log(
+                        '[handleFilterChange] Setting params with filters:',
+                        newParams,
+                    );
+                    setQueryParams(newParams);
                 } else {
                     // Remove filter_by and reset page in one operation
                     const newParams: Record<string, string> = {
@@ -877,6 +919,10 @@ export default function TypesenseSearch({
                         page: '1',
                     };
                     delete (newParams as any).filter_by;
+                    console.log(
+                        '[handleFilterChange] Setting params without filters:',
+                        newParams,
+                    );
                     setQueryParams(newParams);
                 }
 
@@ -893,6 +939,10 @@ export default function TypesenseSearch({
         const newParams: Record<string, string> = { ...queryParams, page: '1' };
         delete (newParams as any).filter_by;
         setQueryParams(newParams);
+        console.log(
+            '[handleClearFilters] Cleared filters, new params:',
+            newParams,
+        );
     };
 
     const handlePerPageChange = (value: number) => {
@@ -1105,6 +1155,15 @@ export default function TypesenseSearch({
 
                         <div className="lg:col-span-4 flex flex-col gap-y-8">
                             <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center mb-4 gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <Label className="text-sm whitespace-nowrap">
+                                        Show Debugger
+                                    </Label>
+                                    <Switch
+                                        checked={showFacetDebugger}
+                                        onCheckedChange={setShowFacetDebugger}
+                                    />
+                                </div>
                                 <Select
                                     value={String(perPage)}
                                     onValueChange={(value) =>
@@ -1149,15 +1208,14 @@ export default function TypesenseSearch({
 
                             {/* Search Results */}
                             <div className="space-y-4">
-                                {/* Debugger - temporarily add for debugging */}
-                                <FacetDebugger
-                                    collectionSchema={collectionSchema}
-                                    facetValues={facetValues}
-                                    facetFields={facetFields}
-                                    nonBooleanFacetFields={
-                                        nonBooleanFacetFields
-                                    }
-                                />
+                                {/* Debugger - only show when toggle is enabled */}
+                                {showFacetDebugger && (
+                                    <FacetDebugger
+                                        collectionSchema={collectionSchema}
+                                        facetValues={facetValues}
+                                        facetFields={facetFields}
+                                    />
+                                )}
 
                                 {loadingDocuments ? (
                                     <SearchSkeleton />
@@ -1183,41 +1241,6 @@ export default function TypesenseSearch({
                                                 Found {totalResults} document
                                                 {totalResults !== 1 ? 's' : ''}
                                             </p>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-sm text-muted-foreground">
-                                                    Show:
-                                                </span>
-                                                <Select
-                                                    value={String(perPage)}
-                                                    onValueChange={(value) =>
-                                                        handlePerPageChange(
-                                                            parseInt(value),
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-20">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {countDropdownOptions.map(
-                                                            (option) => (
-                                                                <SelectItem
-                                                                    key={
-                                                                        option.value
-                                                                    }
-                                                                    value={String(
-                                                                        option.value,
-                                                                    )}
-                                                                >
-                                                                    {
-                                                                        option.value
-                                                                    }
-                                                                </SelectItem>
-                                                            ),
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
                                         </div>
 
                                         <div className="grid gap-4">

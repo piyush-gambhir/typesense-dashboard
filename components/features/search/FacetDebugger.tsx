@@ -19,14 +19,12 @@ interface FacetDebuggerProps {
     } | null;
     facetValues: Record<string, FacetValue[]>;
     facetFields: string[];
-    nonBooleanFacetFields: string[];
 }
 
 const FacetDebugger = ({
     collectionSchema,
     facetValues,
     facetFields,
-    nonBooleanFacetFields,
 }: FacetDebuggerProps) => {
     const intFields = facetFields.filter((field) => {
         const fieldInfo = collectionSchema?.fields?.find(
@@ -47,7 +45,7 @@ const FacetDebugger = ({
                 <div className="space-y-4">
                     <div>
                         <h4 className="font-medium mb-2">Collection Schema:</h4>
-                        <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-40">
+                        <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-40">
                             {JSON.stringify(
                                 collectionSchema?.fields?.filter(
                                     (f) => f.facet,
@@ -90,23 +88,34 @@ const FacetDebugger = ({
                                     Non-Boolean Facet Fields:
                                 </h5>
                                 <ul className="text-xs space-y-1">
-                                    {nonBooleanFacetFields.map((field) => {
-                                        const fieldInfo =
-                                            collectionSchema?.fields?.find(
-                                                (f) => f.name === field,
+                                    {facetFields
+                                        .filter((field: string) => {
+                                            const fieldInfo =
+                                                collectionSchema?.fields?.find(
+                                                    (f) => f.name === field,
+                                                );
+                                            return (
+                                                fieldInfo &&
+                                                fieldInfo.type !== 'bool'
                                             );
-                                        return (
-                                            <li
-                                                key={field}
-                                                className="flex justify-between"
-                                            >
-                                                <span>{field}</span>
-                                                <span className="text-gray-500">
-                                                    ({fieldInfo?.type})
-                                                </span>
-                                            </li>
-                                        );
-                                    })}
+                                        })
+                                        .map((field: string) => {
+                                            const fieldInfo =
+                                                collectionSchema?.fields?.find(
+                                                    (f) => f.name === field,
+                                                );
+                                            return (
+                                                <li
+                                                    key={field}
+                                                    className="flex justify-between"
+                                                >
+                                                    <span>{field}</span>
+                                                    <span className="text-gray-500">
+                                                        ({fieldInfo?.type})
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
                                 </ul>
                             </div>
                         </div>

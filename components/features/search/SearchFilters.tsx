@@ -19,6 +19,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
 
 interface FacetValue {
     value: string | number | boolean;
@@ -269,55 +270,27 @@ const Filter = ({
                         </Button>
                     )}
                 </div>
-                <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                        <div
-                            className={`w-4 h-4 rounded border ${
-                                isTrueSelected
-                                    ? 'bg-primary border-primary'
-                                    : 'border-gray-300'
-                            } flex items-center justify-center cursor-pointer`}
-                            onClick={() =>
-                                onFilterChange(field, true, !isTrueSelected)
+                <div className="flex items-center justify-between">
+                    <Label className="text-sm">
+                        {isTrueSelected ? 'Enabled' : 'Any'}
+                    </Label>
+                    <Switch
+                        checked={isTrueSelected}
+                        onCheckedChange={(checked) => {
+                            // Clear any existing filters for this field first
+                            if (isTrueSelected) {
+                                onFilterChange(field, true, false);
                             }
-                        >
-                            {isTrueSelected && (
-                                <div className="w-2 h-2 bg-white rounded-sm" />
-                            )}
-                        </div>
-                        <Label
-                            className="text-sm cursor-pointer"
-                            onClick={() =>
-                                onFilterChange(field, true, !isTrueSelected)
+                            if (isFalseSelected) {
+                                onFilterChange(field, false, false);
                             }
-                        >
-                            True
-                        </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <div
-                            className={`w-4 h-4 rounded border ${
-                                isFalseSelected
-                                    ? 'bg-primary border-primary'
-                                    : 'border-gray-300'
-                            } flex items-center justify-center cursor-pointer`}
-                            onClick={() =>
-                                onFilterChange(field, false, !isFalseSelected)
+                            // Set the new value based on toggle state
+                            if (checked) {
+                                onFilterChange(field, true, true);
                             }
-                        >
-                            {isFalseSelected && (
-                                <div className="w-2 h-2 bg-white rounded-sm" />
-                            )}
-                        </div>
-                        <Label
-                            className="text-sm cursor-pointer"
-                            onClick={() =>
-                                onFilterChange(field, false, !isFalseSelected)
-                            }
-                        >
-                            False
-                        </Label>
-                    </div>
+                            // If unchecked, we don't set any filter (shows "Any")
+                        }}
+                    />
                 </div>
             </div>
         );
