@@ -96,6 +96,23 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 This dashboard interacts with a Typesense instance to perform search and collection management. The `Typesense` client is initialized using the environment variables provided in the `.env.local` file.
 
+#### **Connection Error Handling**
+
+The application includes robust connection error handling:
+
+- **Graceful Build Process**: The build will not fail if the Typesense server is unreachable
+- **Connection Error Page**: A dedicated `/connection-error` page provides troubleshooting guidance
+- **Automatic Redirects**: When connection fails, users are automatically redirected to the error page
+- **Environment Validation**: Checks for required environment variables and provides clear error messages
+- **Retry Functionality**: Users can retry the connection from the error page
+
+#### **Connection Status Monitoring**
+
+- Real-time connection status in the settings page
+- Detailed error messages for different failure scenarios
+- Environment variable validation
+- Server configuration display
+
 #### **Client Setup Example**:
 
 ```ts

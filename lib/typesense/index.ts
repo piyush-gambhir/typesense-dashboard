@@ -90,3 +90,10 @@ export { getTypesenseMetrics } from './get-cluster-metrics';
 
 // Client
 export { default as typesenseClient } from './typesense-client';
+
+// Connection utilities
+export {
+    checkTypesenseConnection,
+    isTypesenseAvailable,
+} from './connection-check';
+export type { ConnectionStatus } from './connection-check';

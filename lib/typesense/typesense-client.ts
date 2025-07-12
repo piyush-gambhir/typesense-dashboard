@@ -9,7 +9,7 @@ const typesenseClient = new Client({
         },
     ],
     apiKey: process.env.TYPESENSE_API_KEY ?? 'xyz',
-    connectionTimeoutSeconds: 60,
+    connectionTimeoutSeconds: 10, // Reduced timeout for faster failure detection
 });
 
 export default typesenseClient;

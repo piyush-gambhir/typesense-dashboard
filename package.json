@@ -1,6 +1,6 @@
 {
-    "name": "typesense-dashboard-v2",
-    "version": "0.1.0",
+    "name": "typesense-dashboard",
+    "version": "1.0.0",
     "private": true,
     "scripts": {
         "dev": "cross-env NODE_ENV=development next dev --turbopack",
