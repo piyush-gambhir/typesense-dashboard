@@ -100,8 +100,8 @@ export default function TypesenseApiSettings({
   useEffect(() => {
     const fetchCollections = async () => {
       const collections = await getCollections();
-      if (collections) {
-        setAvailableCollections(collections.map((c) => c.name));
+      if (collections && collections.success && collections.data) {
+        setAvailableCollections(collections.data.map((c) => c.name));
       }
     };
     fetchCollections();

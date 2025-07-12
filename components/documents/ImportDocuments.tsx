@@ -85,9 +85,18 @@ export default function ImportDocuments({
           .filter(Boolean)
           .map((line) => JSON.parse(line));
       } else if (file.name.endsWith('.csv')) {
-        documents = fileContent.split('\n').map((line) => {
-          const [id, ...rest] = line.split(',');
-          return { id, data: rest };
+        const lines = fileContent.split('\n').filter(Boolean);
+        if (lines.length === 0) {
+          throw new Error('CSV file is empty.');
+        }
+        const headers = lines[0].split(',').map((header) => header.trim());
+        documents = lines.slice(1).map((line) => {
+          const values = line.split(',').map((value) => value.trim());
+          const doc: Record<string, any> = {};
+          headers.forEach((header, index) => {
+            doc[header] = values[index];
+          });
+          return doc;
         });
       } else {
         throw new Error(

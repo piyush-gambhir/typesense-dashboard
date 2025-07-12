@@ -135,7 +135,7 @@ const DocumentCard = ({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      // await onDelete(result.id);
+      await onDelete(result.id);
     } finally {
       setIsDeleting(false);
       setIsDeleteDialogOpen(false);

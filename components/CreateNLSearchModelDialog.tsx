@@ -1,0 +1,349 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/useToast';
+
+import {
+  createNLSearchModel,
+  getAvailableModelTypes,
+  getDefaultSystemPrompts,
+  type CreateNLSearchModelRequest,
+} from '@/lib/typesense/nl-search-models';
+import { getCollections } from '@/lib/typesense/collections';
+
+interface CreateNLSearchModelDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}
+
+export default function CreateNLSearchModelDialog({
+  open,
+  onOpenChange,
+  onSuccess,
+}: CreateNLSearchModelDialogProps) {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [collections, setCollections] = useState<string[]>([]);
+
+  const [formData, setFormData] = useState<CreateNLSearchModelRequest>({
+    name: '',
+    model_type: '',
+    model_config: {
+      model_name: '',
+      api_key: '',
+      system_prompt: '',
+      max_tokens: 1000,
+      temperature: 0.7,
+    },
+    collections: [],
+  });
+
+  const availableModelTypes = getAvailableModelTypes();
+  const defaultPrompts = getDefaultSystemPrompts();
+
+  useEffect(() => {
+    if (open) {
+      fetchCollections();
+    }
+  }, [open]);
+
+  const fetchCollections = async () => {
+    try {
+      const result = await getCollections();
+      if (result.success && result.data) {
+        setCollections(result.data.map((col: any) => col.name));
+      }
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+    }
+  };
+
+  const handleModelTypeChange = (modelType: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      model_type: modelType,
+      model_config: {
+        ...prev.model_config,
+        model_name: modelType,
+      },
+    }));
+  };
+
+  const handleSystemPromptTemplate = (template: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      model_config: {
+        ...prev.model_config,
+        system_prompt: defaultPrompts[template as keyof typeof defaultPrompts],
+      },
+    }));
+  };
+
+  const handleCollectionToggle = (collectionName: string, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      collections: checked
+        ? [...prev.collections, collectionName]
+        : prev.collections.filter((name) => name !== collectionName),
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const result = await createNLSearchModel(formData);
+      if (result.success) {
+        toast({
+          title: 'Success',
+          description: 'NL search model created successfully.',
+        });
+        onSuccess();
+        onOpenChange(false);
+        // Reset form
+        setFormData({
+          name: '',
+          model_type: '',
+          model_config: {
+            model_name: '',
+            api_key: '',
+            system_prompt: '',
+            max_tokens: 1000,
+            temperature: 0.7,
+          },
+          collections: [],
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: result.error || 'Failed to create NL search model.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create NL search model.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Create NL Search Model</DialogTitle>
+          <DialogDescription>
+            Configure a new natural language search model to enable AI-powered search.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Model Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
+                placeholder="e.g., E-commerce Search Model"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="model_type">Model Type</Label>
+              <Select
+                value={formData.model_type}
+                onValueChange={handleModelTypeChange}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a model type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableModelTypes.map((provider) => (
+                    <div key={provider.provider}>
+                      <div className="px-2 py-1 text-sm font-semibold text-muted-foreground">
+                        {provider.provider}
+                      </div>
+                      {provider.models.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          <div>
+                            <div className="font-medium">{model.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {model.description}
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="api_key">API Key</Label>
+              <Input
+                id="api_key"
+                type="password"
+                value={formData.model_config.api_key}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    model_config: {
+                      ...prev.model_config,
+                      api_key: e.target.value,
+                    },
+                  }))
+                }
+                placeholder="Enter your API key"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="system_prompt">System Prompt</Label>
+              <div className="mb-2">
+                <Select onValueChange={handleSystemPromptTemplate}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Use a template (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">General Search</SelectItem>
+                    <SelectItem value="ecommerce">E-commerce</SelectItem>
+                    <SelectItem value="support">Support Knowledge Base</SelectItem>
+                    <SelectItem value="content">Content Discovery</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Textarea
+                id="system_prompt"
+                value={formData.model_config.system_prompt}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    model_config: {
+                      ...prev.model_config,
+                      system_prompt: e.target.value,
+                    },
+                  }))
+                }
+                placeholder="Enter system prompt to guide the model's behavior..."
+                rows={4}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="max_tokens">Max Tokens</Label>
+                <Input
+                  id="max_tokens"
+                  type="number"
+                  value={formData.model_config.max_tokens}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      model_config: {
+                        ...prev.model_config,
+                        max_tokens: parseInt(e.target.value) || 1000,
+                      },
+                    }))
+                  }
+                  min="100"
+                  max="4000"
+                />
+              </div>
+              <div>
+                <Label htmlFor="temperature">Temperature</Label>
+                <Input
+                  id="temperature"
+                  type="number"
+                  step="0.1"
+                  value={formData.model_config.temperature}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      model_config: {
+                        ...prev.model_config,
+                        temperature: parseFloat(e.target.value) || 0.7,
+                      },
+                    }))
+                  }
+                  min="0"
+                  max="2"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label>Associated Collections</Label>
+              <div className="mt-2 max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+                {collections.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No collections available</p>
+                ) : (
+                  collections.map((collection) => (
+                    <div key={collection} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={collection}
+                        checked={formData.collections.includes(collection)}
+                        onCheckedChange={(checked) =>
+                          handleCollectionToggle(collection, !!checked)
+                        }
+                      />
+                      <Label htmlFor={collection} className="text-sm">
+                        {collection}
+                      </Label>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create Model'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+} 

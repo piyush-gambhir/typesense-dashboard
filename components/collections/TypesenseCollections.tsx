@@ -23,6 +23,14 @@ export default function TypesenseCollections({
   collections: ReadonlyArray<any>;
 }) {
   const router = useRouter();
+
+  if (!collections || collections.length === 0) {
+    return (
+      <div className="container mx-auto flex flex-col gap-y-8 p-8">
+        <p className="text-center text-gray-500">No collections found.</p>
+      </div>
+    );
+  }
   
   return (
     <div className="container mx-auto flex flex-col gap-y-8">

@@ -1,3 +1,5 @@
-export default function GeneralSettings() {
-  return <div>General Settings</div>;
+import Stopwords from '@/components/Stopwords';
+
+export default function StopwordsPage() {
+  return <Stopwords />;
 }

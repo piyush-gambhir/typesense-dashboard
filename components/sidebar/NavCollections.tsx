@@ -48,10 +48,10 @@ export function NavCollections({
           <Collapsible key={item.name} asChild defaultOpen={true}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.name}>
-                <a href={item.url}>
+                <Link href={item.url}>
                   <item.icon />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
               <CollapsibleTrigger asChild>
                 <SidebarMenuAction className="data-[state=open]:rotate-90">

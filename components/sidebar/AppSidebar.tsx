@@ -2,6 +2,7 @@
 
 import {
   ArrowLeftRight,
+  Bot,
   ChartBar,
   Frame,
   ListFilter,
@@ -14,15 +15,11 @@ import * as React from 'react';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
 
 import { NavCollections } from '@/components/sidebar/NavCollections';
 import { NavMain } from '@/components/sidebar/NavMain';
-import { NavUser } from '@/components/sidebar/NavUser';
-import { TeamSwitcher } from '@/components/sidebar/TeamSwitcher';
 
 export default function AppSidebar({
   collections,
@@ -30,6 +27,9 @@ export default function AppSidebar({
 }: Readonly<{
   collections: any;
 }>) {
+  // Handle the new collections data structure
+  const collectionsData = collections?.success && collections?.data ? collections.data : [];
+  
   const data = {
     navMain: [
       {
@@ -75,6 +75,21 @@ export default function AppSidebar({
         isActive: true,
         items: [],
       },
+      {
+        title: 'NL Search',
+        url: '/nl-search',
+        icon: Bot,
+        items: [
+          {
+            title: 'Models',
+            url: '/nl-search-models',
+          },
+          {
+            title: 'Test',
+            url: '/nl-search-test',
+          },
+        ],
+      },
 
       {
         title: 'Settings',
@@ -92,7 +107,7 @@ export default function AppSidebar({
         ],
       },
     ],
-    collections: collections.map((collection: any) => ({
+    collections: collectionsData.map((collection: any) => ({
       name: collection.name,
       url: `/collections/${collection.name}`,
       icon: Frame,

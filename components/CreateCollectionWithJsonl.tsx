@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/useToast';
-import { Upload, X } from 'lucide-react';
+import { FileUp, Upload, X } from 'lucide-react';
 import { createCollectionWithJsonl } from '@/actions/typesense/create-collection-with-jsonl';
 
 const fieldTypes = [
@@ -130,7 +130,7 @@ export default function CreateCollectionWithJsonl() {
       fileContent,
     });
 
-    if (response?.error) {
+    if (response && 'error' in response) {
       toast({
         title: 'Error',
         description: response.error,

@@ -20,7 +20,11 @@ export async function getTypesenseMetrics({
       },
     );
 
-    const metrics = response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const metrics = await response.json();
     return metrics;
   } catch (error) {
     console.error('Error fetching metrics:', error);

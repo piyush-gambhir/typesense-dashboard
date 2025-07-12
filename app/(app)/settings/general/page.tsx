@@ -1,3 +1,5 @@
+import TypesenseConnectionSettings from '@/components/TypesenseConnectionSettings';
+
 export default function GeneralSettings() {
-  return <div>General Settings</div>;
+  return <TypesenseConnectionSettings />;
 }

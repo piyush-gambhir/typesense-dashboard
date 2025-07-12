@@ -15,6 +15,7 @@ import {
 } from '@/lib/typesense/collections';
 
 import { toast } from '@/hooks/useToast';
+import DeleteCollectionDialog from '@/components/collections/DeleteCollectionDialog';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,8 +52,8 @@ interface CollectionDetails {
   name: string;
   created_at: number;
   num_documents: number;
-  default_sorting_field: string;
-  enable_nested_fields: boolean;
+  default_sorting_field?: string;
+  enable_nested_fields?: boolean;
   fields: Field[];
 }
 
@@ -96,23 +97,40 @@ export default function CollectionDetails({
     setJsonSchema(event.target.value);
   };
 
-  const handleUpdateSchema = () => {
-    if (isJsonMode) {
-      try {
-        const parsedSchema = JSON.parse(jsonSchema);
-        updateCollection(collection.name, parsedSchema);
-      } catch (error) {
+  const handleUpdateSchema = async () => {
+    try {
+      let updatedCollectionData;
+      if (isJsonMode) {
+        updatedCollectionData = JSON.parse(jsonSchema);
+      } else {
+        updatedCollectionData = collection; // Schema is already updated in state for table mode
+      }
+
+      const updatedCollection = await updateCollection(
+        collection.name,
+        updatedCollectionData,
+      );
+
+      if (updatedCollection) {
+        setCollection(updatedCollection as CollectionDetails);
+        toast({
+          title: 'Schema Updated',
+          description: 'The collection schema has been updated successfully.',
+        });
+      } else {
         toast({
           title: 'Error',
-          description: 'Invalid JSON. Please check your input.',
+          description: 'Failed to update collection schema.',
           variant: 'destructive',
         });
       }
-    } else {
-      // In table mode, the schema is already updated in state
+    } catch (error) {
       toast({
-        title: 'Schema Updated',
-        description: 'The collection schema has been updated successfully.',
+        title: 'Error',
+        description: `Failed to update collection schema: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        variant: 'destructive',
       });
     }
   };
@@ -369,10 +387,7 @@ export default function CollectionDetails({
           <Button onClick={handleUpdateSchema} variant="default">
             Update Schema
           </Button>
-          <Button onClick={handleDeleteCollection} variant="destructive">
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Collection
-          </Button>
+          <DeleteCollectionDialog collectionName={collection.name} />
         </div>
       </div>
     </div>

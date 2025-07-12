@@ -7,9 +7,16 @@ export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
 export async function getCollections() {
   try {
     const collections = await typesenseClient.collections().retrieve();
-    return collections;
+    return {
+      success: true,
+      data: collections,
+    };
   } catch (error) {
-    return null;
+    console.error('Error fetching collections:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
 }
 
@@ -18,9 +25,16 @@ export async function getCollection(collectionName: string) {
     const collection = await typesenseClient
       .collections(collectionName)
       .retrieve();
-    return collection;
+    return {
+      success: true,
+      data: collection,
+    };
   } catch (error) {
-    return null;
+    console.error('Error fetching collection:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
 }
 

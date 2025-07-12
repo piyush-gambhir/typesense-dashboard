@@ -8,7 +8,7 @@ const typesenseClient = new Client({
       protocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
     },
   ],
-  apiKey: process.env.TYPESENSE_API_KEY ?? '',
+  apiKey: process.env.TYPESENSE_API_KEY ?? 'xyz',
   connectionTimeoutSeconds: 60,
 });
 

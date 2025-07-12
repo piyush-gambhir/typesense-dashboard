@@ -1,3 +1,5 @@
-export default function GeneralSettings() {
-  return <div>General Settings</div>;
+import SearchPresets from '@/components/SearchPresets';
+
+export default function SearchPresetsPage() {
+  return <SearchPresets />;
 }

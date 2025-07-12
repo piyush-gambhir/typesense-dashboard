@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 import { ThemeToggle } from '@/components/ThemeToggle';
+import React from 'react';
 
 export default function Header() {
   const pathname = usePathname();
@@ -24,13 +25,13 @@ export default function Header() {
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
-          <BreadcrumbList key={pathname + Math.random()}>
+          <BreadcrumbList>
             {pathname
               .split('/')
               .filter(Boolean)
               .map((segment, index, array) => (
-                <>
-                  <BreadcrumbItem key={segment} className="hidden md:block">
+                <React.Fragment key={`${segment}-${index}`}>
+                  <BreadcrumbItem className="hidden md:block">
                     {index === array.length - 1 ? (
                       <BreadcrumbPage>
                         {segment
@@ -58,7 +59,7 @@ export default function Header() {
                   {index < array.length - 1 && (
                     <BreadcrumbSeparator className="hidden md:block" />
                   )}
-                </>
+                </React.Fragment>
               ))}
           </BreadcrumbList>
         </Breadcrumb>

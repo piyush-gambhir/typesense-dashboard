@@ -28,18 +28,18 @@ export const useCollectionSearchOptions = ({
       try {
         const schemaResponse = await getCollection(collectionName);
 
-        if (schemaResponse?.fields) {
+        if (schemaResponse?.success && schemaResponse.data?.fields) {
           // Filter for sort fields
-          const sortFields = schemaResponse.fields
-            .filter((field) => field.sort === true)
-            .map((field) => ({
+          const sortFields = schemaResponse.data.fields
+            .filter((field: any) => field.sort === true)
+            .map((field: any) => ({
               label: `${field.name} (Ascending)`,
               value: `${field.name}:asc`,
             }))
             .concat(
-              schemaResponse.fields
-                .filter((field) => field.sort === true)
-                .map((field) => ({
+              schemaResponse.data.fields
+                .filter((field: any) => field.sort === true)
+                .map((field: any) => ({
                   label: `${field.name} (Descending)`,
                   value: `${field.name}:desc`,
                 })),
@@ -47,9 +47,9 @@ export const useCollectionSearchOptions = ({
           setSortFields(sortFields);
 
           // Filter for facet fields
-          const facetFields = schemaResponse.fields
-            .filter((field) => field.facet === true)
-            .map((field) => field.name);
+          const facetFields = schemaResponse.data.fields
+            .filter((field: any) => field.facet === true)
+            .map((field: any) => field.name);
 
           if (facetFields.length > 0) {
             fetchFacets(facetFields);

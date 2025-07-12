@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 import { getCollection } from '@/lib/typesense/collections';
-import { multiSearch } from '@/lib/typesense/documents';
+import { deleteDocument, multiSearch } from '@/lib/typesense/documents';
 
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryParams } from '@/hooks/useQueryParams';
@@ -196,50 +196,55 @@ export default function TypesenseSearch({
       try {
         const schemaResponse = await getCollection(collectionName);
 
-        const facetFields =
-          schemaResponse?.fields
-            ?.filter((field) => field.facet === true)
-            .map((field) => field.name) ?? [];
-        const indexFields =
-          schemaResponse?.fields
-            ?.filter(
-              (field) =>
-                field.index === true &&
-                (field.type === 'string' || field.type === 'string[]'),
-            )
-            .map((field) => field.name) ?? [];
+        // Handle the new collection data structure
+        if (schemaResponse?.success && schemaResponse?.data?.fields) {
+          const facetFields =
+            schemaResponse.data.fields
+              ?.filter((field) => field.facet === true)
+              .map((field) => field.name) ?? [];
+          const indexFields =
+            schemaResponse.data.fields
+              ?.filter(
+                (field) =>
+                  field.index === true &&
+                  (field.type === 'string' || field.type === 'string[]'),
+              )
+              .map((field) => field.name) ?? [];
 
-        const sortFields =
-          schemaResponse?.fields
-            ?.filter((field) => field.sort === true)
-            .map((field) => field.name) ?? [];
+          const sortFields =
+            schemaResponse.data.fields
+              ?.filter((field) => field.sort === true)
+              .map((field) => field.name) ?? [];
 
-        setCollectionSchema(schemaResponse);
-        setFacetFields(facetFields);
-        setIndexFields(indexFields);
-        setSortFields(sortFields);
-        setSortDropdownOptions(
-          sortFields.flatMap((field) => {
-            const words = field
-              .replace(/([A-Z])/g, ' $1')
-              .trim()
-              .split(' ');
-            const capitalizedWords = words.map(
-              (word) => word.charAt(0).toUpperCase() + word.slice(1),
-            );
-            const label = capitalizedWords.join(' ');
-            return [
-              {
-                label: `${label} (Ascending)`,
-                value: `${field}:asc`,
-              },
-              {
-                label: `${label} (Descending)`,
-                value: `${field}:desc`,
-              },
-            ];
-          }),
-        );
+          setCollectionSchema(schemaResponse.data);
+          setFacetFields(facetFields);
+          setIndexFields(indexFields);
+          setSortFields(sortFields);
+          setSortDropdownOptions(
+            sortFields.flatMap((field) => {
+              const words = field
+                .replace(/([A-Z])/g, ' $1')
+                .trim()
+                .split(' ');
+              const capitalizedWords = words.map(
+                (word) => word.charAt(0).toUpperCase() + word.slice(1),
+              );
+              const label = capitalizedWords.join(' ');
+              return [
+                {
+                  label: `${label} (Ascending)`,
+                  value: `${field}:asc`,
+                },
+                {
+                  label: `${label} (Descending)`,
+                  value: `${field}:desc`,
+                },
+              ];
+            }),
+          );
+        } else {
+          console.error('Failed to fetch collection schema:', schemaResponse?.error);
+        }
       } catch (error) {
         console.error('Error fetching schema:', error);
       }
@@ -298,6 +303,16 @@ export default function TypesenseSearch({
     setQueryParams({ ...queryParams, sortBy: value });
     setSortBy(value);
     setCurrentPage(1);
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    try {
+      await deleteDocument(collectionName, documentId);
+      // Refresh the search results after deletion
+      performMultiSearch();
+    } catch (error) {
+      console.error('Error deleting document:', error);
+    }
   };
 
   return (
@@ -384,7 +399,7 @@ export default function TypesenseSearch({
                         result={result}
                         collectionName={collectionName}
                         onEdit={() => {}}
-                        onDelete={() => {}}
+                        onDelete={handleDeleteDocument}
                       />
                     ))}
                   </div>

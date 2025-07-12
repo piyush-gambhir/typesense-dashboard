@@ -1,36 +1,35 @@
-'use server';
+import { getCollections as getTypesenseCollections } from '@/lib/typesense/collections';
+import { getTypesenseMetrics as getMetrics } from '@/lib/typesense/get-cluster-metrics';
 
-export const getClusterHealth = async ({
-  typesenseHost,
-  typesensePort,
-  typesenseProtocol,
-  typesenseApiKey,
-}: {
-  typesenseHost: string;
-  typesensePort: number;
-  typesenseProtocol: string;
-  typesenseApiKey: string;
-}) => {
-  try {
-    const url = `${typesenseProtocol}://${typesenseHost}:${typesensePort}/health`;
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${typesenseApiKey}`,
-      },
-    });
-
-    if (!response.ok) {
-      // Check if the response was unsuccessful
-      throw new Error(
-        `Failed to connect to Typesense server at ${url}: ${response.statusText}`,
-      );
+export async function getClusterHealth(
+    connectionParams?: {
+        typesenseHost: string;
+        typesensePort: number;
+        typesenseProtocol: string;
+        typesenseApiKey: string;
     }
+) {
+    try {
+        const params = connectionParams || {
+            typesenseHost: process.env.TYPESENSE_HOST ?? 'localhost',
+            typesensePort: parseInt(process.env.TYPESENSE_PORT ?? '8108'),
+            typesenseProtocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
+            typesenseApiKey: process.env.TYPESENSE_API_KEY ?? '',
+        };
 
-    await response.json();
+        const metrics = await getMetrics(params);
+        const collections = await getTypesenseCollections();
 
-    return { ok: true };
-  } catch (error) {
-    console.error(`Error connecting to Typesense server: ${error}`);
-    return { ok: false, error: String(error) };
-  }
-};
+        return {
+            ok: true,
+            metrics,
+            collections,
+        };
+    } catch (error) {
+        console.error('Error fetching cluster health:', error);
+        return {
+            ok: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}

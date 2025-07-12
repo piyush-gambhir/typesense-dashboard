@@ -75,6 +75,7 @@ export default function TypesenseServerMetrics({
   const [numCollections, setNumCollections] = useState<number | null>(null);
   const [numDocuments, setNumDocuments] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -88,6 +89,8 @@ export default function TypesenseServerMetrics({
           0,
         );
         setNumDocuments(totalDocs);
+      } else if (collections?.success === false) {
+        setError(`Failed to fetch collections: ${collections.error}`);
       }
 
       if (metrics) {
@@ -194,7 +197,25 @@ export default function TypesenseServerMetrics({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  if (!clusterMetrics) return null;
+  if (!clusterMetrics) {
+    return (
+      <div className="container mx-auto p-4">
+        <Card className="border-none shadow-none">
+          <CardHeader>
+            <CardTitle>Typesense Server Status & Metrics</CardTitle>
+            <CardDescription>
+              Loading server metrics...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-center items-center h-64">
+              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container h-full overflow-hidden mx-auto">
@@ -255,10 +276,14 @@ export default function TypesenseServerMetrics({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {clusterMetrics.cpuUsage.total?.toFixed(2)}%
+                  {Object.values(clusterMetrics.cpuUsage).length > 0
+                    ? (Object.values(clusterMetrics.cpuUsage).reduce((a: number, b: number) => a + b, 0) / Object.values(clusterMetrics.cpuUsage).length).toFixed(2)
+                    : 0}%
                 </div>
                 <Progress
-                  value={clusterMetrics.cpuUsage.total || 0}
+                  value={Object.values(clusterMetrics.cpuUsage).length > 0
+                    ? Object.values(clusterMetrics.cpuUsage).reduce((a: number, b: number) => a + b, 0) / Object.values(clusterMetrics.cpuUsage).length
+                    : 0}
                   className="mt-2"
                 />
               </CardContent>
@@ -327,9 +352,15 @@ export default function TypesenseServerMetrics({
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button onClick={() => window.location.reload()} disabled={false}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh Metrics
+          <Button 
+            onClick={() => {
+              setIsLoading(true);
+              router.refresh();
+            }} 
+            disabled={isLoading}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            {isLoading ? 'Refreshing...' : 'Refresh Metrics'}
           </Button>
           <p className="text-sm text-muted-foreground">
             Last updated: {new Date().toLocaleTimeString()}

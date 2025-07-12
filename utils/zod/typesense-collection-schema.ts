@@ -6,6 +6,6 @@ export const typesenseConnectionSchema = z.object({
     .string()
     .min(1, 'Port is required')
     .regex(/^\d+$/, 'Port must be a number'),
-  protocol: z.string().min(1, 'Protocol is required'),
+  protocol: z.enum(['http', 'https']),
   apiKey: z.string().min(1, 'API Key is required'),
 });
