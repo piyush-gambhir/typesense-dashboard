@@ -1,95 +1,87 @@
 // Collections
 export {
-  getCollections,
-  getCollection,
-  createCollection,
-  updateCollection,
-  deleteCollection,
-  listDocuments,
-  exportCollection,
-  importCollection,
-  createCollectionWithJsonl,
-  type importAction
+    getCollections,
+    getCollection,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    listDocuments,
+    exportCollection,
+    importCollection,
+    createCollectionWithJsonl,
+    type importAction,
 } from './collections';
 
 // Documents
 export {
-  multiSearch,
-  createDocument,
-  getDocumentById,
-  updateDocument,
-  deleteDocument,
-  deleteDocumentsByQuery,
-  upsertDocument,
-  searchDocuments
+    multiSearch,
+    createDocument,
+    getDocumentById,
+    updateDocument,
+    deleteDocument,
+    deleteDocumentsByQuery,
+    upsertDocument,
+    searchDocuments,
 } from './documents';
 
 // API Keys
 export {
-  createApiKey,
-  retrieveApiKeyById,
-  listApiKeys,
-  deleteApiKey
+    createApiKey,
+    retrieveApiKeyById,
+    listApiKeys,
+    deleteApiKey,
 } from './api-keys';
 
 // Aliases
-export {
-  listAliases,
-  createAlias,
-  deleteAlias
-} from './aliases';
+export { listAliases, createAlias, deleteAlias } from './aliases';
 
 // Analytics Rules
 export {
-  listAnalyticsRules,
-  createAnalyticsRule,
-  deleteAnalyticsRule
+    listAnalyticsRules,
+    createAnalyticsRule,
+    deleteAnalyticsRule,
 } from './analytics-rules';
 
 // Search Overrides
 export {
-  listSearchOverrides,
-  createSearchOverride,
-  deleteSearchOverride
+    listSearchOverrides,
+    createSearchOverride,
+    deleteSearchOverride,
 } from './search-overrides';
 
 // Stopwords
-export {
-  listStopwords,
-  upsertStopwords,
-  deleteStopwords
-} from './stopwords';
+export { listStopwords, upsertStopwords, deleteStopwords } from './stopwords';
 
 // Natural Language Search
 export {
-  createNLSearchModel,
-  listNLSearchModels,
-  getNLSearchModel,
-  updateNLSearchModel,
-  deleteNLSearchModel,
-  naturalLanguageSearch,
-  getAvailableModelTypes,
-  getDefaultSystemPrompts
+    createNLSearchModel,
+    listNLSearchModels,
+    getNLSearchModel,
+    updateNLSearchModel,
+    deleteNLSearchModel,
+    naturalLanguageSearch,
+    getAvailableModelTypes,
+    getDefaultSystemPrompts,
 } from './nl-search-models';
 
 // Conversations
 export {
-  createConversation,
-  listConversations,
-  getConversation,
-  updateConversation,
-  deleteConversation,
-  conversationSearch,
-  addMessageToConversation,
-  getConversationMessages,
-  clearConversationHistory,
-  exportConversation,
-  type Conversation,
-  type ConversationMessage,
-  type CreateConversationRequest,
-  type UpdateConversationRequest,
-  type ConversationSearchRequest,
-  type ConversationSearchResponse
+    createConversation,
+    listConversations,
+    getConversation,
+    updateConversation,
+    deleteConversation,
+    conversationSearch,
+    addMessageToConversation,
+    getConversationMessages,
+    clearConversationHistory,
+    exportConversation,
+    type Conversation,
+    type ConversationMessage,
+    type CreateConversationRequest,
+    type UpdateConversationRequest,
+    type ConversationSearchRequest,
+    type ConversationSearchResponse,
 } from './conversations';
 
 // Cluster Health & Metrics

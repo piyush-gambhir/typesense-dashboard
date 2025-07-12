@@ -68,8 +68,8 @@ npm install
 ```
 
 3. **Configure Typesense**:
-   - Ensure you have a running **Typesense** instance.
-   - Create a `.env.local` file in the root directory and configure your Typesense settings:
+    - Ensure you have a running **Typesense** instance.
+    - Create a `.env.local` file in the root directory and configure your Typesense settings:
 
 ```bash
 NEXT_PUBLIC_TYPESENSE_HOST=localhost
@@ -99,18 +99,18 @@ This dashboard interacts with a Typesense instance to perform search and collect
 #### **Client Setup Example**:
 
 ```ts
-import Typesense from "typesense";
+import Typesense from 'typesense';
 
 const typesenseClient = new Typesense.Client({
-  nodes: [
-    {
-      host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
-      port: Number(process.env.NEXT_PUBLIC_TYPESENSE_PORT),
-      protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL,
-    },
-  ],
-  apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY,
-  connectionTimeoutSeconds: 2,
+    nodes: [
+        {
+            host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+            port: Number(process.env.NEXT_PUBLIC_TYPESENSE_PORT),
+            protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL,
+        },
+    ],
+    apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY,
+    connectionTimeoutSeconds: 2,
 });
 
 export default typesenseClient;

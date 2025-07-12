@@ -1,3 +1,3 @@
 export default function GeneralSettings() {
-  return <div>General Settings</div>;
+    return <div>General Settings</div>;
 }

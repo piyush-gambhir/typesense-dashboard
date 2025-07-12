@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 **Primary Commands:**
+
 - `npm run dev` - Start development server with Turbopack (faster builds)
 - `npm run build` - Build for production with Turbopack
 - `npm run start` - Start production server
@@ -19,18 +20,21 @@ This is a **Next.js 15** dashboard application built with **TypeScript** that pr
 ### Core Architecture Patterns
 
 **1. App Router Structure:**
+
 - `/app/(app)/` - Main authenticated application routes with shared layout
 - `/app/layout.tsx` - Root layout with theme providers
 - `/app/(app)/layout.tsx` - Dashboard layout with sidebar and header
 - Routes are organized by feature: `/collections/`, `/documents/`, `/search/`, `/metrics/`, etc.
 
 **2. Component Organization:**
+
 - `/components/features/` - Feature-specific components organized by domain
 - `/components/ui/` - Shadcn/ui reusable UI components (buttons, cards, forms, etc.)
 - `/components/layout/` - Layout components (header, footer, breadcrumbs)
 - `/components/sidebar/` - Sidebar navigation components
 
 **3. Typesense Integration Layer:**
+
 - `/lib/typesense/` - **Centralized Typesense functions** (consolidated from actions)
 - `/lib/typesense/typesense-client.ts` - Main Typesense client configuration
 - `/lib/typesense/index.ts` - Export barrel for easy imports
@@ -39,21 +43,25 @@ This is a **Next.js 15** dashboard application built with **TypeScript** that pr
 ### Key Architectural Decisions
 
 **Typesense Client:**
+
 - Single client instance in `/lib/typesense/typesense-client.ts`
 - Environment variables: `TYPESENSE_HOST`, `TYPESENSE_PORT`, `TYPESENSE_PROTOCOL`, `TYPESENSE_API_KEY`
 - 60-second connection timeout for stability
 - All functions return standardized `{success, data, error}` patterns where applicable
 
 **State Management:**
+
 - React Server Components for data fetching (collections loaded in layout)
 - Client-side state with React hooks and local storage utilities
 - Theme management via `next-themes` with system preference detection
 
 **Form Handling:**
+
 - React Hook Form with Zod validation throughout the application
 - Consistent form patterns in `/components/features/` components
 
 **UI Framework:**
+
 - Shadcn/ui components built on Radix UI primitives
 - Tailwind CSS for styling with custom design system
 - Responsive design with mobile-first approach
@@ -61,9 +69,10 @@ This is a **Next.js 15** dashboard application built with **TypeScript** that pr
 ## Environment Configuration
 
 Required environment variables:
+
 ```
 TYPESENSE_HOST=localhost
-TYPESENSE_PORT=8108  
+TYPESENSE_PORT=8108
 TYPESENSE_PROTOCOL=http
 TYPESENSE_API_KEY=xyz
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -81,8 +90,9 @@ The `/lib/typesense/` directory contains comprehensive Typesense functionality:
 **Management:** API keys, cluster health, metrics monitoring
 
 **Import Pattern:**
+
 ```typescript
-import { getCollections, createDocument, multiSearch } from '@/lib/typesense';
+import { createDocument, getCollections, multiSearch } from '@/lib/typesense';
 ```
 
 ## File Organization Principles

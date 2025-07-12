@@ -1,35 +1,33 @@
 {
-  "tabWidth": 4,
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "bracketSameLine": false,
-  "tailwindFunctions": ["clsx"],
-  "plugins": [
-    "prettier-plugin-tailwindcss",
-    "@trivago/prettier-plugin-sort-imports"
-  ],
-  "importOrder": [
-    "^[a-zA-Z]",
-    "^@core/(.*)$",
-    "^@server/(.*)$",
-    "^@/env/(.*)$",
-    "^@/auth/(.*)$",
-    "^@ui/(.*)$",
-    "^@/actions/(.*)$",
-    "^@/atoms/(.*)$",
-    "^@/context/(.*)$",
-    "^@/helpers/(.*)$",
-    "^@/lib/(.*)$",
-    "^@/utils/(.*)$",
-    "^@/hooks/(.*)$",
-    "^@/components/ui/(.*)$",
-    "^@/components/(.*)$",
-    "^[./]"
-  ],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "tailwindFunctions": ["clsx"],
+    "plugins": [
+        "prettier-plugin-tailwindcss",
+        "@trivago/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+        "^[a-zA-Z]",
+        "^@core/(.*)$",
+        "^@server/(.*)$",
+        "^@/env/(.*)$",
+        "^@/auth/(.*)$",
+        "^@ui/(.*)$",
+        "^@/actions/(.*)$",
+        "^@/atoms/(.*)$",
+        "^@/context/(.*)$",
+        "^@/helpers/(.*)$",
+        "^@/lib/(.*)$",
+        "^@/utils/(.*)$",
+        "^@/hooks/(.*)$",
+        "^@/components/ui/(.*)$",
+        "^@/components/(.*)$",
+        "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
 }
-
-
