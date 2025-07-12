@@ -22,6 +22,7 @@ import {
 
 import PaginationComponent from '@/components/common/Pagination';
 import DocumentCard from '@/components/features/documents/DocumentCard';
+import FacetDebugger from '@/components/features/search/FacetDebugger';
 import Filter from '@/components/features/search/SearchFilters';
 import SearchSkeleton from '@/components/features/search/SearchSkeleton';
 
@@ -387,30 +388,40 @@ export default function TypesenseSearch({
                     return;
                 }
 
-                // Only include facetBy if there are non-boolean facet fields
+                // Create a more robust facet query that ensures all facet fields are included
                 const baseQuery = {
                     collection: collectionName,
                     q: '*',
-                    queryBy:
-                        indexFields.length > 0 ? indexFields.join(',') : '*', // Use * if no string fields available
-                    maxFacetValues: 10,
+                    queryBy: '*', // Use * to ensure we get all documents for facet counting
+                    maxFacetValues: 50, // Increase max facet values to get more options
                     perPage: 0,
                 };
 
-                // Only add facetBy if we have non-boolean facet fields
+                // Always include facetBy if we have any facet fields
                 const queries = [
-                    nonBooleanFacetFields.length > 0
-                        ? {
-                              ...baseQuery,
-                              facetBy: nonBooleanFacetFields.join(','),
-                          }
-                        : baseQuery,
+                    {
+                        ...baseQuery,
+                        facetBy: facetFields.join(','),
+                    },
                 ];
 
                 console.log('[fetchFacets] Debug info:', {
+                    facetFields,
                     nonBooleanFacetFields,
-                    facetByString: nonBooleanFacetFields.join(','),
+                    facetByString: facetFields.join(','),
                     query: queries[0],
+                    // Add specific debugging for int fields
+                    intFields: facetFields.filter((field) => {
+                        const fieldInfo = collectionSchema?.fields?.find(
+                            (f) => f.name === field,
+                        );
+                        return (
+                            fieldInfo &&
+                            ['int32', 'int64', 'float', 'double'].includes(
+                                fieldInfo.type,
+                            )
+                        );
+                    }),
                 });
 
                 const response = await multiSearch({
@@ -441,11 +452,36 @@ export default function TypesenseSearch({
 
                         const facetCounts =
                             documentsResponse.facet_counts as FacetCount[];
+
+                        // Add debugging for facet counts
+                        console.log('[fetchFacets] facet_counts:', facetCounts);
+
                         const newFacetValues = facetCounts.reduce(
                             (
                                 acc: Record<string, FacetValue[]>,
                                 facet: FacetCount,
                             ) => {
+                                // Add debugging for each facet field
+                                const fieldInfo =
+                                    collectionSchema?.fields?.find(
+                                        (f) => f.name === facet.field_name,
+                                    );
+                                console.log(
+                                    `[fetchFacets] Processing facet field: ${facet.field_name}`,
+                                    {
+                                        fieldType: fieldInfo?.type,
+                                        counts: facet.counts,
+                                        isIntField:
+                                            fieldInfo &&
+                                            [
+                                                'int32',
+                                                'int64',
+                                                'float',
+                                                'double',
+                                            ].includes(fieldInfo.type),
+                                    },
+                                );
+
                                 acc[facet.field_name] =
                                     facet.counts?.map((count) => {
                                         // Convert string values to appropriate types for boolean fields
@@ -473,14 +509,26 @@ export default function TypesenseSearch({
                             },
                             {} as Record<string, FacetValue[]>,
                         );
+
+                        console.log(
+                            '[fetchFacets] Processed facet values:',
+                            newFacetValues,
+                        );
                         setFacetValues(newFacetValues);
 
                         // Add boolean facets separately
                         addBooleanFacets();
+
+                        // Add fallback for int fields that might not have facet values
+                        addIntFieldFallbacks(newFacetValues);
                     } else {
                         // No facet counts from API, but still add boolean facets
+                        console.log(
+                            '[fetchFacets] No facet_counts in response',
+                        );
                         setFacetValues({});
                         addBooleanFacets();
+                        addIntFieldFallbacks({});
                     }
                 } else {
                     console.error(
@@ -489,11 +537,13 @@ export default function TypesenseSearch({
                     );
                     setFacetValues({});
                     addBooleanFacets();
+                    addIntFieldFallbacks({});
                 }
             } catch (error) {
                 console.error('Error fetching facet values:', error);
                 setFacetValues({});
                 addBooleanFacets();
+                addIntFieldFallbacks({});
             } finally {
                 setLoadingFilters(false);
             }
@@ -529,13 +579,52 @@ export default function TypesenseSearch({
             setFacetValues((prev) => ({ ...prev, ...booleanFacets }));
         };
 
-        if (facetFields.length > 0 && indexFields.length > 0) {
+        const addIntFieldFallbacks = (
+            existingFacetValues: Record<string, FacetValue[]>,
+        ) => {
+            if (!collectionSchema?.fields) return;
+
+            const intFields = (
+                Array.isArray(collectionSchema.fields)
+                    ? collectionSchema.fields
+                    : []
+            ).filter(
+                (field) =>
+                    field.facet === true &&
+                    ['int32', 'int64', 'float', 'double'].includes(
+                        field.type,
+                    ) &&
+                    !existingFacetValues[field.name],
+            );
+
+            console.log(
+                '[addIntFieldFallbacks] Int fields without facet values:',
+                intFields.map((f) => f.name),
+            );
+
+            if (intFields.length > 0) {
+                const intFieldFallbacks: Record<string, FacetValue[]> = {};
+                intFields.forEach((field) => {
+                    intFieldFallbacks[field.name] = [
+                        { value: 0, count: 0 }, // Add a placeholder value
+                    ];
+                });
+
+                console.log(
+                    '[addIntFieldFallbacks] Adding fallback values:',
+                    intFieldFallbacks,
+                );
+                setFacetValues((prev) => ({ ...prev, ...intFieldFallbacks }));
+            }
+        };
+
+        if (facetFields.length > 0) {
             fetchFacets();
         } else {
             setLoadingFilters(false);
             setFacetValues({});
         }
-    }, [facetFields, collectionName, indexFields]);
+    }, [facetFields, collectionName, collectionSchema]);
 
     useEffect(() => {
         const fetchSchema = async () => {
@@ -932,6 +1021,7 @@ export default function TypesenseSearch({
                                 <Filter
                                     collectionSchema={collectionSchema}
                                     facetValues={facetValues}
+                                    singleColumn={true}
                                     filterBy={(() => {
                                         const filterMap: Record<
                                             string,
@@ -1057,47 +1147,80 @@ export default function TypesenseSearch({
                                 </Select>
                             </div>
 
-                            {loadingDocuments ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                                        <Card
-                                            key={i}
-                                            className="w-full flex flex-col justify-between"
-                                        >
-                                            <CardContent className="p-6">
-                                                <div className="space-y-4">
-                                                    <div className="mb-4">
-                                                        <div className="h-4 w-16 mb-2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                    </div>
-                                                    {[1, 2, 3].map((j) => (
-                                                        <div
-                                                            key={j}
-                                                            className="mb-4"
-                                                        >
-                                                            <div className="h-4 w-20 mb-2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                            <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </CardContent>
-                                            <CardContent className="pt-4 border-t">
-                                                <div className="flex justify-end space-x-2">
-                                                    <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                    <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
-                            ) : (
-                                <>
-                                    {searchResults.length === 0 ? (
-                                        <div className="text-center text-gray-500 py-8">
-                                            No documents found.
+                            {/* Search Results */}
+                            <div className="space-y-4">
+                                {/* Debugger - temporarily add for debugging */}
+                                <FacetDebugger
+                                    collectionSchema={collectionSchema}
+                                    facetValues={facetValues}
+                                    facetFields={facetFields}
+                                    nonBooleanFacetFields={
+                                        nonBooleanFacetFields
+                                    }
+                                />
+
+                                {loadingDocuments ? (
+                                    <SearchSkeleton />
+                                ) : error ? (
+                                    <Alert>
+                                        <AlertDescription>
+                                            {error}
+                                        </AlertDescription>
+                                    </Alert>
+                                ) : searchResults.length === 0 ? (
+                                    <Card>
+                                        <CardContent className="p-8 text-center">
+                                            <p className="text-muted-foreground">
+                                                No documents found matching your
+                                                search criteria.
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm text-muted-foreground">
+                                                Found {totalResults} document
+                                                {totalResults !== 1 ? 's' : ''}
+                                            </p>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-sm text-muted-foreground">
+                                                    Show:
+                                                </span>
+                                                <Select
+                                                    value={String(perPage)}
+                                                    onValueChange={(value) =>
+                                                        handlePerPageChange(
+                                                            parseInt(value),
+                                                        )
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-20">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {countDropdownOptions.map(
+                                                            (option) => (
+                                                                <SelectItem
+                                                                    key={
+                                                                        option.value
+                                                                    }
+                                                                    value={String(
+                                                                        option.value,
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        option.value
+                                                                    }
+                                                                </SelectItem>
+                                                            ),
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
                                         </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                                        <div className="grid gap-4">
                                             {searchResults.map((result) => (
                                                 <DocumentCard
                                                     key={result.id}
@@ -1105,24 +1228,23 @@ export default function TypesenseSearch({
                                                     collectionName={
                                                         collectionName
                                                     }
-                                                    onEdit={() => {}}
                                                     onDelete={
                                                         handleDeleteDocument
                                                     }
                                                 />
                                             ))}
                                         </div>
-                                    )}
 
-                                    {totalResults > 0 && (
-                                        <PaginationComponent
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            onPageChange={handlePageChange}
-                                        />
-                                    )}
-                                </>
-                            )}
+                                        {totalPages > 1 && (
+                                            <PaginationComponent
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                onPageChange={handlePageChange}
+                                            />
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </CardContent>

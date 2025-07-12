@@ -56,7 +56,7 @@ export default function ConnectionErrorPage() {
                 </div>
 
                 {/* Main Error Card */}
-                <Card className="border-none">
+                <Card className="border-none shadow-none">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-destructive" />

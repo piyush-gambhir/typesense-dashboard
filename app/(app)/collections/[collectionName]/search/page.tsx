@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NLSearchWrapper from '@/components/features/search/NLSearchWrapper';
+import TypesenseSearch from '@/components/features/search/TypesenseSearch';
 
 export default async function page({
     params,
@@ -10,5 +10,5 @@ export default async function page({
 }) {
     const { collectionName } = await params;
 
-    return <NLSearchWrapper collectionName={collectionName} />;
+    return <TypesenseSearch collectionName={collectionName} />;
 }

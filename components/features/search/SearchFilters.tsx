@@ -41,6 +41,7 @@ interface FilterProps {
         checked: boolean,
     ) => void;
     onClearFilters: () => void;
+    singleColumn?: boolean;
 }
 
 const Filter = ({
@@ -49,6 +50,7 @@ const Filter = ({
     filterBy,
     onFilterChange,
     onClearFilters,
+    singleColumn,
 }: Readonly<FilterProps>) => {
     const [openPopovers, setOpenPopovers] = useState<Record<string, boolean>>(
         {},
@@ -56,6 +58,18 @@ const Filter = ({
     const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
         {},
     );
+
+    // Add debugging for component props
+    console.log('[SearchFilters] Component props:', {
+        facetValuesKeys: Object.keys(facetValues),
+        facetValuesCount: Object.keys(facetValues).length,
+        collectionSchemaFields: collectionSchema?.fields?.map((f) => ({
+            name: f.name,
+            type: f.type,
+            facet: f.facet,
+        })),
+        filterByKeys: Object.keys(filterBy),
+    });
 
     const formatFieldLabel = (field: string): string => {
         return field
@@ -310,14 +324,30 @@ const Filter = ({
     };
 
     const renderNumberFilter = (field: string, values: FacetValue[]) => {
-        // Filter out non-numeric values
-        const numericValues = values
-            .map((v) => Number(v.value))
-            .filter((v) => !isNaN(v));
+        console.log(
+            `[renderNumberFilter] Starting to render number filter for field: ${field}`,
+            {
+                values,
+                fieldType: getFieldType(field),
+            },
+        );
 
-        if (numericValues.length === 0) {
+        // Don't filter out values - let all values through and let the UI handle them
+        // This ensures we don't accidentally hide valid int field values
+        if (values.length === 0) {
+            console.log(
+                `[renderNumberFilter] No values found for field: ${field}`,
+            );
             return null;
         }
+
+        console.log(
+            `[renderNumberFilter] Rendering number filter for field: ${field}`,
+            {
+                values,
+                fieldType: getFieldType(field),
+            },
+        );
 
         // For number filters, show the values as multi-select like strings
         return renderMultiSelectFilter(field, values);
@@ -368,11 +398,26 @@ const Filter = ({
             )}
 
             {/* Filter sections */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+                className={`grid gap-4 ${singleColumn ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
+            >
                 {Object.entries(facetValues).map(([field, values]) => {
                     if (values.length === 0) return null; // Don't render if there are no options
 
                     const fieldType = getFieldType(field);
+
+                    // Add debugging for field rendering
+                    console.log(`[SearchFilters] Rendering field: ${field}`, {
+                        fieldType,
+                        valuesCount: values.length,
+                        values: values.slice(0, 3), // Show first 3 values for debugging
+                        isIntField: [
+                            'float',
+                            'int32',
+                            'int64',
+                            'double',
+                        ].includes(fieldType),
+                    });
 
                     return (
                         <div key={field} className="w-full">
