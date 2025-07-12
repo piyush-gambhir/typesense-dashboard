@@ -19,7 +19,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
 
 interface FacetValue {
     value: string | number | boolean;
@@ -264,7 +263,9 @@ const Filter = ({
                                     ? 'bg-primary border-primary'
                                     : 'border-gray-300'
                             } flex items-center justify-center cursor-pointer`}
-                            onClick={() => onFilterChange(field, true, !isTrueSelected)}
+                            onClick={() =>
+                                onFilterChange(field, true, !isTrueSelected)
+                            }
                         >
                             {isTrueSelected && (
                                 <div className="w-2 h-2 bg-white rounded-sm" />
@@ -272,7 +273,9 @@ const Filter = ({
                         </div>
                         <Label
                             className="text-sm cursor-pointer"
-                            onClick={() => onFilterChange(field, true, !isTrueSelected)}
+                            onClick={() =>
+                                onFilterChange(field, true, !isTrueSelected)
+                            }
                         >
                             True
                         </Label>
@@ -284,7 +287,9 @@ const Filter = ({
                                     ? 'bg-primary border-primary'
                                     : 'border-gray-300'
                             } flex items-center justify-center cursor-pointer`}
-                            onClick={() => onFilterChange(field, false, !isFalseSelected)}
+                            onClick={() =>
+                                onFilterChange(field, false, !isFalseSelected)
+                            }
                         >
                             {isFalseSelected && (
                                 <div className="w-2 h-2 bg-white rounded-sm" />
@@ -292,7 +297,9 @@ const Filter = ({
                         </div>
                         <Label
                             className="text-sm cursor-pointer"
-                            onClick={() => onFilterChange(field, false, !isFalseSelected)}
+                            onClick={() =>
+                                onFilterChange(field, false, !isFalseSelected)
+                            }
                         >
                             False
                         </Label>
@@ -361,22 +368,25 @@ const Filter = ({
             )}
 
             {/* Filter sections */}
-            {Object.entries(facetValues).map(([field, values]) => {
-                if (values.length === 0) return null; // Don't render if there are no options
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(facetValues).map(([field, values]) => {
+                    if (values.length === 0) return null; // Don't render if there are no options
 
-                const fieldType = getFieldType(field);
+                    const fieldType = getFieldType(field);
 
-                return (
-                    <div key={field}>
-                        {(fieldType === 'string' || fieldType === 'string[]') &&
-                            renderMultiSelectFilter(field, values)}
-                        {fieldType === 'bool' && renderBooleanFilter(field)}
-                        {['float', 'int32', 'int64', 'double'].includes(
-                            fieldType,
-                        ) && renderNumberFilter(field, values)}
-                    </div>
-                );
-            })}
+                    return (
+                        <div key={field} className="w-full">
+                            {(fieldType === 'string' ||
+                                fieldType === 'string[]') &&
+                                renderMultiSelectFilter(field, values)}
+                            {fieldType === 'bool' && renderBooleanFilter(field)}
+                            {['float', 'int32', 'int64', 'double'].includes(
+                                fieldType,
+                            ) && renderNumberFilter(field, values)}
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };
