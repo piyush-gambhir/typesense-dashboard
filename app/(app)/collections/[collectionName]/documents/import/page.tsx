@@ -1,11 +1,12 @@
 import React from 'react';
 
-import ImportDocuments from '@/components/documents/ImportDocuments';
+import ImportDocuments from '@/components/features/documents/ImportDocuments';
 
-export default function page({
-  params: { collectionName },
+export default async function page({
+    params,
 }: {
-  params: { collectionName: string };
+    params: Promise<{ collectionName: string }>;
 }) {
-  return <ImportDocuments collectionName={collectionName} />;
+    const { collectionName } = await params;
+    return <ImportDocuments collectionName={collectionName} />;
 }

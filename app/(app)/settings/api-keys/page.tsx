@@ -1,10 +1,20 @@
 import React from 'react';
 
-import { getApiKeys } from '@/lib/typesense/api-keys';
+import { listApiKeys } from '@/lib/typesense/api-keys';
 
-import TypesenseApiSettings from '@/components/TypesenseApiSettings';
+import TypesenseApiSettings from '@/components/features/settings/TypesenseApiSettings';
 
 export default async function page() {
-  const apiKeys = await getApiKeys();
-  return <TypesenseApiSettings initialApiKeys={apiKeys ?? []} />;
+    const apiKeysResponse = await listApiKeys();
+
+    // Convert the response to the expected format
+    const apiKeys = (apiKeysResponse?.keys || []).map((key) => ({
+        id: key.id,
+        description: key.description || '',
+        actions: key.actions,
+        collections: key.collections,
+        value: key.value,
+    }));
+
+    return <TypesenseApiSettings initialApiKeys={apiKeys} />;
 }

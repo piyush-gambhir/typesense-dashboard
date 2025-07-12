@@ -1,11 +1,12 @@
 import React from 'react';
 
-import ExportDocuments from '@/components/documents/ExportDocuments';
+import ExportDocuments from '@/components/features/documents/ExportDocuments';
 
-export default function page({
-  params,
+export default async function page({
+    params,
 }: {
-  params: { collectionName: string };
+    params: Promise<{ collectionName: string }>;
 }) {
-  return <ExportDocuments collectionName={params.collectionName} />;
+    const { collectionName } = await params;
+    return <ExportDocuments collectionName={collectionName} />;
 }

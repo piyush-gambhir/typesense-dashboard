@@ -1,3 +1,5 @@
-export default function GeneralSettings() {
-  return <div>General Settings</div>;
+import Aliases from '@/components/features/analytics/Aliases';
+
+export default function AliasesPage() {
+    return <Aliases />;
 }

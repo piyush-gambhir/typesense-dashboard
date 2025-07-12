@@ -1,3 +1,5 @@
-export default function GeneralSettings() {
-  return <div>General Settings</div>;
+import AnalyticsRules from '@/components/features/analytics/AnalyticsRules';
+
+export default function AnalyticsRulesPage() {
+    return <AnalyticsRules />;
 }

@@ -1,7 +1,6 @@
 // Local fonts
-import { NeueMontreal } from "./localFonts";
-
 // Google fonts
-import { Inter, Poppins, BebasNeue, Roboto } from "./googleFonts";
+import { BebasNeue, Inter, Poppins, Roboto } from './googleFonts';
+import { NeueMontreal } from './localFonts';
 
 export { NeueMontreal, Inter, Poppins, Roboto, BebasNeue };

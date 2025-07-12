@@ -2,10 +2,10 @@ import React from 'react';
 
 import { getCollections } from '@/lib/typesense/collections';
 
-import TypesenseCollections from '@/components/collections/TypesenseCollections';
+import TypesenseCollections from '@/components/features/collections/TypesenseCollections';
 
 export default async function page() {
-  const collections = await getCollections();
+    const collectionsResult = await getCollections();
 
-  return <TypesenseCollections collections={collections ?? []} />;
+    return <TypesenseCollections collections={collectionsResult.data || []} />;
 }

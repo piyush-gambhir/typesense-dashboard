@@ -1,24 +1,24 @@
-import type { Metadata } from "next";
+import { Providers } from '@/providers/Providers';
 
-import "./globals.css";
+import type { Metadata } from 'next';
 
-import { Providers } from "@/providers/Providers";
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Typesese Dashboard",
-  description: "Typesese Dashboard",
+    title: 'Typesese Dashboard',
+    description: 'Typesese Dashboard',
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={`antialiased`}>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body className={`antialiased`} suppressHydrationWarning>
+                <Providers>{children}</Providers>
+            </body>
+        </html>
+    );
 }

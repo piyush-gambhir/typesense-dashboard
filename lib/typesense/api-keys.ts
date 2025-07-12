@@ -1,53 +1,45 @@
 import typesenseClient from '@/lib/typesense/typesense-client';
 
-// Retrieve all API keys
-export async function getApiKeys() {
-  try {
-    const apiKeys = await typesenseClient.keys().retrieve();
-    return apiKeys;
-  } catch (error) {
-    console.error('Error fetching API keys:', error);
-    return null;
-  }
-}
-
-// Retrieve a specific API key by its ID
-export async function getApiKeyById(apiKeyId: string) {
-  try {
-    const apiKey = await typesenseClient.keys(Number(apiKeyId)).retrieve();
-    return apiKey;
-  } catch (error) {
-    console.error(`Error fetching API key "${apiKeyId}":`, error);
-    return null;
-  }
-}
-
-// Create a new API key
 export async function createApiKey(
-  description: string,
-  actions: string[],
-  collections: string[],
+    description: string,
+    actions: string[],
+    collections: string[],
 ) {
-  try {
-    const newApiKey = await typesenseClient.keys().create({
-      description,
-      actions,
-      collections,
-    });
-    return newApiKey;
-  } catch (error) {
-    console.error('Error creating API key:', error);
-    return null;
-  }
+    try {
+        return await typesenseClient.keys().create({
+            description,
+            actions,
+            collections,
+        });
+    } catch (error) {
+        console.error('Error creating API key:', error);
+        throw error;
+    }
 }
 
-// Delete an API key by its ID
-export async function deleteApiKey(apiKeyId: string) {
-  try {
-    const deleteResult = await typesenseClient.keys(Number(apiKeyId)).delete();
-    return deleteResult;
-  } catch (error) {
-    console.error(`Error deleting API key "${apiKeyId}":`, error);
-    return null;
-  }
+export async function retrieveApiKeyById(keyId: number) {
+    try {
+        return await typesenseClient.keys(keyId).retrieve();
+    } catch (error) {
+        console.error('Error retrieving API key:', error);
+        throw error;
+    }
+}
+
+export async function listApiKeys() {
+    try {
+        return await typesenseClient.keys().retrieve();
+    } catch (error) {
+        console.error('Error listing API keys:', error);
+        throw error;
+    }
+}
+
+export async function deleteApiKey(keyId: number) {
+    try {
+        return await typesenseClient.keys(keyId).delete();
+    } catch (error) {
+        console.error('Error deleting API key:', error);
+        throw error;
+    }
 }
