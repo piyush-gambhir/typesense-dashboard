@@ -388,13 +388,33 @@ export default function TypesenseSearch({
                     return;
                 }
 
-                // Create a more robust facet query that ensures all facet fields are included
+                // Build filter string for facets - use the same logic as performMultiSearch
+                const validFilters = debouncedFilterBy.filter((filter) => {
+                    if (!filter || filter.trim() === '') return false;
+
+                    // Validate filter format - should be field:=value
+                    if (!filter.includes(':=')) {
+                        console.warn(
+                            '[fetchFacets] Invalid filter format:',
+                            filter,
+                        );
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                const filterString = validFilters.join(' && ');
+
+                // Create a facet query that respects current search and filters
                 const baseQuery = {
                     collection: collectionName,
-                    q: '*',
-                    queryBy: '*', // Use * to ensure we get all documents for facet counting
+                    q: debouncedSearchQuery || '*',
+                    queryBy:
+                        indexFields.length > 0 ? indexFields.join(',') : '*',
                     maxFacetValues: 100, // Increase max facet values to get more options
                     perPage: 0,
+                    filterBy: filterString,
                 };
 
                 // Always include facetBy if we have any facet fields
@@ -665,7 +685,14 @@ export default function TypesenseSearch({
             setLoadingFilters(false);
             setFacetValues({});
         }
-    }, [facetFields, collectionName, collectionSchema]);
+    }, [
+        facetFields,
+        collectionName,
+        collectionSchema,
+        debouncedSearchQuery,
+        debouncedFilterBy,
+        indexFields,
+    ]);
 
     useEffect(() => {
         const fetchSchema = async () => {
@@ -1243,7 +1270,7 @@ export default function TypesenseSearch({
                                             </p>
                                         </div>
 
-                                        <div className="grid gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                             {searchResults.map((result) => (
                                                 <DocumentCard
                                                     key={result.id}
