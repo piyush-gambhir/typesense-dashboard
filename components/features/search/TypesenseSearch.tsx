@@ -11,21 +11,12 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-
-import PaginationComponent from '@/components/common/Pagination';
-import DocumentCard from '@/components/features/documents/DocumentCard';
 import FacetDebugger from '@/components/features/search/FacetDebugger';
 import Filter from '@/components/features/search/SearchFilters';
+import SearchBar from '@/components/features/search/SearchBar';
+import SearchErrorAlert from '@/components/features/search/SearchErrorAlert';
+import SearchOptionsPanel from '@/components/features/search/SearchOptionsPanel';
+import SearchResults from '@/components/features/search/SearchResults';
 import SearchSkeleton from '@/components/features/search/SearchSkeleton';
 
 interface FacetValue {
@@ -1035,270 +1026,214 @@ export default function TypesenseSearch({
     }
 
     return (
-        <div className="p-4 md:p-8 flex flex-col gap-y-4">
-            <Card className="border-none shadow-none">
-                <CardContent>
-                    {error && (
-                        <Alert className="mb-4">
-                            <AlertDescription className="flex items-center justify-between">
-                                <span>{error}</span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setError(null);
-                                        performMultiSearch();
-                                    }}
-                                >
-                                    Retry
-                                </Button>
-                            </AlertDescription>
-                        </Alert>
-                    )}
-
-                    {/* Search Bar */}
-                    <div className="mb-6">
-                        <div className="flex gap-2">
-                            <Input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search documents..."
-                                className="flex-1"
-                            />
-                        </div>
+        <div className="container mx-auto px-4 py-8 space-y-8">
+            {/* Header Section */}
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-bold tracking-tight">Search Documents</h1>
+                        <p className="text-muted-foreground">
+                            Search and filter documents in the {collectionName} collection
+                        </p>
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-12">
-                        <div className="col-span-1">
-                            {loadingFilters ? (
-                                <div className="space-y-6">
-                                    {[1, 2, 3].map((i) => (
-                                        <div
-                                            key={i}
-                                            className="border-b last:border-b-0 pb-4"
-                                        >
-                                            <div className="h-6 w-32 mb-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                            <div className="space-y-3">
-                                                {[1, 2, 3, 4].map((j) => (
-                                                    <div
-                                                        key={j}
-                                                        className="flex items-center space-x-2"
-                                                    >
-                                                        <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                        <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                        <div className="h-4 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <Filter
-                                    collectionSchema={collectionSchema}
-                                    facetValues={facetValues}
-                                    singleColumn={true}
-                                    filterBy={(() => {
-                                        const filterMap: Record<
-                                            string,
-                                            (string | number | boolean)[]
-                                        > = {};
-                                        filterBy.forEach((filter) => {
-                                            if (filter) {
-                                                let field: string,
-                                                    value: string;
-
-                                                // Now all filters use the := format
-                                                if (filter.includes(':=')) {
-                                                    // Use indexOf to find the first occurrence and split properly
-                                                    const separatorIndex =
-                                                        filter.indexOf(':=');
-                                                    field = filter.substring(
-                                                        0,
-                                                        separatorIndex,
-                                                    );
-                                                    value = filter.substring(
-                                                        separatorIndex + 2,
-                                                    );
-                                                } else {
-                                                    return; // Skip invalid filters
-                                                }
-
-                                                if (
-                                                    field &&
-                                                    value !== undefined
-                                                ) {
-                                                    // Convert string values back to their original types
-                                                    let parsedValue:
-                                                        | string
-                                                        | number
-                                                        | boolean;
-                                                    if (value === 'true') {
-                                                        parsedValue = true;
-                                                    } else if (
-                                                        value === 'false'
-                                                    ) {
-                                                        parsedValue = false;
-                                                    } else if (
-                                                        !isNaN(Number(value)) &&
-                                                        value !== '' &&
-                                                        value !== 'null'
-                                                    ) {
-                                                        parsedValue =
-                                                            Number(value);
-                                                    } else {
-                                                        parsedValue = value;
-                                                    }
-
-                                                    if (!filterMap[field]) {
-                                                        filterMap[field] = [];
-                                                    }
-                                                    filterMap[field].push(
-                                                        parsedValue,
-                                                    );
-                                                }
-                                            }
-                                        });
-                                        return filterMap;
-                                    })()}
-                                    onFilterChange={(
-                                        field: string,
-                                        value: string | number | boolean,
-                                        checked: boolean,
-                                    ) => {
-                                        handleFilterChange(
-                                            field,
-                                            typeof value === 'boolean'
-                                                ? value
-                                                : String(value),
-                                            checked,
-                                        );
-                                    }}
-                                    onClearFilters={handleClearFilters}
-                                />
-                            )}
+                    {totalResults > 0 && (
+                        <div className="text-right">
+                            <div className="text-2xl font-bold">{totalResults.toLocaleString()}</div>
+                            <div className="text-sm text-muted-foreground">documents found</div>
                         </div>
+                    )}
+                </div>
 
-                        <div className="lg:col-span-4 flex flex-col gap-y-8">
-                            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center mb-4 gap-4">
-                                <div className="flex items-center space-x-2">
-                                    <Label className="text-sm whitespace-nowrap">
-                                        Show Debugger
-                                    </Label>
-                                    <Switch
-                                        checked={showFacetDebugger}
-                                        onCheckedChange={setShowFacetDebugger}
-                                    />
-                                </div>
-                                <Select
-                                    value={String(perPage)}
-                                    onValueChange={(value) =>
-                                        handlePerPageChange(parseInt(value))
-                                    }
-                                >
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue>
-                                            Results per page
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {countDropdownOptions.map((option) => (
-                                            <SelectItem
-                                                key={option.value}
-                                                value={String(option.value)}
-                                            >
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Select
-                                    value={sortBy}
-                                    onValueChange={handleSortByChange}
-                                >
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue>Sort by</SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {sortDropdownOptions.map((option) => (
-                                            <SelectItem
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                <SearchErrorAlert
+                    error={error}
+                    onRetry={() => {
+                        setError(null);
+                        performMultiSearch();
+                    }}
+                    onDismiss={() => setError(null)}
+                />
 
-                            {/* Search Results */}
+                {/* Search Bar */}
+                <SearchBar
+                    searchQuery={searchQuery}
+                    onSearchQueryChange={setSearchQuery}
+                    placeholder="Search documents across all fields..."
+                />
+
+                {/* Search Options */}
+                <Card className="border border-border/50">
+                    <CardContent className="p-6">
+                        <SearchOptionsPanel
+                            perPage={perPage}
+                            sortBy={sortBy}
+                            showFacetDebugger={showFacetDebugger}
+                            onPerPageChange={handlePerPageChange}
+                            onSortByChange={handleSortByChange}
+                            onShowFacetDebuggerChange={setShowFacetDebugger}
+                            countDropdownOptions={countDropdownOptions}
+                            sortDropdownOptions={sortDropdownOptions}
+                        />
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Main Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Filters Sidebar */}
+                <div className="lg:col-span-1">
+                    <Card className="border border-border/50 sticky top-8">
+                        <CardContent className="p-6">
                             <div className="space-y-4">
-                                {/* Debugger - only show when toggle is enabled */}
-                                {showFacetDebugger && (
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold">Filters</h3>
+                                    {filterBy.length > 0 && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleClearFilters}
+                                            className="text-xs"
+                                        >
+                                            Clear all
+                                        </Button>
+                                    )}
+                                </div>
+                                
+                                {loadingFilters ? (
+                                    <div className="space-y-6">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="space-y-3">
+                                                <div className="h-4 w-24 bg-muted/50 rounded animate-pulse" />
+                                                <div className="space-y-2">
+                                                    {[1, 2, 3].map((j) => (
+                                                        <div key={j} className="flex items-center space-x-2">
+                                                            <div className="h-4 w-4 bg-muted/50 rounded animate-pulse" />
+                                                            <div className="h-4 w-20 bg-muted/50 rounded animate-pulse" />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <Filter
+                                        collectionSchema={collectionSchema}
+                                        facetValues={facetValues}
+                                        singleColumn={true}
+                                        filterBy={(() => {
+                                            const filterMap: Record<
+                                                string,
+                                                (string | number | boolean)[]
+                                            > = {};
+                                            filterBy.forEach((filter) => {
+                                                if (filter) {
+                                                    let field: string,
+                                                        value: string;
+
+                                                    // Now all filters use the := format
+                                                    if (filter.includes(':=')) {
+                                                        // Use indexOf to find the first occurrence and split properly
+                                                        const separatorIndex =
+                                                            filter.indexOf(':=');
+                                                        field = filter.substring(
+                                                            0,
+                                                            separatorIndex,
+                                                        );
+                                                        value = filter.substring(
+                                                            separatorIndex + 2,
+                                                        );
+                                                    } else {
+                                                        return; // Skip invalid filters
+                                                    }
+
+                                                    if (
+                                                        field &&
+                                                        value !== undefined
+                                                    ) {
+                                                        // Convert string values back to their original types
+                                                        let parsedValue:
+                                                            | string
+                                                            | number
+                                                            | boolean;
+                                                        if (value === 'true') {
+                                                            parsedValue = true;
+                                                        } else if (
+                                                            value === 'false'
+                                                        ) {
+                                                            parsedValue = false;
+                                                        } else if (
+                                                            !isNaN(Number(value)) &&
+                                                            value !== '' &&
+                                                            value !== 'null'
+                                                        ) {
+                                                            parsedValue =
+                                                                Number(value);
+                                                        } else {
+                                                            parsedValue = value;
+                                                        }
+
+                                                        if (!filterMap[field]) {
+                                                            filterMap[field] = [];
+                                                        }
+                                                        filterMap[field].push(
+                                                            parsedValue,
+                                                        );
+                                                    }
+                                                }
+                                            });
+                                            return filterMap;
+                                        })()}
+                                        onFilterChange={(
+                                            field: string,
+                                            value: string | number | boolean,
+                                            checked: boolean,
+                                        ) => {
+                                            handleFilterChange(
+                                                field,
+                                                typeof value === 'boolean'
+                                                    ? value
+                                                    : String(value),
+                                                checked,
+                                            );
+                                        }}
+                                        onClearFilters={handleClearFilters}
+                                    />
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Results Area */}
+                <div className="lg:col-span-3">
+                    <div className="space-y-6">
+
+                        {/* Debugger - only show when toggle is enabled */}
+                        {showFacetDebugger && (
+                            <Card className="border border-border/50">
+                                <CardContent className="p-6">
                                     <FacetDebugger
                                         collectionSchema={collectionSchema}
                                         facetValues={facetValues}
                                         facetFields={facetFields}
                                     />
-                                )}
+                                </CardContent>
+                            </Card>
+                        )}
 
-                                {loadingDocuments ? (
-                                    <SearchSkeleton />
-                                ) : error ? (
-                                    <Alert>
-                                        <AlertDescription>
-                                            {error}
-                                        </AlertDescription>
-                                    </Alert>
-                                ) : searchResults.length === 0 ? (
-                                    <Card>
-                                        <CardContent className="p-8 text-center">
-                                            <p className="text-muted-foreground">
-                                                No documents found matching your
-                                                search criteria.
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                ) : (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-sm text-muted-foreground">
-                                                Found {totalResults} document
-                                                {totalResults !== 1 ? 's' : ''}
-                                            </p>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                            {searchResults.map((result) => (
-                                                <DocumentCard
-                                                    key={result.id}
-                                                    result={result}
-                                                    collectionName={
-                                                        collectionName
-                                                    }
-                                                    onDelete={
-                                                        handleDeleteDocument
-                                                    }
-                                                />
-                                            ))}
-                                        </div>
-
-                                        {totalPages > 1 && (
-                                            <PaginationComponent
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                onPageChange={handlePageChange}
-                                            />
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        {/* Search Results */}
+                        <SearchResults
+                            searchResults={searchResults}
+                            totalResults={totalResults}
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            collectionName={collectionName}
+                            loadingDocuments={loadingDocuments}
+                            onPageChange={handlePageChange}
+                            onDeleteDocument={handleDeleteDocument}
+                        />
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

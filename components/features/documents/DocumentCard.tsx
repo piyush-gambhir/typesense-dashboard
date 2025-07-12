@@ -1,13 +1,24 @@
 'use client';
 
-import { Edit, Trash2 } from 'lucide-react';
+import { 
+    Calendar,
+    Edit, 
+    ExternalLink,
+    FileText,
+    Hash,
+    Image as ImageIcon,
+    Link as LinkIcon,
+    Trash2 
+} from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 
 import { validateURL } from '@/utils/zod/validation';
+import { cn } from '@/lib/utils';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -16,6 +27,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 
 import Link from '@/components/link';
 
@@ -37,53 +49,84 @@ interface ResultFieldProps {
 }
 
 const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
+    const getFieldIcon = (fieldName: string, value: unknown) => {
+        if (fieldName.toLowerCase().includes('date') || fieldName.toLowerCase().includes('time')) {
+            return <Calendar className="h-3 w-3 text-amber-500" />;
+        }
+        if (fieldName.toLowerCase() === 'id') {
+            return <Hash className="h-3 w-3 text-blue-500" />;
+        }
+        if (Array.isArray(value)) {
+            return <FileText className="h-3 w-3 text-purple-500" />;
+        }
+        if (typeof value === 'string' && validateURL(String(value)).valid) {
+            return isImageUrl(String(value)) ? 
+                <ImageIcon className="h-3 w-3 text-emerald-500" /> : 
+                <LinkIcon className="h-3 w-3 text-blue-500" />;
+        }
+        return <FileText className="h-3 w-3 text-muted-foreground" />;
+    };
+
     const renderContent = () => {
         if (Array.isArray(value)) {
             return value.length > 0 ? (
-                <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
-                    {value.map((item, index) => (
-                        <span
-                            key={index}
-                            className="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md text-xs md:text-sm break-words"
-                        >
-                            {String(item)}
-                        </span>
-                    ))}
+                <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
+                        {value.map((item, index) => (
+                            <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs font-mono"
+                            >
+                                {String(item)}
+                            </Badge>
+                        ))}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        {value.length} items
+                    </div>
                 </div>
             ) : (
-                <span className="text-gray-400 italic">No items</span>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <span className="text-sm">No items</span>
+                </div>
             );
         }
 
         if (typeof value === 'string') {
             if (value.trim() === '') {
-                return <span className="text-gray-400 italic">Empty</span>;
+                return (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <span className="text-sm italic">Empty</span>
+                    </div>
+                );
             }
             try {
                 if (validateURL(value).valid) {
                     if (isImageUrl(value)) {
                         return (
-                            <>
-                                <Image
-                                    src={value}
-                                    alt={field}
-                                    width={200}
-                                    height={200}
-                                    className="mt-2 rounded-md"
-                                />
-                                <div className="mt-2 break-words">
-                                    <Link
-                                        href={value}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:underline inline-flex"
-                                    >
-                                        <span className="break-all">
-                                            {value}
-                                        </span>
-                                    </Link>
+                            <div className="space-y-3">
+                                <div className="relative overflow-hidden rounded-lg border bg-muted/20">
+                                    <Image
+                                        src={value}
+                                        alt={field}
+                                        width={200}
+                                        height={200}
+                                        className="object-cover"
+                                    />
                                 </div>
-                            </>
+                                <Link
+                                    href={value}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
+                                >
+                                    <ExternalLink className="h-3 w-3" />
+                                    <span className="break-all font-mono text-xs">
+                                        {value.length > 50 ? `${value.substring(0, 50)}...` : value}
+                                    </span>
+                                </Link>
+                            </div>
                         );
                     }
                     return (
@@ -91,34 +134,53 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
                             href={value}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline inline-flex  break-all"
+                            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
                         >
-                            <span className="mr-1">{value}</span>
+                            <ExternalLink className="h-3 w-3" />
+                            <span className="break-all font-mono">
+                                {value.length > 80 ? `${value.substring(0, 80)}...` : value}
+                            </span>
                         </Link>
                     );
                 }
-                return <span dangerouslySetInnerHTML={{ __html: value }} />;
-            } catch {
-                // If URL validation fails, just render as regular text
                 return (
-                    <span dangerouslySetInnerHTML={{ __html: String(value) }} />
+                    <div className="text-sm break-words font-mono bg-muted/30 rounded-md p-2">
+                        {value.length > 200 ? `${value.substring(0, 200)}...` : value}
+                    </div>
+                );
+            } catch {
+                return (
+                    <div className="text-sm break-words font-mono bg-muted/30 rounded-md p-2">
+                        {String(value).length > 200 ? `${String(value).substring(0, 200)}...` : String(value)}
+                    </div>
                 );
             }
         }
 
         if (value === null || value === undefined) {
-            return <span className="text-gray-400 italic">Not available</span>;
+            return (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <span className="text-sm italic">Not available</span>
+                </div>
+            );
         }
 
-        return <span>{String(value)}</span>;
+        return (
+            <div className="text-sm font-mono bg-muted/30 rounded-md p-2">
+                {String(value)}
+            </div>
+        );
     };
 
     return (
-        <div className="mb-4">
-            <span className="font-semibold text-sm md:text-base block mb-2">
-                {field}
-            </span>
-            <div className="text-sm md:text-base">{renderContent()}</div>
+        <div className="space-y-2">
+            <div className="flex items-center gap-2">
+                {getFieldIcon(field, value)}
+                <span className="text-sm font-medium text-muted-foreground">
+                    {field}
+                </span>
+            </div>
+            <div className="ml-5">{renderContent()}</div>
         </div>
     );
 };
@@ -162,72 +224,123 @@ const DocumentCard = ({
         }
     };
 
+    const fieldCount = Object.keys(result).length;
+    const documentId = String(result.id);
+
     return (
         <>
-            <Card className="w-full flex flex-col justify-between">
-                <CardContent className="p-4 md:p-6">
-                    <div className="space-y-4">
-                        <div className="mb-4">
-                            <span className="font-semibold text-sm md:text-base block mb-2">
-                                ID
-                            </span>
-                            <div className="text-sm md:text-base break-all">
-                                {String(result.id)}
+            <Card className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                                <div className="p-2 bg-blue-500/10 rounded-lg">
+                                    <FileText className="h-4 w-4 text-blue-600" />
+                                </div>
+                                Document
+                            </CardTitle>
+                            <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="font-mono text-xs">
+                                    {documentId.length > 20 ? `${documentId.substring(0, 20)}...` : documentId}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                    {fieldCount} fields
+                                </Badge>
                             </div>
                         </div>
+                        
+                        <div className="flex items-center gap-2">
+                            <Link href={`/collections/${collectionName}/document/${result.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                            </Link>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => setIsDeleteDialogOpen(true)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                        <ResultField field="id" value={result.id} />
                         {sortedEntries.map(
                             ([key, value]) =>
                                 key !== 'id' && (
-                                    <ResultField
-                                        key={key}
-                                        field={key}
-                                        value={value}
-                                    />
+                                    <div key={key}>
+                                        <ResultField field={key} value={value} />
+                                        <Separator className="mt-4" />
+                                    </div>
                                 ),
                         )}
                     </div>
-                </CardContent>
-                <CardFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t">
-                    <Link
-                        href={`/collections/${collectionName}/document/${result.id}`}
-                        className="w-full sm:w-auto"
-                    >
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full sm:w-auto"
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between pt-2">
+                        <div className="flex gap-2">
+                            <Link href={`/collections/${collectionName}/document/${result.id}`} className="flex-1">
+                                <Button variant="outline" size="sm" className="gap-2">
+                                    <Edit className="h-4 w-4" />
+                                    Edit Document
+                                </Button>
+                            </Link>
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+                            onClick={() => setIsDeleteDialogOpen(true)}
                         >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit
+                            <Trash2 className="h-4 w-4" />
+                            Delete
                         </Button>
-                    </Link>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        className="w-full sm:w-auto"
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                    </Button>
-                </CardFooter>
+                    </div>
+                </CardContent>
             </Card>
 
             <Dialog
                 open={isDeleteDialogOpen}
                 onOpenChange={setIsDeleteDialogOpen}
             >
-                <DialogContent>
+                <DialogContent className="border-destructive/20">
                     <DialogHeader>
-                        <DialogTitle>
-                            Are you sure you want to delete this document?
-                        </DialogTitle>
-                        <DialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete the document and remove its data from our
-                            servers.
-                        </DialogDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-destructive/10 rounded-full">
+                                <Trash2 className="h-6 w-6 text-destructive" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl">
+                                    Delete Document
+                                </DialogTitle>
+                                <DialogDescription className="mt-1">
+                                    Are you sure you want to delete this document?
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
+                    
+                    <div className="my-4 p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <Hash className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">Document ID:</span>
+                                <Badge variant="outline" className="font-mono text-xs">
+                                    {documentId}
+                                </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                This action cannot be undone. The document and all its data will be permanently removed.
+                            </p>
+                        </div>
+                    </div>
+                    
                     <DialogFooter>
                         <Button
                             variant="outline"
@@ -240,8 +353,19 @@ const DocumentCard = ({
                             variant="destructive"
                             onClick={handleDelete}
                             disabled={isDeleting}
+                            className="gap-2"
                         >
-                            {isDeleting ? 'Deleting...' : 'Delete'}
+                            {isDeleting ? (
+                                <>
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                    Deleting...
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Document
+                                </>
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

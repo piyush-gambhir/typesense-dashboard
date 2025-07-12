@@ -8,7 +8,7 @@ import {
     Search,
     Trash2,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
     type Conversation,
@@ -52,6 +52,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table,
     TableBody,
@@ -64,6 +65,52 @@ import {
 interface NLConversationsProps {
     collectionName?: string;
     onSelectConversation?: (conversation: Conversation) => void;
+}
+
+function NLConversationsSkeleton() {
+    return (
+        <div className="space-y-6">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <Skeleton className="h-8 w-80" />
+                    <Skeleton className="h-4 w-96" />
+                </div>
+                <Skeleton className="h-10 w-32" />
+            </div>
+
+            {/* Filters skeleton */}
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
+                <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Skeleton className="h-10 flex-1" />
+                        <Skeleton className="h-10 w-48" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Table skeleton */}
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
+                <CardContent className="p-6">
+                    <div className="space-y-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="flex items-center space-x-4"
+                            >
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-8 w-16" />
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
 }
 
 export default function NLConversations({
@@ -85,7 +132,7 @@ export default function NLConversations({
     const [conversationToClear, setConversationToClear] =
         useState<Conversation | null>(null);
 
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
         setLoading(true);
         try {
             const params =
@@ -113,7 +160,7 @@ export default function NLConversations({
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedCollection, toast]);
 
     useEffect(() => {
         fetchConversations();
@@ -206,20 +253,17 @@ export default function NLConversations({
         try {
             const result = await exportConversation(conversation.id, format);
             if (result.success && result.data) {
-                // Create download link
-                const dataStr =
-                    typeof result.data === 'string'
-                        ? result.data
-                        : JSON.stringify(result.data, null, 2);
-                const dataBlob = new Blob([dataStr], {
+                const blob = new Blob([result.data], {
                     type: getContentType(format),
                 });
-                const url = window.URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `conversation-${conversation.id}.${format}`;
-                link.click();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversation-${conversation.id}.${format}`;
+                document.body.appendChild(a);
+                a.click();
                 window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
 
                 toast({
                     title: 'Success',
@@ -255,17 +299,6 @@ export default function NLConversations({
         }
     };
 
-    const filteredConversations = conversations.filter(
-        (conversation) =>
-            searchQuery === '' ||
-            conversation.title
-                ?.toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-            conversation.collection_name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()),
-    );
-
     const getUniqueCollections = () => {
         const collections = [
             ...new Set(conversations.map((c) => c.collection_name)),
@@ -273,25 +306,33 @@ export default function NLConversations({
         return collections.sort();
     };
 
+    const filteredConversations = conversations.filter((conversation) => {
+        const matchesSearch = searchQuery
+            ? conversation.title
+                  ?.toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+              conversation.id.toLowerCase().includes(searchQuery.toLowerCase())
+            : true;
+        const matchesCollection =
+            selectedCollection === 'all' ||
+            conversation.collection_name === selectedCollection;
+        return matchesSearch && matchesCollection;
+    });
+
     if (loading) {
-        return (
-            <div className="container mx-auto p-8">
-                <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-            </div>
-        );
+        return <NLConversationsSkeleton />;
     }
 
     return (
-        <div className="container mx-auto p-8 space-y-6">
+        <div className="space-y-6">
+            {/* Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <MessageSquare className="h-8 w-8" />
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+                        <MessageSquare className="h-6 w-6 text-primary" />
                         NL Search Conversations
-                    </h1>
-                    <p className="text-muted-foreground mt-2">
+                    </h2>
+                    <p className="text-muted-foreground">
                         Manage your natural language search conversations and
                         chat history
                     </p>
@@ -303,7 +344,7 @@ export default function NLConversations({
             </div>
 
             {/* Filters */}
-            <Card>
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1">
@@ -349,8 +390,9 @@ export default function NLConversations({
                 </CardContent>
             </Card>
 
+            {/* Content */}
             {filteredConversations.length === 0 ? (
-                <Card>
+                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
                         <h3 className="text-lg font-semibold mb-2">
@@ -364,7 +406,7 @@ export default function NLConversations({
                     </CardContent>
                 </Card>
             ) : (
-                <Card>
+                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardHeader>
                         <CardTitle>
                             Conversations ({filteredConversations.length})
@@ -383,7 +425,9 @@ export default function NLConversations({
                                     <TableHead>Messages</TableHead>
                                     <TableHead>Last Activity</TableHead>
                                     <TableHead>Model</TableHead>
-                                    <TableHead>Actions</TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -396,7 +440,7 @@ export default function NLConversations({
                                         }
                                     >
                                         <TableCell>
-                                            <div>
+                                            <div className="space-y-1">
                                                 <div className="font-medium">
                                                     {conversation.title ||
                                                         `Conversation ${conversation.id.slice(0, 8)}`}
@@ -457,11 +501,11 @@ export default function NLConversations({
                                                 </span>
                                             )}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-right">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button
-                                                        variant="ghost"
+                                                        variant="outline"
                                                         size="sm"
                                                     >
                                                         •••
@@ -469,67 +513,62 @@ export default function NLConversations({
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem
-                                                        onClick={() =>
-                                                            onSelectConversation?.(
-                                                                conversation,
-                                                            )
-                                                        }
-                                                    >
-                                                        <MessageSquare className="h-4 w-4 mr-2" />
-                                                        Open Chat
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleExport(
                                                                 conversation,
                                                                 'json',
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         <Download className="h-4 w-4 mr-2" />
                                                         Export JSON
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleExport(
                                                                 conversation,
                                                                 'csv',
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         <Download className="h-4 w-4 mr-2" />
                                                         Export CSV
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleExport(
                                                                 conversation,
                                                                 'txt',
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         <Download className="h-4 w-4 mr-2" />
-                                                        Export Text
+                                                        Export TXT
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleClearHistory(
                                                                 conversation,
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         <RotateCcw className="h-4 w-4 mr-2" />
                                                         Clear History
                                                     </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
                                                     <DropdownMenuItem
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleDelete(
                                                                 conversation,
-                                                            )
-                                                        }
-                                                        className="text-destructive focus:text-destructive"
+                                                            );
+                                                        }}
+                                                        className="text-red-600"
                                                     >
                                                         <Trash2 className="h-4 w-4 mr-2" />
                                                         Delete
@@ -545,7 +584,7 @@ export default function NLConversations({
                 </Card>
             )}
 
-            {/* Delete Confirmation Dialog */}
+            {/* Dialogs */}
             <Dialog
                 open={isDeleteDialogOpen}
                 onOpenChange={setIsDeleteDialogOpen}
@@ -554,12 +593,15 @@ export default function NLConversations({
                     <DialogHeader>
                         <DialogTitle>Delete Conversation</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete the conversation
-                            &quot;
-                            {conversationToDelete?.title ||
-                                conversationToDelete?.id}
-                            &quot;? This action cannot be undone and will
-                            permanently remove all messages.
+                            Are you sure you want to delete the conversation{' '}
+                            <strong>
+                                {conversationToDelete?.title ||
+                                    `Conversation ${conversationToDelete?.id.slice(
+                                        0,
+                                        8,
+                                    )}`}
+                            </strong>
+                            ? This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -576,7 +618,6 @@ export default function NLConversations({
                 </DialogContent>
             </Dialog>
 
-            {/* Clear History Confirmation Dialog */}
             <Dialog
                 open={isClearHistoryDialogOpen}
                 onOpenChange={setIsClearHistoryDialogOpen}
@@ -585,12 +626,17 @@ export default function NLConversations({
                     <DialogHeader>
                         <DialogTitle>Clear Conversation History</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to clear the history for
-                            &quot;
-                            {conversationToClear?.title ||
-                                conversationToClear?.id}
-                            &quot;? This will remove all messages but keep the
-                            conversation. This action cannot be undone.
+                            Are you sure you want to clear the history for the
+                            conversation{' '}
+                            <strong>
+                                {conversationToClear?.title ||
+                                    `Conversation ${conversationToClear?.id.slice(
+                                        0,
+                                        8,
+                                    )}`}
+                            </strong>
+                            ? This will remove all messages but keep the
+                            conversation.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>

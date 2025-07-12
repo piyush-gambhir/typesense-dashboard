@@ -16,6 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -152,42 +153,75 @@ export default function ExportDocuments({
     };
 
     return (
-        <div className="container mx-auto p-8">
-            <Card className="shadow-none border-none">
-                <CardHeader>
-                    <CardTitle>Export Documents</CardTitle>
-                    <CardDescription>
-                        Export your documents in various formats
+        <div className="space-y-6">
+            <Card className="border border-border/50 shadow-sm">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-xl font-semibold">Export Documents</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                        Export your collection documents to JSON, JSONL, CSV, or XML format
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            <Select onValueChange={setSelectedFormat}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select export format" />
+                <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-3">
+                            <Label htmlFor="format" className="text-sm font-medium">
+                                Export Format
+                            </Label>
+                            <Select onValueChange={setSelectedFormat} value={selectedFormat}>
+                                <SelectTrigger className="h-11">
+                                    <SelectValue placeholder="Choose the format for your exported data" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="json">JSON</SelectItem>
-                                    <SelectItem value="jsonl">JSONL</SelectItem>
-                                    <SelectItem value="csv">CSV</SelectItem>
-                                    <SelectItem value="xml">XML</SelectItem>
+                                    <SelectItem value="json">
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">JSON</span>
+                                            <span className="text-xs text-muted-foreground">Pretty-formatted JSON array</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="jsonl">
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">JSONL</span>
+                                            <span className="text-xs text-muted-foreground">JSON Lines format (one object per line)</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="csv">
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">CSV</span>
+                                            <span className="text-xs text-muted-foreground">Comma-separated values</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="xml">
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">XML</span>
+                                            <span className="text-xs text-muted-foreground">Structured XML format</span>
+                                        </div>
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
+
+                        {/* Progress Bar */}
+                        {isExporting && (
+                            <div className="space-y-2">
+                                <ProgressBar
+                                    isLoading={isExporting}
+                                    progress={progress}
+                                    title="Exporting..."
+                                    loadingMessage="Please wait while we export your data."
+                                    completeMessage="Export complete! Downloading..."
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-6 items-start justify-start">
-                    <ProgressBar
-                        isLoading={isExporting}
-                        progress={progress}
-                        title="Exporting..."
-                        loadingMessage="Please wait while we export your data."
-                        completeMessage="Export complete! Downloading..."
-                    />
-
-                    <Button onClick={handleExport} disabled={isExporting}>
+                <CardFooter className="flex flex-col space-y-4 pt-6">
+                    <Button 
+                        onClick={handleExport} 
+                        disabled={!selectedFormat || isExporting}
+                        className="w-full h-11"
+                        size="lg"
+                    >
                         {isExporting ? (
                             <>
                                 <FileDown className="mr-2 h-4 w-4 animate-bounce" />
@@ -200,6 +234,12 @@ export default function ExportDocuments({
                             </>
                         )}
                     </Button>
+
+                    {selectedFormat && !isExporting && (
+                        <div className="text-xs text-muted-foreground text-center">
+                            Your documents will be exported as a {selectedFormat.toUpperCase()} file
+                        </div>
+                    )}
                 </CardFooter>
             </Card>
         </div>

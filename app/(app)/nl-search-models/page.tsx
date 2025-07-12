@@ -2,6 +2,6 @@ import React from 'react';
 
 import NLSearchModels from '@/components/features/search/NLSearchModels';
 
-export default function NLSearchModelsPage() {
+export default async function NLSearchModelsPage() {
     return <NLSearchModels />;
 }

@@ -1,7 +1,10 @@
-import { BookOpen, Brain, MessageSquare, Settings } from 'lucide-react';
+import { AlertCircle, BookOpen, Brain, MessageSquare, Settings } from 'lucide-react';
 import { Metadata } from 'next';
 import React from 'react';
 
+import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
     Card,
     CardContent,
@@ -20,28 +23,51 @@ export const metadata: Metadata = {
         'Manage AI models and conversations for natural language search',
 };
 
-export default function NaturalLanguageSearchPage() {
+export default async function NaturalLanguageSearchPage() {
+    // Check connection first
+    const connectionStatus = await checkTypesenseConnection();
+
+    if (!connectionStatus.isConnected) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-2xl mx-auto">
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Connection Error</AlertTitle>
+                        <AlertDescription>
+                            Unable to connect to Typesense server. Please check your
+                            configuration and try again. Error:{' '}
+                            {connectionStatus.error}
+                        </AlertDescription>
+                    </Alert>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="container mx-auto p-8 space-y-8">
+        <div className="container mx-auto px-4 py-8 space-y-8">
             {/* Header */}
-            <div>
-                <h1 className="text-4xl font-bold flex items-center gap-3 mb-4">
-                    <Brain className="h-10 w-10 text-primary" />
-                    Natural Language Search
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-3xl">
-                    Configure AI models and manage conversations for
-                    intelligent, natural language search capabilities across
-                    your Typesense collections.
-                </p>
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+                        <Brain className="h-8 w-8 text-primary" />
+                        Natural Language Search
+                    </h1>
+                    <p className="text-muted-foreground max-w-3xl">
+                        Configure AI models and manage conversations for
+                        intelligent, natural language search capabilities across
+                        your Typesense collections.
+                    </p>
+                </div>
             </div>
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
+                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <Brain className="h-5 w-5" />
+                            <Brain className="h-5 w-5 text-primary" />
                             AI Models
                         </CardTitle>
                         <CardDescription>
@@ -60,10 +86,10 @@ export default function NaturalLanguageSearchPage() {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <MessageSquare className="h-5 w-5" />
+                            <MessageSquare className="h-5 w-5 text-primary" />
                             Conversations
                         </CardTitle>
                         <CardDescription>
@@ -81,10 +107,10 @@ export default function NaturalLanguageSearchPage() {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <Settings className="h-5 w-5" />
+                            <Settings className="h-5 w-5 text-primary" />
                             Advanced Features
                         </CardTitle>
                         <CardDescription>
@@ -104,7 +130,7 @@ export default function NaturalLanguageSearchPage() {
             </div>
 
             {/* Main Content */}
-            <Card>
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-6">
                     <Tabs defaultValue="models" className="space-y-6">
                         <TabsList className="grid w-full grid-cols-3">
@@ -147,7 +173,7 @@ export default function NaturalLanguageSearchPage() {
                             className="space-y-6"
                         >
                             <div className="grid gap-6">
-                                <Card>
+                                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                                     <CardHeader>
                                         <CardTitle>Getting Started</CardTitle>
                                         <CardDescription>
@@ -193,7 +219,7 @@ export default function NaturalLanguageSearchPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card>
+                                <Card className="relative overflow-hidden transition-all hover:shadow-md">
                                     <CardHeader>
                                         <CardTitle>
                                             Supported Model Types
@@ -250,12 +276,11 @@ export default function NaturalLanguageSearchPage() {
                                                         Cloudflare Workers AI
                                                     </h4>
                                                     <p className="text-xs text-muted-foreground">
-                                                        Llama 2, Mistral, Phi-2
-                                                        models
+                                                        Llama 2, Mistral, and
+                                                        other open models
                                                     </p>
                                                     <p className="text-xs mt-1">
-                                                        Requires: Account ID,
-                                                        API Token
+                                                        Requires: Account Token
                                                     </p>
                                                 </div>
                                                 <div className="border rounded-lg p-3">
@@ -263,69 +288,13 @@ export default function NaturalLanguageSearchPage() {
                                                         vLLM (Self-hosted)
                                                     </h4>
                                                     <p className="text-xs text-muted-foreground">
-                                                        Custom models via vLLM
-                                                        API
+                                                        Local deployment of
+                                                        open-source models
                                                     </p>
                                                     <p className="text-xs mt-1">
-                                                        Requires: API Base URL
+                                                        Requires: Server URL
                                                     </p>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Query Examples</CardTitle>
-                                        <CardDescription>
-                                            Example natural language queries and
-                                            their capabilities
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-4">
-                                            <div className="border-l-4 border-primary pl-4">
-                                                <h4 className="font-semibold text-sm">
-                                                    E-commerce
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    &ldquo;Show me red shirts
-                                                    under $50 with high
-                                                    ratings&rdquo;
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Automatically extracts
-                                                    color, price range, and
-                                                    rating filters
-                                                </p>
-                                            </div>
-                                            <div className="border-l-4 border-primary pl-4">
-                                                <h4 className="font-semibold text-sm">
-                                                    Content
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    &ldquo;Find recent articles
-                                                    about machine learning from
-                                                    last month&rdquo;
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Combines topic matching with
-                                                    date range filtering
-                                                </p>
-                                            </div>
-                                            <div className="border-l-4 border-primary pl-4">
-                                                <h4 className="font-semibold text-sm">
-                                                    Support
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    &ldquo;Show urgent tickets
-                                                    about billing issues&rdquo;
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Filters by priority level
-                                                    and issue category
-                                                </p>
                                             </div>
                                         </div>
                                     </CardContent>

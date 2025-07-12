@@ -6,7 +6,6 @@ import {
     ChartBar,
     Frame,
     ListFilter,
-    Search,
     Settings2,
     SquareTerminal,
 } from 'lucide-react';
@@ -65,13 +64,7 @@ export default function AppSidebar({
                 isActive: true,
                 items: [],
             },
-            {
-                title: 'Search Presets',
-                url: '/search-presets',
-                icon: Search,
-                isActive: true,
-                items: [],
-            },
+
             {
                 title: 'NL Search',
                 url: '/nl-search',

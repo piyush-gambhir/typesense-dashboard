@@ -164,41 +164,81 @@ export default function ImportDocuments({
     };
 
     return (
-        <div className="container mx-auto p-8">
-            <Card className="shadow-none border-none">
-                <CardHeader>
-                    <CardTitle>Import Documents</CardTitle>
-                    <CardDescription>
-                        Upload and import your documents
+        <div className="space-y-6">
+            <Card className="border border-border/50 shadow-sm">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-xl font-semibold">Import Documents</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                        Upload JSON, JSONL, or CSV files to import documents into your collection
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-3">
-                            <Label htmlFor="file">Select File</Label>
-                            <Input
-                                id="file"
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                accept=".json,.jsonl,.csv"
-                                disabled={isImporting}
-                            />
+                <CardContent className="space-y-6">
+                    <div className="grid w-full items-center gap-6">
+                        {/* File Upload Area */}
+                        <div className="space-y-3">
+                            <Label htmlFor="file" className="text-sm font-medium">
+                                Upload File
+                            </Label>
+                            <div className="relative">
+                                <div className={`
+                                    border-2 border-dashed rounded-lg p-8 text-center transition-colors
+                                    ${file ? 'border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20' : 'border-muted-foreground/25 hover:border-muted-foreground/40'}
+                                    ${isImporting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                                `}>
+                                    <Input
+                                        id="file"
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        accept=".json,.jsonl,.csv"
+                                        disabled={isImporting}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <div className="space-y-3">
+                                        {file ? (
+                                            <>
+                                                <FileUp className="mx-auto h-8 w-8 text-green-600 dark:text-green-400" />
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                                                        {file.name}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                                                    </p>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={handleRemoveFile}
+                                                    disabled={isImporting}
+                                                    className="mt-2"
+                                                >
+                                                    <X className="h-4 w-4 mr-1" />
+                                                    Remove
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-medium">
+                                                        Drop your file here or click to browse
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Supports JSON, JSONL, and CSV files
+                                                    </p>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>Selected file: {file?.name}</span>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleRemoveFile}
-                                disabled={isImporting}
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        <div className="flex flex-col space-y-3">
-                            <Label htmlFor="action">Import Action</Label>
+                        {/* Import Action */}
+                        <div className="space-y-3">
+                            <Label htmlFor="action" className="text-sm font-medium">
+                                Import Action
+                            </Label>
                             <Select
                                 disabled={isImporting}
                                 onValueChange={(value) =>
@@ -206,26 +246,26 @@ export default function ImportDocuments({
                                 }
                                 value={action}
                             >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Action" />
+                                <SelectTrigger className="h-11">
+                                    <SelectValue placeholder="Select how to handle existing documents" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {(
                                         [
-                                            'create',
-                                            'update',
-                                            'upsert',
-                                            'emplace',
-                                        ] as importAction[]
-                                    ).map((actionValue) => (
+                                            { value: 'create', label: 'Create', description: 'Only create new documents (fail if exists)' },
+                                            { value: 'update', label: 'Update', description: 'Only update existing documents (fail if not exists)' },
+                                            { value: 'upsert', label: 'Upsert', description: 'Create new or update existing documents' },
+                                            { value: 'emplace', label: 'Emplace', description: 'Create or replace existing documents' },
+                                        ] as Array<{ value: importAction; label: string; description: string }>
+                                    ).map((actionItem) => (
                                         <SelectItem
-                                            key={actionValue}
-                                            value={actionValue}
+                                            key={actionItem.value}
+                                            value={actionItem.value}
                                         >
-                                            {actionValue
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                                actionValue.slice(1)}
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{actionItem.label}</span>
+                                                <span className="text-xs text-muted-foreground">{actionItem.description}</span>
+                                            </div>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -243,32 +283,43 @@ export default function ImportDocuments({
                         )}
                     </div>
                 </CardContent>
-                <CardFooter>
-                    <Button
-                        onClick={handleImport}
-                        disabled={!file || isImporting}
-                    >
-                        {isImporting ? (
-                            <>
-                                <FileUp className="mr-2 h-4 w-4 animate-bounce" />
-                                Importing...
-                            </>
-                        ) : (
-                            <>
-                                <Upload className="mr-2 h-4 w-4" />
-                                Import Documents
-                            </>
-                        )}
-                    </Button>
-                    {importLog.length > 0 && (
+                <CardFooter className="flex flex-col space-y-4 pt-6">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full">
                         <Button
-                            onClick={downloadLog}
-                            variant="outline"
-                            className="ml-4"
+                            onClick={handleImport}
+                            disabled={!file || isImporting}
+                            className="flex-1 h-11"
+                            size="lg"
                         >
-                            <Download className="mr-2 h-4 w-4" />
-                            Download Log
+                            {isImporting ? (
+                                <>
+                                    <FileUp className="mr-2 h-4 w-4 animate-bounce" />
+                                    Importing...
+                                </>
+                            ) : (
+                                <>
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Import Documents
+                                </>
+                            )}
                         </Button>
+                        {importLog.length > 0 && (
+                            <Button
+                                onClick={downloadLog}
+                                variant="outline"
+                                className="h-11"
+                                size="lg"
+                            >
+                                <Download className="mr-2 h-4 w-4" />
+                                Download Log
+                            </Button>
+                        )}
+                    </div>
+                    
+                    {importLog.length > 0 && (
+                        <div className="text-xs text-muted-foreground text-center">
+                            Import log contains {importLog.length} entries with detailed results
+                        </div>
                     )}
                 </CardFooter>
             </Card>

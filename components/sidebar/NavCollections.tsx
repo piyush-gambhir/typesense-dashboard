@@ -2,12 +2,17 @@
 
 import {
     ArrowLeftRight,
+    BarChart3,
+    CheckCircle,
     ChevronRight,
+    Database,
     FilePlus,
     Folder,
     Forward,
     ListFilter,
     type LucideIcon,
+    Search,
+    Settings,
 } from 'lucide-react';
 
 import {
@@ -116,6 +121,58 @@ export function NavCollections({
                                             >
                                                 <FilePlus className="text-muted-foreground" />
                                                 <span>Add Document</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton asChild>
+                                            <Link
+                                                href={`/collections/${item.name}/documents/bulk`}
+                                            >
+                                                <Database className="text-muted-foreground" />
+                                                <span>Bulk Operations</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton asChild>
+                                            <Link
+                                                href={`/collections/${item.name}/documents/stats`}
+                                            >
+                                                <BarChart3 className="text-muted-foreground" />
+                                                <span>Document Stats</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton asChild>
+                                            <Link
+                                                href={`/collections/${item.name}/documents/validator`}
+                                            >
+                                                <CheckCircle className="text-muted-foreground" />
+                                                <span>Document Validator</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton asChild>
+                                            <Link
+                                                href={`/collections/${item.name}/documents/suggestions`}
+                                            >
+                                                <Search className="text-muted-foreground" />
+                                                <span>
+                                                    Document Suggestions
+                                                </span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton asChild>
+                                            <Link
+                                                href={`/collections/${item.name}/management`}
+                                            >
+                                                <Settings className="text-muted-foreground" />
+                                                <span>Management</span>
                                             </Link>
                                         </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>

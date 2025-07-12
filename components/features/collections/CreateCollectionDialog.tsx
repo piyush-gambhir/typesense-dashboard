@@ -1,6 +1,7 @@
 'use client';
 
 import { PlusCircle } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,22 +12,30 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 
-import CreateCollectionWithJsonl from '@/components/features/collections/CreateCollectionWithJsonl';
+import CreateCollectionUnified from '@/components/features/collections/CreateCollectionUnified';
 
 export default function CreateCollectionDialog() {
+    const [open, setOpen] = useState(false);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        // Refresh collections list if needed
+        window.location.reload();
+    };
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Create Collection
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Create New Collection</DialogTitle>
                 </DialogHeader>
-                <CreateCollectionWithJsonl />
+                <CreateCollectionUnified onSuccess={handleSuccess} mode="dialog" />
             </DialogContent>
         </Dialog>
     );

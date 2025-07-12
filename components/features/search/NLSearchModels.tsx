@@ -1,7 +1,7 @@
 'use client';
 
 import { Bot, Edit, Plus, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
     type NLSearchModel,
@@ -13,13 +13,7 @@ import { useToast } from '@/hooks/useToast';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -28,6 +22,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table,
     TableBody,
@@ -39,6 +34,41 @@ import {
 
 import CreateNLSearchModelDialog from '@/components/features/search/CreateNLSearchModelDialog';
 import EditNLSearchModelDialog from '@/components/features/search/EditNLSearchModelDialog';
+
+function NLSearchModelsSkeleton() {
+    return (
+        <div className="space-y-6">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <Skeleton className="h-8 w-80" />
+                    <Skeleton className="h-4 w-96" />
+                </div>
+                <Skeleton className="h-10 w-32" />
+            </div>
+
+            {/* Table skeleton */}
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
+                <CardContent className="p-6">
+                    <div className="space-y-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="flex items-center space-x-4"
+                            >
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-8 w-16" />
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
 export default function NLSearchModels() {
     const { toast } = useToast();
@@ -56,7 +86,7 @@ export default function NLSearchModels() {
 
     // const availableModelTypes = getAvailableModelTypes();
 
-    const fetchModels = async () => {
+    const fetchModels = useCallback(async () => {
         setLoading(true);
         try {
             const result = await listNLSearchModels();
@@ -79,7 +109,7 @@ export default function NLSearchModels() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
         fetchModels();
@@ -136,38 +166,31 @@ export default function NLSearchModels() {
     };
 
     if (loading) {
-        return (
-            <div className="container mx-auto p-4 md:p-8 flex flex-col gap-y-4">
-                <Card className="border-none shadow-none">
-                    <CardContent className="flex items-center justify-center h-64">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </CardContent>
-                </Card>
-            </div>
-        );
+        return <NLSearchModelsSkeleton />;
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-8 flex flex-col gap-y-4">
-            <Card className="border-none shadow-none">
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>
-                                Natural Language Search Models
-                            </CardTitle>
-                            <CardDescription>
-                                Manage AI models for natural language search
-                                functionality
-                            </CardDescription>
-                        </div>
-                        <Button onClick={() => setIsCreateDialogOpen(true)}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Model
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
+        <div className="space-y-6 container mx-auto px-4 py-8">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                        Natural Language Search Models
+                    </h2>
+                    <p className="text-muted-foreground">
+                        Manage AI models for natural language search
+                        functionality
+                    </p>
+                </div>
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Model
+                </Button>
+            </div>
+
+            {/* Content */}
+            <Card className="relative overflow-hidden transition-all hover:shadow-md">
+                <CardContent className="p-6">
                     {models.length === 0 ? (
                         <div className="flex items-center justify-center h-64">
                             <div className="text-center space-y-6 max-w-md">
@@ -199,81 +222,82 @@ export default function NLSearchModels() {
                                     <TableHead>ID</TableHead>
                                     <TableHead>Model Name</TableHead>
                                     <TableHead>Provider</TableHead>
-                                    <TableHead>Temperature</TableHead>
-                                    <TableHead>Max Bytes</TableHead>
-                                    <TableHead>Actions</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {models.map((model) => {
-                                    const provider = getProviderFromModelName(
-                                        model.model_name,
-                                    );
-                                    return (
-                                        <TableRow key={model.id}>
-                                            <TableCell className="font-mono text-sm">
-                                                {model.id}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>
-                                                    <div className="font-medium">
-                                                        {model.model_name}
-                                                    </div>
-                                                    {model.system_prompt && (
-                                                        <div className="text-xs text-muted-foreground truncate max-w-xs">
-                                                            {
-                                                                model.system_prompt
-                                                            }
-                                                        </div>
-                                                    )}
+                                {models.map((model) => (
+                                    <TableRow key={model.id}>
+                                        <TableCell className="font-mono text-sm">
+                                            {model.id}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="space-y-1">
+                                                <div className="font-medium">
+                                                    {model.model_name}
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline">
-                                                    {provider}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                {model.temperature !== undefined
-                                                    ? model.temperature
-                                                    : 'N/A'}
-                                            </TableCell>
-                                            <TableCell>
-                                                {model.max_bytes
-                                                    ? `${model.max_bytes.toLocaleString()}`
-                                                    : 'N/A'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            handleEdit(model)
-                                                        }
-                                                    >
-                                                        <Edit className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            handleDelete(model)
-                                                        }
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {model.system_prompt
+                                                        ? model.system_prompt.substring(
+                                                              0,
+                                                              50,
+                                                          ) +
+                                                          (model.system_prompt
+                                                              .length > 50
+                                                              ? '...'
+                                                              : '')
+                                                        : 'No system prompt'}
                                                 </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant="secondary">
+                                                {getProviderFromModelName(
+                                                    model.model_name,
+                                                )}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline">
+                                                {model.api_key
+                                                    ? 'Configured'
+                                                    : 'Not configured'}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        handleEdit(model)
+                                                    }
+                                                >
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        handleDelete(model)
+                                                    }
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     )}
                 </CardContent>
             </Card>
 
+            {/* Dialogs */}
             <CreateNLSearchModelDialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
@@ -297,10 +321,9 @@ export default function NLSearchModels() {
                     <DialogHeader>
                         <DialogTitle>Delete NL Search Model</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete the model &quot;
-                            {modelToDelete?.name}&quot;? This action cannot be
-                            undone and will disable natural language search for
-                            associated collections.
+                            Are you sure you want to delete the NL search model{' '}
+                            <strong>{modelToDelete?.model_name}</strong>? This
+                            action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
