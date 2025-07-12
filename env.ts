@@ -1,5 +1,5 @@
 export const env = {
-    NODE_ENV: process.env.NODE_ENV as 'development' | 'test' | 'production',
+    NODE_ENV: process.env.NODE_ENV,
     TYPESENSE_HOST: process.env.TYPESENSE_HOST!,
     TYPESENSE_PORT: process.env.TYPESENSE_PORT!,
     TYPESENSE_PROTOCOL: process.env.TYPESENSE_PROTOCOL!,
