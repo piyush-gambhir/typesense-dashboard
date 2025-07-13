@@ -76,7 +76,6 @@ export default function SearchOptionsPanel({
                 <Switch
                     checked={showFacetDebugger}
                     onCheckedChange={onShowFacetDebuggerChange}
-                    size="sm"
                 />
             </div>
         </div>

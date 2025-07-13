@@ -42,11 +42,9 @@ interface Collection {
 interface CollectionCardProps {
     collection: Collection;
     onViewDetails: (name: string) => void;
-    onImport: (name: string) => void;
-    onExport: (name: string) => void;
 }
 
-function CollectionCard({ collection, onViewDetails, onImport, onExport }: CollectionCardProps) {
+function CollectionCard({ collection, onViewDetails }: CollectionCardProps) {
     const { date } = convertUnixTimestamp(collection.created_at);
     
     const getDocumentCountStatus = (count: number) => {
@@ -150,7 +148,7 @@ function CollectionCard({ collection, onViewDetails, onImport, onExport }: Colle
                         <Link href={`/collections/${collection.name}/search`} className="flex-1">
                             <Button className="w-full gap-2 bg-gradient-to-r from-primary to-primary/90 shadow-lg font-medium">
                                 <Search className="h-4 w-4" />
-                                Search Collection
+                                Search
                             </Button>
                         </Link>
                         <Button
@@ -165,24 +163,26 @@ function CollectionCard({ collection, onViewDetails, onImport, onExport }: Colle
 
                     {/* Quick Actions */}
                     <div className="flex gap-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="flex-1 gap-2 text-muted-foreground"
-                            onClick={() => onImport(collection.name)}
-                        >
-                            <Import className="h-4 w-4" />
-                            Import
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="flex-1 gap-2 text-muted-foreground"
-                            onClick={() => onExport(collection.name)}
-                        >
-                            <Download className="h-4 w-4" />
-                            Export
-                        </Button>
+                        <Link href={`/collections/${collection.name}/documents`} className="flex-1">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full gap-2 text-muted-foreground hover:text-foreground"
+                            >
+                                <FileText className="h-4 w-4" />
+                                Documents
+                            </Button>
+                        </Link>
+                        <Link href={`/collections/${collection.name}/analytics`} className="flex-1">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full gap-2 text-muted-foreground hover:text-foreground"
+                            >
+                                <TrendingUp className="h-4 w-4" />
+                                Analytics
+                            </Button>
+                        </Link>
                     </div>
                 </div>
 
@@ -403,13 +403,6 @@ export default function TypesenseCollections({
         router.push(`/collections/${name}`);
     };
 
-    const handleImport = (name: string) => {
-        router.push(`/collections/${name}/documents/import`);
-    };
-
-    const handleExport = (name: string) => {
-        router.push(`/collections/${name}/documents/export`);
-    };
 
     if (!collections || collections.length === 0) {
         return (
@@ -456,8 +449,6 @@ export default function TypesenseCollections({
                         key={collection.name}
                         collection={collection}
                         onViewDetails={handleViewDetails}
-                        onImport={handleImport}
-                        onExport={handleExport}
                     />
                 ))}
             </div>

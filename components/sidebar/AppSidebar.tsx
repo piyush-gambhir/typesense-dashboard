@@ -2,12 +2,12 @@
 
 import {
     ArrowLeftRight,
+    BarChart3,
     Bot,
-    ChartBar,
-    Frame,
+    Database,
     ListFilter,
     Settings2,
-    SquareTerminal,
+    TrendingUp,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -15,6 +15,7 @@ import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar';
 
 import { NavCollections } from '@/components/sidebar/NavCollections';
 import { NavMain } from '@/components/sidebar/NavMain';
+import { AppSidebarHeader } from '@/components/sidebar/SidebarHeader';
 
 export default function AppSidebar({
     collections,
@@ -29,58 +30,57 @@ export default function AppSidebar({
     const data = {
         navMain: [
             {
-                title: 'Metrics',
+                title: 'Overview',
                 url: '/metrics',
-                icon: SquareTerminal,
+                icon: TrendingUp,
                 isActive: true,
                 items: [],
             },
             {
                 title: 'Collections',
                 url: '/collections',
-                icon: Frame,
-                isActive: true,
-                items: [],
-            },
-
-            {
-                title: 'Aliases',
-                url: '/aliases',
-                icon: ArrowLeftRight,
+                icon: Database,
                 isActive: true,
                 items: [],
             },
             {
-                title: 'Stopwords',
-                url: '/stopwords',
-                icon: ListFilter,
-                isActive: true,
-                items: [],
-            },
-            {
-                title: 'Analytics Rules',
-                url: '/analytics-rules',
-                icon: ChartBar,
-                isActive: true,
-                items: [],
-            },
-
-            {
-                title: 'NL Search',
+                title: 'Search Tools',
                 url: '/nl-search',
                 icon: Bot,
                 items: [
+                    {
+                        title: 'Natural Language',
+                        url: '/nl-search',
+                    },
                     {
                         title: 'Models',
                         url: '/nl-search-models',
                     },
                     {
-                        title: 'Test',
+                        title: 'Test Search',
                         url: '/nl-search-test',
                     },
                 ],
             },
-
+            {
+                title: 'Management',
+                url: '/aliases',
+                icon: Settings2,
+                items: [
+                    {
+                        title: 'Aliases',
+                        url: '/aliases',
+                    },
+                    {
+                        title: 'Stopwords',
+                        url: '/stopwords',
+                    },
+                    {
+                        title: 'Analytics Rules',
+                        url: '/analytics-rules',
+                    },
+                ],
+            },
             {
                 title: 'Settings',
                 url: '/settings',
@@ -100,21 +100,16 @@ export default function AppSidebar({
         collections: collectionsData.map((collection: any) => ({
             name: collection.name,
             url: `/collections/${collection.name}`,
-            icon: Frame,
+            icon: Database,
         })),
     };
     return (
-        <Sidebar collapsible="icon" {...props}>
-            {/* <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader> */}
-            <SidebarContent>
+        <Sidebar collapsible="icon" {...props} className="border-r border-border/50">
+            <AppSidebarHeader />
+            <SidebarContent className="gap-6 py-4">
                 <NavMain items={data.navMain} />
                 <NavCollections collections={data.collections} />
             </SidebarContent>
-            {/* <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter> */}
             <SidebarRail />
         </Sidebar>
     );
