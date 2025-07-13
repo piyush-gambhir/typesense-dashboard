@@ -1,4 +1,10 @@
-import { AlertCircle, BookOpen, Brain, MessageSquare, Settings } from 'lucide-react';
+import {
+    AlertCircle,
+    BookOpen,
+    Brain,
+    MessageSquare,
+    Settings,
+} from 'lucide-react';
 import { Metadata } from 'next';
 import React from 'react';
 
@@ -14,8 +20,8 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import NLConversations from '@/components/features/search/NLConversations';
-import NLSearchModels from '@/components/features/search/NLSearchModels';
+import NLConversations from '@/components/features/search/nl-conversations';
+import NLSearchModels from '@/components/features/search/nl-search-models';
 
 export const metadata: Metadata = {
     title: 'Natural Language Search | Typesense Dashboard',
@@ -35,8 +41,8 @@ export default async function NaturalLanguageSearchPage() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Connection Error</AlertTitle>
                         <AlertDescription>
-                            Unable to connect to Typesense server. Please check your
-                            configuration and try again. Error:{' '}
+                            Unable to connect to Typesense server. Please check
+                            your configuration and try again. Error:{' '}
                             {connectionStatus.error}
                         </AlertDescription>
                     </Alert>

@@ -1,4 +1,4 @@
-import CreateDocumentPage from '@/components/features/documents/CreateDocument';
+import CreateDocumentPage from '@/components/features/documents/create-document';
 
 export default async function AddDocumentPage({
     params,

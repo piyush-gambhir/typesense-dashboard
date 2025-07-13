@@ -5,7 +5,7 @@ import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-import TypesenseServerMetrics from '@/components/features/analytics/TypesenseServerMetrics';
+import TypesenseServerMetrics from '@/components/features/analytics/typesense-server-metrics';
 
 export default async function page() {
     // Check connection first

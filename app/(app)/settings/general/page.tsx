@@ -8,7 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 
-import ConnectionStatus from '@/components/features/settings/ConnectionStatus';
+import ConnectionStatus from '@/components/features/settings/connection-status';
 
 export default function GeneralSettings() {
     return (

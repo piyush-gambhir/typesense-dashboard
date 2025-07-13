@@ -6,10 +6,10 @@ import { getCollection } from '@/lib/typesense/collections';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import CollectionBackupRestore from '@/components/features/collections/CollectionBackupRestore';
-import CollectionConfigManager from '@/components/features/collections/CollectionConfigManager';
-import CollectionFieldManager from '@/components/features/collections/CollectionFieldManager';
-import CollectionStats from '@/components/features/collections/CollectionStats';
+import CollectionBackupRestore from '@/components/features/collections/collection-backup-restore';
+import CollectionConfigManager from '@/components/features/collections/collection-config-manager';
+import CollectionFieldManager from '@/components/features/collections/collection-field-manager';
+import CollectionStats from '@/components/features/collections/collection-stats';
 
 export default async function CollectionManagementPage({
     params,

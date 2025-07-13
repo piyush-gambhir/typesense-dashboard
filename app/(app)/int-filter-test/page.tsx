@@ -1,4 +1,4 @@
-import IntFilterTest from '@/components/features/search/IntFilterTest';
+import IntFilterTest from '@/components/features/search/int-filter-test';
 
 export default function IntFilterTestPage() {
     return (

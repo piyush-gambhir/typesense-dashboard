@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CollectionAnalytics from '@/components/features/collections/CollectionAnalytics';
+import CollectionAnalytics from '@/components/features/collections/collection-analytics';
 
 export default async function AnalyticsPage({
     params,

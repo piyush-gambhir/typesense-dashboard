@@ -1,4 +1,4 @@
-import Aliases from '@/components/features/analytics/Aliases';
+import Aliases from '@/components/features/analytics/aliases';
 
 export default function AliasesPage() {
     return <Aliases />;

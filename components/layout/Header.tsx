@@ -15,7 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
-import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { ThemeToggle } from '@/components/common/theme-toggle';
 
 export default function Header() {
     const pathname = usePathname();

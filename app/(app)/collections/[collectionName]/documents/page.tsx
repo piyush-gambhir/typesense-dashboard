@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CollectionDocumentsManager from '@/components/features/collections/CollectionDocumentsManager';
+import CollectionDocumentsManager from '@/components/features/collections/collection-documents-manager';
 
 export default async function DocumentsPage({
     params,

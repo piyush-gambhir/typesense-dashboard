@@ -5,8 +5,8 @@ import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
-import Header from '@/components/layout/Header';
-import AppSidebar from '@/components/sidebar/AppSidebar';
+import Header from '@/components/layout/header';
+import AppSidebar from '@/components/sidebar/app-sidebar';
 
 export default async function RootLayout({
     children,

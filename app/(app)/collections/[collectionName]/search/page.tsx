@@ -1,6 +1,6 @@
 import React from 'react';
 
-import TypesenseSearch from '@/components/features/search/TypesenseSearch';
+import TypesenseSearch from '@/components/features/search/typesense-search';
 
 export default async function page({
     params,

@@ -6,7 +6,7 @@ import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-import TypesenseApiSettings from '@/components/features/settings/TypesenseApiSettings';
+import TypesenseApiSettings from '@/components/features/settings/typesense-api-settings';
 
 export default async function page() {
     // Check connection first

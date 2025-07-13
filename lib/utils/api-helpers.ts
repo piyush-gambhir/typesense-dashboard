@@ -1,4 +1,4 @@
-import { toast } from '@/hooks/useToast';
+import { toast } from '@/hooks/use-toast';
 
 // Standard API response type
 export interface ApiResponse<T = any> {
@@ -13,7 +13,7 @@ export class ApiError extends Error {
     constructor(
         message: string,
         public status?: number,
-        public code?: string
+        public code?: string,
     ) {
         super(message);
         this.name = 'ApiError';
@@ -74,7 +74,7 @@ export const apiToast = {
             loading: string;
             success: string;
             error: string;
-        }
+        },
     ) => {
         toast({
             title: messages.loading,
@@ -91,7 +91,10 @@ export const apiToast = {
             .catch((error) => {
                 toast({
                     title: messages.error,
-                    description: error instanceof Error ? error.message : 'Operation failed',
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : 'Operation failed',
                     variant: 'destructive',
                 });
                 throw error;
@@ -102,7 +105,7 @@ export const apiToast = {
 // Async operation wrapper with error handling
 export async function withErrorHandling<T>(
     operation: () => Promise<T>,
-    context?: string
+    context?: string,
 ): Promise<ApiResponse<T>> {
     try {
         const data = await operation();
@@ -124,14 +127,14 @@ export async function handleFormSubmission<T extends Record<string, any>>(
         errorMessage?: string;
         onSuccess?: () => void;
         onError?: (error: string) => void;
-    } = {}
+    } = {},
 ) {
     try {
         const result = await submitFn(data);
-        
+
         if (result?.success !== false) {
             apiToast.success(
-                options.successMessage || 'Operation completed successfully'
+                options.successMessage || 'Operation completed successfully',
             );
             options.onSuccess?.();
             return { success: true, data: result };
@@ -139,10 +142,11 @@ export async function handleFormSubmission<T extends Record<string, any>>(
             throw new Error(result.error || 'Operation failed');
         }
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Operation failed';
+        const errorMessage =
+            error instanceof Error ? error.message : 'Operation failed';
         apiToast.error(
             options.errorMessage || 'Operation failed',
-            errorMessage
+            errorMessage,
         );
         options.onError?.(errorMessage);
         return { success: false, error: errorMessage };
@@ -155,14 +159,16 @@ export const collectionHelpers = {
         return handleFormSubmission(
             data,
             async (formData) => {
-                const { createCollection } = await import('@/lib/typesense/collections');
+                const { createCollection } = await import(
+                    '@/lib/typesense/collections'
+                );
                 return createCollection(formData);
             },
             {
                 successMessage: 'Collection created successfully',
                 errorMessage: 'Failed to create collection',
                 onSuccess,
-            }
+            },
         );
     },
 
@@ -170,29 +176,33 @@ export const collectionHelpers = {
         return handleFormSubmission(
             data,
             async (formData) => {
-                const { updateCollection } = await import('@/lib/typesense/collections');
+                const { updateCollection } = await import(
+                    '@/lib/typesense/collections'
+                );
                 return updateCollection(name, formData);
             },
             {
                 successMessage: 'Collection updated successfully',
                 errorMessage: 'Failed to update collection',
                 onSuccess,
-            }
+            },
         );
     },
 
     async delete(name: string, onSuccess?: () => void) {
         return withErrorHandling(async () => {
-            const { deleteCollection } = await import('@/lib/typesense/collections');
+            const { deleteCollection } = await import(
+                '@/lib/typesense/collections'
+            );
             const result = await deleteCollection(name);
-            
+
             if (result) {
                 apiToast.success('Collection deleted successfully');
                 onSuccess?.();
             } else {
                 throw new Error('Failed to delete collection');
             }
-            
+
             return result;
         }, 'Collection deletion');
     },
@@ -204,44 +214,59 @@ export const documentHelpers = {
         return handleFormSubmission(
             data,
             async (formData) => {
-                const { createDocument } = await import('@/lib/typesense/documents');
+                const { createDocument } = await import(
+                    '@/lib/typesense/documents'
+                );
                 return createDocument(collectionName, formData);
             },
             {
                 successMessage: 'Document created successfully',
                 errorMessage: 'Failed to create document',
                 onSuccess,
-            }
+            },
         );
     },
 
-    async update(collectionName: string, documentId: string, data: any, onSuccess?: () => void) {
+    async update(
+        collectionName: string,
+        documentId: string,
+        data: any,
+        onSuccess?: () => void,
+    ) {
         return handleFormSubmission(
             data,
             async (formData) => {
-                const { updateDocument } = await import('@/lib/typesense/documents');
+                const { updateDocument } = await import(
+                    '@/lib/typesense/documents'
+                );
                 return updateDocument(collectionName, documentId, formData);
             },
             {
                 successMessage: 'Document updated successfully',
                 errorMessage: 'Failed to update document',
                 onSuccess,
-            }
+            },
         );
     },
 
-    async delete(collectionName: string, documentId: string, onSuccess?: () => void) {
+    async delete(
+        collectionName: string,
+        documentId: string,
+        onSuccess?: () => void,
+    ) {
         return withErrorHandling(async () => {
-            const { deleteDocument } = await import('@/lib/typesense/documents');
+            const { deleteDocument } = await import(
+                '@/lib/typesense/documents'
+            );
             const result = await deleteDocument(collectionName, documentId);
-            
+
             if (result) {
                 apiToast.success('Document deleted successfully');
                 onSuccess?.();
             } else {
                 throw new Error('Failed to delete document');
             }
-            
+
             return result;
         }, 'Document deletion');
     },
@@ -251,23 +276,23 @@ export const documentHelpers = {
 export async function fetchWithErrorHandling<T>(
     fetchFn: () => Promise<T>,
     fallback?: T,
-    context?: string
+    context?: string,
 ): Promise<T | null> {
     try {
         return await fetchFn();
     } catch (error) {
         console.error(context ? `[${context}]` : '[Fetch Error]', error);
-        
+
         if (fallback !== undefined) {
             return fallback;
         }
-        
+
         // Show error toast for failed fetches
         apiToast.error(
             'Failed to load data',
-            error instanceof Error ? error.message : 'Please try again'
+            error instanceof Error ? error.message : 'Please try again',
         );
-        
+
         return null;
     }
 }

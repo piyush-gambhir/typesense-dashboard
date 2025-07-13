@@ -1,6 +1,6 @@
 import React from 'react';
 
-import EditDocumentPage from '@/components/features/documents/EditDocument';
+import EditDocumentPage from '@/components/features/documents/edit-document';
 
 export default async function page({
     params,

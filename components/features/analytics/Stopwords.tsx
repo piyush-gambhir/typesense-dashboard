@@ -10,7 +10,7 @@ import {
     upsertStopwords,
 } from '@/lib/typesense/stopwords';
 
-import { toast } from '@/hooks/useToast';
+import { toast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -49,7 +49,7 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 interface StopwordsSet {
     id: string;

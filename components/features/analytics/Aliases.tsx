@@ -19,7 +19,7 @@ import {
 } from '@/lib/typesense/aliases';
 import { getCollections } from '@/lib/typesense/collections';
 
-import { toast } from '@/hooks/useToast';
+import { toast } from '@/hooks/use-toast';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -66,7 +66,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 interface Alias {
     name: string;
