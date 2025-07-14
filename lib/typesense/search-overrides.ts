@@ -1,4 +1,4 @@
-import { getTypesenseClient } from "@/lib/typesense/typesense-client";
+import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 
 export interface SearchOverride {
     id: string;
@@ -18,7 +18,8 @@ export interface SearchOverride {
 export async function listSearchOverrides() {
     try {
         // Get all collections first
-        const typesenseClient = getTypesenseClient();        const collections = await typesenseClient.collections().retrieve();
+        const typesenseClient = getTypesenseClient();
+        const collections = await typesenseClient.collections().retrieve();
         const allOverrides = [];
 
         // Fetch overrides for each collection
@@ -58,6 +59,7 @@ export async function getSearchOverride(
     overrideId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const override = await typesenseClient
             .collections(collectionName)
             .overrides(overrideId)
@@ -75,6 +77,7 @@ export async function createSearchOverride(
     override: any,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const newOverride = await typesenseClient
             .collections(collectionName)
             .overrides()
@@ -92,6 +95,7 @@ export async function updateSearchOverride(
     override: any,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const updatedOverride = await typesenseClient
             .collections(collectionName)
             .overrides()
@@ -108,6 +112,7 @@ export async function deleteSearchOverride(
     overrideId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .overrides(overrideId)

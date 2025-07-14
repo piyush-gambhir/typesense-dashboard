@@ -1,11 +1,12 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
+
 import { getServerTypesenseClient } from '@/lib/typesense/get-server-client';
 
 export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
 
 export async function getCollections() {
     try {
-    const typesenseClient = await getServerTypesenseClient();
+        const typesenseClient = await getServerTypesenseClient();
         const collections = await typesenseClient.collections().retrieve();
         return {
             success: true,
@@ -22,7 +23,7 @@ export async function getCollections() {
 
 export async function getCollection(collectionName: string) {
     try {
-    const typesenseClient = await getServerTypesenseClient();
+        const typesenseClient = await getServerTypesenseClient();
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
@@ -49,7 +50,7 @@ export async function getCollection(collectionName: string) {
 
 export async function createCollection(schema: CollectionCreateSchema) {
     try {
-    const typesenseClient = await getServerTypesenseClient();
+        const typesenseClient = await getServerTypesenseClient();
         const newCollection = await typesenseClient
             .collections()
             .create(schema);
@@ -64,6 +65,8 @@ export async function updateCollection(
     schema: Record<string, any>,
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         // Validate collection name
         if (!collectionName || typeof collectionName !== 'string') {
             throw new Error('Invalid collection name');
@@ -268,7 +271,7 @@ export async function updateCollection(
 
 export async function deleteCollection(collectionName: string) {
     try {
-    const typesenseClient = await getServerTypesenseClient();
+        const typesenseClient = await getServerTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .delete();
@@ -322,6 +325,8 @@ export async function importCollection(
     documents: Record<string, any>[],
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         const importedCollection = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -635,6 +640,8 @@ export async function updateCollectionConfig(
     },
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         const updateData: Record<string, any> = {};
 
         if (config.default_sorting_field !== undefined) {
@@ -714,6 +721,8 @@ export async function addCollectionFields(
     }>,
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         const validatedFields = fields.map((field) => ({
             name: field.name,
             type: field.type as any, // Type assertion for FieldType

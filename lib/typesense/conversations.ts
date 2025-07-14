@@ -1,4 +1,4 @@
-import { getTypesenseClient } from "@/lib/typesense/typesense-client";
+import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 
 export interface ConversationMessage {
     role: 'user' | 'assistant';
@@ -90,6 +90,8 @@ export interface ConversationSearchResponse {
 // Create a new conversation
 export async function createConversation(request: CreateConversationRequest) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.post(
             '/conversations',
             request,
@@ -115,6 +117,8 @@ export async function listConversations(params?: {
     offset?: number;
 }) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const queryParams = new URLSearchParams();
         if (params?.collection_name)
             queryParams.set('collection_name', params.collection_name);
@@ -146,6 +150,8 @@ export async function listConversations(params?: {
 // Get a specific conversation
 export async function getConversation(conversationId: string) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.get(
             `/conversations/${conversationId}`,
         );
@@ -168,6 +174,8 @@ export async function updateConversation(
     updates: UpdateConversationRequest,
 ) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.put(
             `/conversations/${conversationId}`,
             updates,
@@ -188,6 +196,8 @@ export async function updateConversation(
 // Delete a conversation
 export async function deleteConversation(conversationId: string) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         await (typesenseClient as any).apiCall.delete(
             `/conversations/${conversationId}`,
         );
@@ -212,6 +222,8 @@ export async function conversationSearch(
     error?: string;
 }> {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.post(
             `/conversations/${request.conversation_id}/search`,
             {
@@ -249,6 +261,8 @@ export async function addMessageToConversation(
     message: ConversationMessage,
 ) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.post(
             `/conversations/${conversationId}/messages`,
             message,
@@ -276,6 +290,8 @@ export async function getConversationMessages(
     },
 ) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const queryParams = new URLSearchParams();
         if (params?.limit) queryParams.set('limit', params.limit.toString());
         if (params?.offset) queryParams.set('offset', params.offset.toString());
@@ -306,6 +322,8 @@ export async function getConversationMessages(
 // Clear conversation history (keep conversation but remove messages)
 export async function clearConversationHistory(conversationId: string) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         await (typesenseClient as any).apiCall.delete(
             `/conversations/${conversationId}/messages`,
         );
@@ -327,6 +345,8 @@ export async function exportConversation(
     format: 'json' | 'csv' | 'txt' = 'json',
 ) {
     try {
+        const typesenseClient = await getTypesenseClient();
+
         const response = await (typesenseClient as any).apiCall.get(
             `/conversations/${conversationId}/export?format=${format}`,
         );

@@ -36,6 +36,8 @@ export async function multiSearch({
     searchQueries: SearchQuery[];
 }>): Promise<MultiSearchResponse | null> {
     try {
+        const typesenseClient = getTypesenseClient();
+
         if (!typesenseClient?.multiSearch?.perform) {
             console.error(
                 'Typesense client or multiSearch method is not available',
@@ -58,7 +60,11 @@ export async function multiSearch({
             };
 
             // Only add query_by if it's not empty and not just '*'
-            if (query.queryBy && query.queryBy.trim() !== '' && query.queryBy !== '*') {
+            if (
+                query.queryBy &&
+                query.queryBy.trim() !== '' &&
+                query.queryBy !== '*'
+            ) {
                 request.query_by = query.queryBy;
             }
 
@@ -100,8 +106,6 @@ export async function multiSearch({
         });
 
         console.log('[multiSearch] Processed requests:', multiSearchRequests);
-
-        const typesenseClient = getTypesenseClient();
         const response = await typesenseClient.multiSearch.perform({
             searches: multiSearchRequests,
         });
@@ -127,6 +131,7 @@ export async function createDocument(
     document: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const createdDocument = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -147,6 +152,7 @@ export async function getDocumentById(
     documentId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const document = await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -168,6 +174,7 @@ export async function updateDocument(
     document: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const updatedDocument = await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -188,6 +195,7 @@ export async function deleteDocument(
     documentId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -209,6 +217,7 @@ export async function deleteDocumentsByQuery(
     batchSize?: number,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -232,6 +241,7 @@ export async function upsertDocument(
     document: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const upsertResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -257,6 +267,7 @@ export async function searchDocuments(
     page: number = 1,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const searchResults = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -284,6 +295,7 @@ export async function bulkCreateDocuments(
     documents: Record<string, unknown>[],
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const bulkResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -315,6 +327,7 @@ export async function bulkUpdateDocuments(
     documents: Record<string, unknown>[],
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const bulkResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -346,6 +359,7 @@ export async function bulkUpsertDocuments(
     documents: Record<string, unknown>[],
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const bulkResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -377,6 +391,7 @@ export async function emplaceDocument(
     document: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const emplaceResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -397,6 +412,7 @@ export async function getDocumentCount(
     filterBy?: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const searchResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -422,6 +438,7 @@ export async function documentExists(
     documentId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -483,6 +500,7 @@ export async function getDocumentFieldStats(
     filterBy?: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const searchResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -526,6 +544,7 @@ export async function getDocumentMetadata(
     documentId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const document = await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -562,6 +581,7 @@ export async function updateDocumentMetadata(
     metadata: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const updatedDocument = await typesenseClient
             .collections(collectionName)
             .documents(documentId)
@@ -591,6 +611,7 @@ export async function getDocumentsByFilter(
     page: number = 1,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const documents = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -626,6 +647,7 @@ export async function getAllDocuments(
     sortBy?: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const documents = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -658,6 +680,7 @@ export async function validateDocument(
     document: Record<string, unknown>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         // Get collection schema first
         const collection = await typesenseClient
             .collections(collectionName)
@@ -787,6 +810,7 @@ export async function getDocumentSuggestions(
     limit: number = 10,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const suggestions = await typesenseClient
             .collections(collectionName)
             .documents()
