@@ -1,8 +1,8 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export async function listAnalyticsRules() {
     try {
-        const rules = await typesenseClient.analytics.rules().retrieve();
+        const typesenseClient = getTypesenseClient();        const rules = await typesenseClient.analytics.rules().retrieve();
         return rules.rules;
     } catch (error) {
         console.error('Error listing analytics rules:', error);
@@ -15,7 +15,7 @@ export async function createAnalyticsRule(
     rule: Record<string, any>,
 ) {
     try {
-        const newRule = await typesenseClient.analytics
+        const typesenseClient = getTypesenseClient();        const newRule = await typesenseClient.analytics
             .rules()
             .upsert(ruleName, rule as any);
         return newRule;
@@ -27,7 +27,7 @@ export async function createAnalyticsRule(
 
 export async function deleteAnalyticsRule(ruleName: string) {
     try {
-        const deleteResult = await typesenseClient.analytics
+        const typesenseClient = getTypesenseClient();        const deleteResult = await typesenseClient.analytics
             .rules(ruleName)
             .delete();
         return deleteResult;

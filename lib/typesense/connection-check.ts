@@ -1,4 +1,4 @@
-import typesenseClient from './typesense-client';
+import { getServerTypesenseClient, getServerConnectionConfig } from '@/lib/typesense/get-server-client';
 
 export interface ConnectionStatus {
     isConnected: boolean;
@@ -12,29 +12,15 @@ export interface ConnectionStatus {
 }
 
 export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
+    // Get the actual configuration that will be used
+    const config = await getServerConnectionConfig();
+    const typesenseClient = await getServerTypesenseClient();
+    
     const serverInfo = {
-        host: process.env.TYPESENSE_HOST ?? 'localhost',
-        port: parseInt(process.env.TYPESENSE_PORT ?? '8108'),
-        protocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
+        host: config.host,
+        port: config.port,
+        protocol: config.protocol,
     };
-
-    // Check if required environment variables are set
-    const requiredVars = [
-        'TYPESENSE_HOST',
-        'TYPESENSE_PORT',
-        'TYPESENSE_PROTOCOL',
-        'TYPESENSE_API_KEY',
-    ];
-    const missingVars = requiredVars.filter((varName) => !process.env[varName]);
-
-    if (missingVars.length > 0) {
-        return {
-            isConnected: false,
-            error: `Missing environment variables: ${missingVars.join(', ')}`,
-            serverInfo,
-            timestamp: new Date().toISOString(),
-        };
-    }
 
     try {
         // Create a timeout promise to avoid hanging during build

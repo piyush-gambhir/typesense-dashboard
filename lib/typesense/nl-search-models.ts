@@ -1,4 +1,4 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 
 export interface NLSearchModel {
     id: string;
@@ -119,6 +119,7 @@ export interface NLSearchResponse {
 // Create a new NL search model
 export async function createNLSearchModel(model: CreateNLSearchModelRequest) {
     try {
+        const typesenseClient = await getTypesenseClient();
         // Use the generic API call method since nlSearchModels may not be in types yet
         const response = await (typesenseClient as any).apiCall.post(
             '/nl_search_models',
@@ -140,6 +141,7 @@ export async function createNLSearchModel(model: CreateNLSearchModelRequest) {
 // List all NL search models
 export async function listNLSearchModels() {
     try {
+        const typesenseClient = await getTypesenseClient();
         const response = await (typesenseClient as any).apiCall.get(
             '/nl_search_models',
         );
@@ -164,6 +166,7 @@ export async function listNLSearchModels() {
 // Get a specific NL search model
 export async function getNLSearchModel(modelId: string) {
     try {
+        const typesenseClient = await getTypesenseClient();
         const response = await (typesenseClient as any).apiCall.get(
             `/nl_search_models/${modelId}`,
         );
@@ -186,6 +189,7 @@ export async function updateNLSearchModel(
     updates: UpdateNLSearchModelRequest,
 ) {
     try {
+        const typesenseClient = await getTypesenseClient();
         const response = await (typesenseClient as any).apiCall.put(
             `/nl_search_models/${modelId}`,
             updates,
@@ -206,6 +210,7 @@ export async function updateNLSearchModel(
 // Delete an NL search model
 export async function deleteNLSearchModel(modelId: string) {
     try {
+        const typesenseClient = await getTypesenseClient();
         await (typesenseClient as any).apiCall.delete(
             `/nl_search_models/${modelId}`,
         );
@@ -226,6 +231,7 @@ export async function naturalLanguageSearch(
     query: NLSearchQuery,
 ): Promise<{ success: boolean; data?: NLSearchResponse; error?: string }> {
     try {
+        const typesenseClient = await getTypesenseClient();
         const searchParams: any = {
             q: query.nl_query,
             query_by: query.query_by || '*',

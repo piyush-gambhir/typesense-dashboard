@@ -5,7 +5,7 @@ import { getCollection } from '@/lib/typesense/collections';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-import TypesenseCollectionDetails from '@/components/features/collections/TypesenseCollectionDetails';
+import TypesenseCollectionDetails from '@/components/features/collections/typesense-collection-details';
 
 export default async function page({
     params,

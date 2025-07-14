@@ -5,7 +5,7 @@ import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-import TypesenseServerMetrics from '@/components/features/analytics/TypesenseServerMetrics';
+import TypesenseServerMetrics from '@/components/features/analytics/typesense-server-metrics';
 
 export default async function page() {
     // Check connection first
@@ -13,16 +13,18 @@ export default async function page() {
 
     if (!connectionStatus.isConnected) {
         return (
-            <div className="container mx-auto p-4">
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Connection Error</AlertTitle>
-                    <AlertDescription>
-                        Unable to connect to Typesense server. Please check your
-                        configuration and try again. Error:{' '}
-                        {connectionStatus.error}
-                    </AlertDescription>
-                </Alert>
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-2xl mx-auto">
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Connection Error</AlertTitle>
+                        <AlertDescription>
+                            Unable to connect to Typesense server. Please check your
+                            configuration and try again. Error:{' '}
+                            {connectionStatus.error}
+                        </AlertDescription>
+                    </Alert>
+                </div>
             </div>
         );
     }
@@ -32,15 +34,17 @@ export default async function page() {
 
         if (!clusterData || clusterData.status === 'error') {
             return (
-                <div className="container mx-auto p-4">
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Connection Error</AlertTitle>
-                        <AlertDescription>
-                            Unable to connect to Typesense server. Please check
-                            your configuration and try again.
-                        </AlertDescription>
-                    </Alert>
+                <div className="container mx-auto px-4 py-8">
+                    <div className="max-w-2xl mx-auto">
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Connection Error</AlertTitle>
+                            <AlertDescription>
+                                Unable to connect to Typesense server. Please check
+                                your configuration and try again.
+                            </AlertDescription>
+                        </Alert>
+                    </div>
                 </div>
             );
         }
@@ -62,14 +66,16 @@ export default async function page() {
         );
     } catch (error) {
         return (
-            <div className="container mx-auto p-4">
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error Loading Metrics</AlertTitle>
-                    <AlertDescription>
-                        Failed to load server metrics. Please try again later.
-                    </AlertDescription>
-                </Alert>
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-2xl mx-auto">
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error Loading Metrics</AlertTitle>
+                        <AlertDescription>
+                            Failed to load server metrics. Please try again later.
+                        </AlertDescription>
+                    </Alert>
+                </div>
             </div>
         );
     }

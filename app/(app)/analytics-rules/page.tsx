@@ -1,4 +1,4 @@
-import AnalyticsRules from '@/components/features/analytics/AnalyticsRules';
+import AnalyticsRules from '@/components/features/analytics/analytics-rules';
 
 export default function AnalyticsRulesPage() {
     return <AnalyticsRules />;

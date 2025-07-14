@@ -1,7 +1,8 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export async function listStopwords(collectionName: string) {
     try {
+        const typesenseClient = getTypesenseClient();
         const stopwordsResult = await (
             typesenseClient.collections(collectionName) as any
         )
@@ -20,6 +21,7 @@ export async function upsertStopwords(
     stopwords: Record<string, any>,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const newStopwords = await (
             typesenseClient.collections(collectionName) as any
         )
@@ -37,6 +39,7 @@ export async function deleteStopwords(
     stopwordsId: string,
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const deleteResult = await (
             typesenseClient.collections(collectionName) as any
         )

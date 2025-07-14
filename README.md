@@ -7,6 +7,8 @@ This project is a dashboard built with **Next.js** and **TypeScript**, integrate
 ### **Features**
 
 - **Typesense Integration**: Full integration with Typesense to retrieve collections and perform search operations.
+- **Collection Aliases Management**: Create, edit, and delete collection aliases for zero-downtime schema changes and backward compatibility.
+- **Search Curation Management**: Comprehensive search override management with document promotion, exclusion, and stop words.
 - **Responsive Design**: Adaptive user interface built using modern React components for a smooth user experience across devices.
 - **Real-time Collection Management**: View, search, and manage collections dynamically.
 - **TypeScript**: Full type-safety using TypeScript for a more maintainable and error-free codebase.
@@ -134,6 +136,120 @@ export default typesenseClient;
 ```
 
 This client is used throughout the project to fetch collections, search data, and display the results dynamically in the UI.
+
+#### **Collection Aliases Management**
+
+The dashboard provides comprehensive collection alias management functionality:
+
+**Features:**
+
+- **Create Aliases**: Create new aliases that point to existing collections
+- **Edit Aliases**: Update which collection an alias points to
+- **Delete Aliases**: Remove aliases when no longer needed
+- **Search & Filter**: Search through aliases by name or collection name
+- **Real-time Updates**: See changes immediately after operations
+
+**Use Cases:**
+
+- **Zero-downtime Schema Changes**: Point aliases to new collection versions
+- **Backward Compatibility**: Maintain old collection names while using new ones
+- **Friendly Names**: Create user-friendly names for collections
+- **Version Management**: Switch between different collection versions
+
+**API Functions:**
+
+```ts
+import {
+    createAlias,
+    deleteAlias,
+    getAlias,
+    listAliases,
+    updateAlias,
+} from '@/lib/typesense/aliases';
+
+// List all aliases
+const aliases = await listAliases();
+
+// Get specific alias
+const alias = await getAlias('my-alias');
+
+// Create new alias
+const newAlias = await createAlias('my-alias', 'my-collection');
+
+// Update alias
+const updatedAlias = await updateAlias('my-alias', 'new-collection');
+
+// Delete alias
+const deleted = await deleteAlias('my-alias');
+```
+
+**Access:** Navigate to `/aliases` in the dashboard to manage collection aliases.
+
+#### **Search Curation Management**
+
+The dashboard provides comprehensive search curation (overrides) management functionality:
+
+**Features:**
+
+- **Create Curations**: Create search overrides with complex rules and conditions
+- **Edit Curations**: Update existing curations with new settings
+- **Delete Curations**: Remove curations when no longer needed
+- **Document Promotion**: Force include specific documents in search results
+- **Document Exclusion**: Force exclude specific documents from search results
+- **Stop Words**: Add words to ignore in search queries
+- **Advanced Filtering**: Apply custom filters and sorting to search results
+- **Search & Filter**: Search through curations by ID, collection, or query
+- **Real-time Updates**: See changes immediately after operations
+
+**Use Cases:**
+
+- **Content Promotion**: Ensure important documents appear for specific queries
+- **Content Filtering**: Exclude irrelevant or outdated content
+- **Search Optimization**: Improve search relevance and user experience
+- **A/B Testing**: Test different search behaviors
+- **Business Rules**: Implement business-specific search logic
+
+**API Functions:**
+
+```ts
+import {
+    createSearchOverride,
+    deleteSearchOverride,
+    getSearchOverride,
+    listSearchOverrides,
+    updateSearchOverride,
+    validateOverrideData,
+} from '@/lib/typesense/search-overrides';
+
+// List all search overrides
+const overrides = await listSearchOverrides();
+
+// Get specific override
+const override = await getSearchOverride('collection', 'override-id');
+
+// Create new override
+const newOverride = await createSearchOverride('collection', 'override-id', {
+    rule: { query: 'search term', match: 'contains' },
+    applies_to: 'always',
+    force_include: [{ id: 'doc1', position: 1 }],
+    force_exclude: [{ id: 'doc2' }],
+    stop_words: ['the', 'and'],
+});
+
+// Update override
+const updatedOverride = await updateSearchOverride(
+    'collection',
+    'override-id',
+    {
+        force_include: [{ id: 'doc3', position: 1 }],
+    },
+);
+
+// Delete override
+const deleted = await deleteSearchOverride('collection', 'override-id');
+```
+
+**Access:** Navigate to any collection and click "Curations" in the sidebar to manage search curations for that collection.
 
 ---
 

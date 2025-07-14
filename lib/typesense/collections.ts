@@ -1,11 +1,12 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getServerTypesenseClient } from '@/lib/typesense/get-server-client';
 
 export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
 
 export async function getCollections() {
     try {
+        const typesenseClient = await getServerTypesenseClient();
         const collections = await typesenseClient.collections().retrieve();
         return {
             success: true,
@@ -22,14 +23,7 @@ export async function getCollections() {
 
 export async function getCollection(collectionName: string) {
     try {
-        if (!typesenseClient?.collections) {
-            console.error('Typesense client is not available');
-            return {
-                success: false,
-                error: 'Typesense client is not available',
-            };
-        }
-
+        const typesenseClient = await getServerTypesenseClient();
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
@@ -56,6 +50,7 @@ export async function getCollection(collectionName: string) {
 
 export async function createCollection(schema: CollectionCreateSchema) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
         const newCollection = await typesenseClient
             .collections()
             .create(schema);
@@ -70,6 +65,8 @@ export async function updateCollection(
     schema: Record<string, any>,
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         // Validate collection name
         if (!collectionName || typeof collectionName !== 'string') {
             throw new Error('Invalid collection name');
@@ -274,6 +271,7 @@ export async function updateCollection(
 
 export async function deleteCollection(collectionName: string) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .delete();
@@ -285,6 +283,7 @@ export async function deleteCollection(collectionName: string) {
 
 export async function listDocuments(collectionName: string) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
         const documents = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -304,6 +303,7 @@ export async function exportCollection({
     includeFields?: string;
     excludeFields?: string;
 }) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         const response = await typesenseClient
             .collections(collectionName)
@@ -325,6 +325,8 @@ export async function importCollection(
     documents: Record<string, any>[],
 ) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
+
         const importedCollection = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -355,6 +357,7 @@ export async function createCollectionWithJsonl({
     fields: Array<{ name: string; type: string; facet?: boolean }>;
     fileContent: string;
 }) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         // Create schema with proper typing
         const schema: CollectionCreateSchema = {
@@ -392,6 +395,438 @@ export async function createCollectionWithJsonl({
         };
     } catch (error) {
         console.error('Error creating collection with JSONL:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Get collection statistics
+export async function getCollectionStats(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        const stats = await typesenseClient
+            .collections(collectionName)
+            .documents()
+            .search({
+                q: '*',
+                per_page: 0,
+            });
+
+        return {
+            success: true,
+            data: {
+                total_documents: stats.found,
+                collection_name: collectionName,
+                timestamp: new Date().toISOString(),
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching collection stats:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Get collection health status
+export async function getCollectionHealth(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        // Try to access the collection
+        const collection = await typesenseClient
+            .collections(collectionName)
+            .retrieve();
+
+        // Try a simple search to check if collection is responsive
+        const searchResult = await typesenseClient
+            .collections(collectionName)
+            .documents()
+            .search({
+                q: '*',
+                per_page: 1,
+            });
+
+        return {
+            success: true,
+            data: {
+                status: 'healthy',
+                collection_name: collectionName,
+                num_documents: searchResult.found,
+                schema_version: collection.num_memory_shards || 1,
+                timestamp: new Date().toISOString(),
+            },
+        };
+    } catch (error) {
+        console.error('Error checking collection health:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            data: {
+                status: 'unhealthy',
+                collection_name: collectionName,
+                timestamp: new Date().toISOString(),
+            },
+        };
+    }
+}
+
+// Validate collection schema
+export async function validateCollectionSchema(schema: CollectionCreateSchema) {
+    const typesenseClient = await getServerTypesenseClient();
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    try {
+        // Validate collection name
+        if (!schema.name || typeof schema.name !== 'string') {
+            errors.push('Collection name is required and must be a string');
+        } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema.name)) {
+            errors.push(
+                'Collection name must start with a letter or underscore and contain only letters, numbers, and underscores',
+            );
+        }
+
+        // Validate fields
+        if (
+            !schema.fields ||
+            !Array.isArray(schema.fields) ||
+            schema.fields.length === 0
+        ) {
+            errors.push('At least one field is required');
+        } else {
+            const validFieldTypes = [
+                'string',
+                'int32',
+                'int64',
+                'float',
+                'bool',
+                'string[]',
+                'int32[]',
+                'int64[]',
+                'float[]',
+                'bool[]',
+                'object',
+                'object[]',
+                'auto',
+            ];
+
+            const fieldNames = new Set<string>();
+            const reservedNames = ['id', '_id', 'id_'];
+
+            schema.fields.forEach((field, index) => {
+                // Check field name
+                if (!field.name || typeof field.name !== 'string') {
+                    errors.push(
+                        `Field ${index}: Name is required and must be a string`,
+                    );
+                } else if (reservedNames.includes(field.name)) {
+                    errors.push(
+                        `Field ${index}: Name '${field.name}' is reserved and cannot be used`,
+                    );
+                } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field.name)) {
+                    errors.push(
+                        `Field ${index}: Name '${field.name}' contains invalid characters`,
+                    );
+                } else if (fieldNames.has(field.name)) {
+                    errors.push(
+                        `Field ${index}: Duplicate field name '${field.name}'`,
+                    );
+                } else {
+                    fieldNames.add(field.name);
+                }
+
+                // Check field type
+                if (!field.type || !validFieldTypes.includes(field.type)) {
+                    errors.push(
+                        `Field ${index}: Invalid field type '${field.type}'`,
+                    );
+                }
+
+                // Check for potential issues
+                if (field.type === 'auto' && field.facet) {
+                    warnings.push(
+                        `Field ${index}: Auto fields may not work well with faceting`,
+                    );
+                }
+
+                if (field.type.includes('[]') && field.sort) {
+                    warnings.push(
+                        `Field ${index}: Array fields cannot be used for sorting`,
+                    );
+                }
+            });
+        }
+
+        // Validate default sorting field
+        if (schema.default_sorting_field) {
+            const fieldExists = schema.fields?.some(
+                (f) => f.name === schema.default_sorting_field,
+            );
+            if (!fieldExists) {
+                errors.push('Default sorting field must exist in the schema');
+            } else {
+                const field = schema.fields?.find(
+                    (f) => f.name === schema.default_sorting_field,
+                );
+                if (
+                    field &&
+                    !['int32', 'int64', 'float'].includes(field.type)
+                ) {
+                    errors.push(
+                        'Default sorting field must be a numeric type (int32, int64, float)',
+                    );
+                }
+            }
+        }
+
+        return {
+            success: errors.length === 0,
+            errors,
+            warnings,
+            schema,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            errors: [
+                error instanceof Error
+                    ? error.message
+                    : 'Unknown validation error',
+            ],
+            warnings: [],
+            schema,
+        };
+    }
+}
+
+// Get collection configuration
+export async function getCollectionConfig(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        const collection = await typesenseClient
+            .collections(collectionName)
+            .retrieve();
+
+        return {
+            success: true,
+            data: {
+                name: collection.name,
+                num_documents: collection.num_documents,
+                num_memory_shards: collection.num_memory_shards,
+                fields: collection.fields,
+                default_sorting_field: collection.default_sorting_field,
+                enable_nested_fields: collection.enable_nested_fields,
+                created_at: collection.created_at,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching collection config:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Update collection configuration
+export async function updateCollectionConfig(
+    collectionName: string,
+    config: {
+        default_sorting_field?: string;
+        enable_nested_fields?: boolean;
+    },
+) {
+    try {
+        const typesenseClient = await getServerTypesenseClient();
+
+        const updateData: Record<string, any> = {};
+
+        if (config.default_sorting_field !== undefined) {
+            updateData.default_sorting_field = config.default_sorting_field;
+        }
+
+        if (config.enable_nested_fields !== undefined) {
+            updateData.enable_nested_fields = config.enable_nested_fields;
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return {
+                success: false,
+                error: 'No configuration changes provided',
+            };
+        }
+
+        const updatedCollection = await typesenseClient
+            .collections(collectionName)
+            .update(updateData);
+
+        return {
+            success: true,
+            data: updatedCollection,
+        };
+    } catch (error) {
+        console.error('Error updating collection config:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Get collection field details
+export async function getCollectionFields(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        const collection = await typesenseClient
+            .collections(collectionName)
+            .retrieve();
+
+        const fields = collection.fields.map((field: any) => ({
+            name: field.name,
+            type: field.type,
+            facet: field.facet || false,
+            index: field.index !== false, // Default to true if not specified
+            optional: field.optional || false,
+            sort: field.sort || false,
+            store: field.store !== false, // Default to true if not specified
+        }));
+
+        return {
+            success: true,
+            data: fields,
+        };
+    } catch (error) {
+        console.error('Error fetching collection fields:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Add new fields to collection
+export async function addCollectionFields(
+    collectionName: string,
+    fields: Array<{
+        name: string;
+        type: string;
+        facet?: boolean;
+        index?: boolean;
+        optional?: boolean;
+        sort?: boolean;
+        store?: boolean;
+    }>,
+) {
+    try {
+        const typesenseClient = await getServerTypesenseClient();
+
+        const validatedFields = fields.map((field) => ({
+            name: field.name,
+            type: field.type as any, // Type assertion for FieldType
+            ...(field.facet !== undefined && { facet: field.facet }),
+            ...(field.index !== undefined && { index: field.index }),
+            ...(field.optional !== undefined && { optional: field.optional }),
+            ...(field.sort !== undefined && { sort: field.sort }),
+            ...(field.store !== undefined && { store: field.store }),
+        }));
+
+        const updatedCollection = await typesenseClient
+            .collections(collectionName)
+            .update({ fields: validatedFields });
+
+        return {
+            success: true,
+            data: updatedCollection,
+        };
+    } catch (error) {
+        console.error('Error adding collection fields:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Get collection backup (export with metadata)
+export async function backupCollection(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        // Get collection schema
+        const collection = await typesenseClient
+            .collections(collectionName)
+            .retrieve();
+
+        // Export all documents
+        const documents = await typesenseClient
+            .collections(collectionName)
+            .documents()
+            .export();
+
+        const backup = {
+            collection_schema: {
+                name: collection.name,
+                fields: collection.fields,
+                default_sorting_field: collection.default_sorting_field,
+                enable_nested_fields: collection.enable_nested_fields,
+            },
+            documents: documents
+                .split('\n')
+                .filter(Boolean)
+                .map((line) => JSON.parse(line)),
+            backup_timestamp: new Date().toISOString(),
+            total_documents: collection.num_documents,
+        };
+
+        return {
+            success: true,
+            data: backup,
+        };
+    } catch (error) {
+        console.error('Error creating collection backup:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+
+// Restore collection from backup
+export async function restoreCollection(backup: any) {
+    const typesenseClient = await getServerTypesenseClient();
+    try {
+        // Create collection with schema
+        const newCollection = await typesenseClient
+            .collections()
+            .create(backup.collection_schema);
+
+        // Import documents
+        if (backup.documents && backup.documents.length > 0) {
+            const importResult = await typesenseClient
+                .collections(backup.collection_schema.name)
+                .documents()
+                .import(backup.documents, { action: 'create' });
+
+            return {
+                success: true,
+                data: {
+                    collection: newCollection,
+                    import_result: importResult,
+                },
+            };
+        }
+
+        return {
+            success: true,
+            data: {
+                collection: newCollection,
+                import_result: null,
+            },
+        };
+    } catch (error) {
+        console.error('Error restoring collection:', error);
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
