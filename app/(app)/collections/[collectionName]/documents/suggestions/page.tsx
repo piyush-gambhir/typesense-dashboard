@@ -6,12 +6,11 @@ import { getCollection } from '@/lib/typesense/collections';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import CollectionNavigation from '@/components/features/collections/collection-details/collection-navigation';
-import TypesenseSearch from '@/components/features/search/typesense-search';
+import DocumentSuggestions from '@/components/features/documents/document-suggestions';
 
-export default async function page({
+export default async function DocumentSuggestionsPage({
     params,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
     params: Promise<{ collectionName: string }>;
 }) {
     const { collectionName } = await params;
@@ -23,16 +22,14 @@ export default async function page({
         !collectionResult.data
     ) {
         return (
-            <div className="container mx-auto flex flex-col gap-y-8 p-8">
-                <Alert variant="destructive">
-                    <Terminal className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {collectionResult?.error ||
-                            `Collection '${collectionName}' not found.`}
-                    </AlertDescription>
-                </Alert>
-            </div>
+            <Alert variant="destructive">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                    {collectionResult?.error ||
+                        `Collection '${collectionName}' not found.`}
+                </AlertDescription>
+            </Alert>
         );
     }
 
@@ -41,7 +38,7 @@ export default async function page({
     return (
         <>
             <CollectionNavigation collectionName={collection.name} />
-            <TypesenseSearch collectionName={collectionName} />
+            <DocumentSuggestions collectionName={collectionName} />
         </>
     );
 }

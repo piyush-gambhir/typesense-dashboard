@@ -6,6 +6,8 @@ import { getCollection } from '@/lib/typesense/collections';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import CollectionCurations from '@/components/features/collections/collection-curations';
+import CollectionHeader from '@/components/features/collections/collection-details/collection-header';
+import CollectionNavigation from '@/components/features/collections/collection-details/collection-navigation';
 
 export default async function CollectionCurationsPage({
     params,
@@ -34,9 +36,14 @@ export default async function CollectionCurationsPage({
         );
     }
 
+    const collection = collectionResult.data;
+
     return (
-        <div className="container mx-auto p-4 md:p-8">
-            <CollectionCurations collectionName={collectionName} />
-        </div>
+        <>
+            <CollectionNavigation collectionName={collection.name} />
+            <div className="container mx-auto p-4 md:p-8">
+                <CollectionCurations collectionName={collectionName} />
+            </div>
+        </>
     );
 }

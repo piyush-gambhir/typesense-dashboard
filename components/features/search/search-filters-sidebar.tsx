@@ -13,7 +13,7 @@ import Filter from './search-filters';
 interface SearchFiltersSidebarProps {
     collectionSchema: CollectionSchema | null;
     facetValues: Record<string, FacetValue[]>;
-    filterBy: string[];
+    filterBy: Record<string, (string | number | boolean)[]>;
     loadingFilters: boolean;
     onFilterChange: (
         field: string,
@@ -31,45 +31,8 @@ export default function SearchFiltersSidebar({
     onFilterChange,
     onClearFilters,
 }: SearchFiltersSidebarProps) {
-    // Convert filterBy array to the format expected by Filter component
-    const filterMap: Record<string, (string | number | boolean)[]> = {};
-
-    filterBy.forEach((filter) => {
-        if (filter) {
-            let field: string, value: string;
-
-            if (filter.includes(':=')) {
-                const separatorIndex = filter.indexOf(':=');
-                field = filter.substring(0, separatorIndex);
-                value = filter.substring(separatorIndex + 2);
-            } else {
-                return; // Skip invalid filters
-            }
-
-            if (field && value !== undefined) {
-                // Convert string values back to their original types
-                let parsedValue: string | number | boolean;
-                if (value === 'true') {
-                    parsedValue = true;
-                } else if (value === 'false') {
-                    parsedValue = false;
-                } else if (
-                    !isNaN(Number(value)) &&
-                    value !== '' &&
-                    value !== 'null'
-                ) {
-                    parsedValue = Number(value);
-                } else {
-                    parsedValue = value;
-                }
-
-                if (!filterMap[field]) {
-                    filterMap[field] = [];
-                }
-                filterMap[field].push(parsedValue);
-            }
-        }
-    });
+    // filterBy is already in the correct format
+    const filterMap = filterBy;
 
     return (
         <div className="lg:col-span-1">
@@ -78,7 +41,7 @@ export default function SearchFiltersSidebar({
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold">Filters</h3>
-                            {filterBy.length > 0 && (
+                            {Object.keys(filterBy).length > 0 && (
                                 <Button
                                     variant="ghost"
                                     size="sm"

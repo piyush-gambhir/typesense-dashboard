@@ -85,6 +85,20 @@ export {
 // Stopwords
 export { listStopwords, upsertStopwords, deleteStopwords } from './stopwords';
 
+// Synonyms
+export {
+    createSynonym,
+    updateSynonym,
+    getSynonym,
+    listSynonyms,
+    deleteSynonym,
+    validateSynonymData,
+    type Synonym,
+    type SynonymResponse,
+    type CreateSynonymRequest,
+    type ListSynonymsResponse,
+} from './synonyms';
+
 // Natural Language Search
 export {
     createNLSearchModel,

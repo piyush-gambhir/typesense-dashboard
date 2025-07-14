@@ -21,8 +21,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { PageLoading, StatsGridLoading } from '@/components/ui/loading';
+import { StatsGridLoading } from '@/components/ui/loading';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     Select,
     SelectContent,
@@ -146,26 +147,26 @@ export default function DocumentStats({
                 <StatsGridLoading items={3} />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-4 p-6 border rounded-lg">
-                        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                        <Skeleton className="h-4 w-32" />
                         <div className="space-y-2">
                             {Array.from({ length: 5 }).map((_, i) => (
                                 <div
                                     key={i}
                                     className="flex justify-between items-center"
                                 >
-                                    <div className="h-3 w-24 bg-muted animate-pulse rounded" />
-                                    <div className="h-3 w-12 bg-muted animate-pulse rounded" />
+                                    <Skeleton className="h-3 w-24" />
+                                    <Skeleton className="h-3 w-12" />
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div className="space-y-4 p-6 border rounded-lg">
-                        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                        <Skeleton className="h-4 w-32" />
                         <div className="space-y-2">
                             {Array.from({ length: 3 }).map((_, i) => (
                                 <div key={i} className="space-y-1">
-                                    <div className="h-3 w-20 bg-muted animate-pulse rounded" />
-                                    <div className="h-2 w-full bg-muted animate-pulse rounded" />
+                                    <Skeleton className="h-3 w-20" />
+                                    <Skeleton className="h-2 w-full" />
                                 </div>
                             ))}
                         </div>

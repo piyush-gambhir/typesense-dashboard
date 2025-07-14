@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 
 import { useCollectionSchema } from '@/hooks/search/use-collection-schema';
 import { useFacetManagement } from '@/hooks/search/use-facet-management';
@@ -20,7 +20,10 @@ interface SearchContainerProps {
 
 export default function SearchContainer({
     collectionName,
-}: SearchContainerProps) {
+}: Readonly<SearchContainerProps>) {
+    // Facet debugger state
+    const [showFacetDebugger, setShowFacetDebugger] = useState<boolean>(false);
+
     // Initialize all hooks first (before any early returns)
     const {
         searchQuery,
@@ -34,7 +37,6 @@ export default function SearchContainer({
         updatePage,
         updateFilterBy,
         clearFilters,
-        getFilterByFromParams,
     } = useSearchState();
 
     const {
@@ -48,9 +50,37 @@ export default function SearchContainer({
         setError: setSchemaError,
     } = useCollectionSchema(collectionName);
 
+    // Convert filterBy object to Typesense filter string
+    const convertFilterByToString = (filterObj: Record<string, (string | number | boolean)[]>): string => {
+        const filterParts: string[] = [];
+
+        Object.entries(filterObj).forEach(([field, values]) => {
+            if (values.length > 0) {
+                const fieldFilters = values.map((value) => {
+                    if (typeof value === 'boolean') {
+                        return `${field}:=${value}`;
+                    } else if (typeof value === 'number') {
+                        return `${field}:=${value}`;
+                    } else {
+                        return `${field}:="${value}"`;
+                    }
+                });
+                filterParts.push(`(${fieldFilters.join(' || ')})`);
+            }
+        });
+
+        return filterParts.join(' && ');
+    };
+
     // Debounced values for search
     const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
-    const debouncedFilterBy = useDebounce<string[]>(filterBy, 500);
+    const debouncedFilterBy = useDebounce<Record<string, (string | number | boolean)[]>>(filterBy, 500);
+    
+    // Convert filter object to string array for hooks
+    const debouncedFilterByArray = useMemo(() => {
+        const filterString = convertFilterByToString(debouncedFilterBy);
+        return filterString ? [filterString] : [];
+    }, [debouncedFilterBy]);
 
     const { facetValues, loading: facetsLoading } = useFacetManagement(
         collectionName,
@@ -58,7 +88,7 @@ export default function SearchContainer({
         facetFields,
         indexFields,
         debouncedSearchQuery,
-        debouncedFilterBy,
+        debouncedFilterByArray,
     );
 
     const {
@@ -82,7 +112,7 @@ export default function SearchContainer({
                 currentPage,
                 perPage,
                 sortBy,
-                debouncedFilterBy,
+                debouncedFilterByArray,
             );
         }
     }, [
@@ -90,7 +120,7 @@ export default function SearchContainer({
         currentPage,
         perPage,
         sortBy,
-        debouncedFilterBy,
+        debouncedFilterByArray,
         indexFields,
         isInitialLoad,
         performSearch,
@@ -105,10 +135,10 @@ export default function SearchContainer({
                 currentPage,
                 perPage,
                 sortBy,
-                debouncedFilterBy,
+                debouncedFilterByArray,
             );
         }
-    }, [indexFields, isInitialLoad, performSearch]);
+    }, [indexFields, isInitialLoad, performSearch, debouncedSearchQuery, currentPage, perPage, sortBy, debouncedFilterByArray]);
 
     // Filter management
     const handleFilterChange = (
@@ -116,29 +146,21 @@ export default function SearchContainer({
         value: string | boolean | number,
         checked: boolean,
     ) => {
-        let stringValue: string;
-        if (typeof value === 'boolean') {
-            stringValue = value ? 'true' : 'false';
-        } else if (typeof value === 'number') {
-            stringValue = String(value);
+        const newFilters = { ...filterBy };
+        const currentValues = newFilters[field] || [];
+
+        if (checked) {
+            if (!currentValues.includes(value)) {
+                newFilters[field] = [...currentValues, value];
+            }
         } else {
-            stringValue = String(value);
+            newFilters[field] = currentValues.filter((v) => v !== value);
+            if (newFilters[field].length === 0) {
+                delete newFilters[field];
+            }
         }
 
-        const filterString = `${field}:=${stringValue}`;
-
-        const newFilters = checked
-            ? filterBy.includes(filterString)
-                ? filterBy
-                : [...filterBy, filterString]
-            : filterBy.filter((item) => item !== filterString);
-
-        if (
-            JSON.stringify(newFilters.sort()) !==
-            JSON.stringify(filterBy.sort())
-        ) {
-            updateFilterBy(newFilters);
-        }
+        updateFilterBy(newFilters);
     };
 
     const handleSortChange = (value: string) => {
@@ -155,7 +177,7 @@ export default function SearchContainer({
                 currentPage,
                 perPage,
                 sortBy,
-                debouncedFilterBy,
+                debouncedFilterByArray,
             );
         }
     };
@@ -197,7 +219,7 @@ export default function SearchContainer({
                         currentPage,
                         perPage,
                         sortBy,
-                        debouncedFilterBy,
+                        debouncedFilterByArray,
                     );
                 }}
                 onDismissError={() => {
@@ -210,6 +232,15 @@ export default function SearchContainer({
                 onSortByChange={handleSortChange}
                 countDropdownOptions={countDropdownOptions}
                 sortDropdownOptions={sortDropdownOptions}
+                showFacetDebugger={showFacetDebugger}
+                onShowFacetDebuggerChange={setShowFacetDebugger}
+                // Filter props
+                collectionSchema={collectionSchema}
+                facetValues={facetValues}
+                filterBy={filterBy}
+                loadingFilters={facetsLoading}
+                onFilterChange={handleFilterChange}
+                onClearFilters={clearFilters}
             />
 
             <SearchMainContent
@@ -224,6 +255,7 @@ export default function SearchContainer({
                 loadingDocuments={searchLoading}
                 loadingFilters={facetsLoading}
                 facetFields={facetFields}
+                showFacetDebugger={showFacetDebugger}
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 onPageChange={updatePage}

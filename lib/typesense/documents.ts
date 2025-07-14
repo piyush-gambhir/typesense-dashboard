@@ -52,11 +52,15 @@ export async function multiSearch({
             const request: Record<string, unknown> = {
                 collection: query.collection,
                 q: query.q || '*',
-                query_by: query.queryBy,
                 per_page: query.perPage ?? 10,
                 page: query.page ?? 1,
                 exhaustive_search: query.exhaustiveSearch ?? true,
             };
+
+            // Only add query_by if it's not empty and not just '*'
+            if (query.queryBy && query.queryBy.trim() !== '' && query.queryBy !== '*') {
+                request.query_by = query.queryBy;
+            }
 
             // Only add non-empty filter_by
             if (query.filterBy && query.filterBy.trim() !== '') {

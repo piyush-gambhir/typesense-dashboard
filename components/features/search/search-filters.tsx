@@ -1,7 +1,7 @@
 'use client';
 
-import { ChevronDown, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { ChevronDown, X, Copy, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
+
+import { useCopyToClipboard } from '@/hooks/shared/use-copy-to-clipboard';
 
 interface FacetValue {
     value: string | number | boolean;
@@ -59,18 +61,16 @@ const Filter = ({
     const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
         {},
     );
+    const { copyToClipboard, isCopied, resetCopyState } = useCopyToClipboard();
 
-    // Add debugging for component props
-    console.log('[SearchFilters] Component props:', {
-        facetValuesKeys: Object.keys(facetValues),
-        facetValuesCount: Object.keys(facetValues).length,
-        collectionSchemaFields: collectionSchema?.fields?.map((f) => ({
-            name: f.name,
-            type: f.type,
-            facet: f.facet,
-        })),
-        filterByKeys: Object.keys(filterBy),
-    });
+    // Reset copy state after 2 seconds
+    useEffect(() => {
+        if (isCopied) {
+            const timer = setTimeout(resetCopyState, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [isCopied, resetCopyState]);
+
 
     const formatFieldLabel = (field: string): string => {
         return field
@@ -123,9 +123,9 @@ const Filter = ({
         const isOpen = openPopovers[field] || false;
 
         return (
-            <div className="space-y-2">
+            <div className="space-y-3 p-4 border-2 rounded-xl bg-card shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium">
+                    <Label className="text-sm font-semibold text-foreground truncate">
                         {formatFieldLabel(field)}
                     </Label>
                     {currentValues.length > 0 && (
@@ -133,9 +133,9 @@ const Filter = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => clearFieldFilters(field)}
-                            className="h-6 px-2 text-xs"
+                            className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
                         >
-                            Clear
+                            <X className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
@@ -151,26 +151,46 @@ const Filter = ({
                             variant="outline"
                             role="combobox"
                             aria-expanded={isOpen}
-                            className="w-full justify-between text-sm"
+                            className="w-full justify-between text-sm h-10 border-2 hover:border-primary/50 transition-colors"
                         >
                             {currentValues.length > 0
                                 ? `${currentValues.length} selected`
-                                : `Select ${formatFieldLabel(field)}`}
-                            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                : `All`}
+                            <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0" align="start">
                         <Command>
-                            <CommandInput
-                                placeholder={`Search ${formatFieldLabel(field)}...`}
-                                value={searchQuery}
-                                onValueChange={(value) =>
-                                    setSearchQueries((prev) => ({
-                                        ...prev,
-                                        [field]: value,
-                                    }))
-                                }
-                            />
+                            <div className="relative">
+                                <CommandInput
+                                    placeholder={`Search ${formatFieldLabel(field)}...`}
+                                    value={searchQuery}
+                                    onValueChange={(value) =>
+                                        setSearchQueries((prev) => ({
+                                            ...prev,
+                                            [field]: value,
+                                        }))
+                                    }
+                                    className="pr-8"
+                                />
+                                {searchQuery && (
+                                    <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => copyToClipboard(searchQuery)}
+                                            className="h-6 w-6 p-0 hover:bg-muted/50"
+                                            title="Copy search text"
+                                        >
+                                            {isCopied ? (
+                                                <Check className="h-3 w-3 text-green-600" />
+                                            ) : (
+                                                <Copy className="h-3 w-3 text-muted-foreground" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
                             <CommandList>
                                 <CommandEmpty>
                                     No {formatFieldLabel(field)} found.
@@ -221,18 +241,18 @@ const Filter = ({
 
                 {/* Show selected values as chips */}
                 {currentValues.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-3">
                         {currentValues.map((value) => (
                             <Badge
                                 key={`${field}-${value}`}
                                 variant="secondary"
-                                className="text-xs"
+                                className="text-sm px-3 py-1 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
                             >
                                 {String(value)}
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                                    className="h-5 w-5 p-0 ml-2 hover:bg-destructive/20 hover:text-destructive rounded-full transition-colors"
                                     onClick={() =>
                                         onFilterChange(field, value, false)
                                     }
@@ -254,9 +274,9 @@ const Filter = ({
         const hasAnySelection = currentValues.length > 0;
 
         return (
-            <div className="space-y-2">
+            <div className="space-y-3 p-4 border-2 rounded-xl bg-card shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium">
+                    <Label className="text-sm font-semibold text-foreground truncate">
                         {formatFieldLabel(field)}
                     </Label>
                     {hasAnySelection && (
@@ -264,15 +284,15 @@ const Filter = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => clearFieldFilters(field)}
-                            className="h-6 px-2 text-xs"
+                            className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
                         >
-                            Clear
+                            <X className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
-                <div className="flex items-center justify-between">
-                    <Label className="text-sm">
-                        {isTrueSelected ? 'Enabled' : 'Any'}
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                    <Label className="text-sm font-medium">
+                        {isTrueSelected ? 'True' : 'All values'}
                     </Label>
                     <Switch
                         checked={isTrueSelected}
@@ -290,6 +310,7 @@ const Filter = ({
                             }
                             // If unchecked, we don't set any filter (shows "Any")
                         }}
+                        className="data-[state=checked]:bg-primary"
                     />
                 </div>
             </div>
@@ -297,30 +318,11 @@ const Filter = ({
     };
 
     const renderNumberFilter = (field: string, values: FacetValue[]) => {
-        console.log(
-            `[renderNumberFilter] Starting to render number filter for field: ${field}`,
-            {
-                values,
-                fieldType: getFieldType(field),
-            },
-        );
-
         // Don't filter out values - let all values through and let the UI handle them
         // This ensures we don't accidentally hide valid int field values
         if (values.length === 0) {
-            console.log(
-                `[renderNumberFilter] No values found for field: ${field}`,
-            );
             return null;
         }
-
-        console.log(
-            `[renderNumberFilter] Rendering number filter for field: ${field}`,
-            {
-                values,
-                fieldType: getFieldType(field),
-            },
-        );
 
         // For number filters, show the values as multi-select like strings
         return renderMultiSelectFilter(field, values);
@@ -329,68 +331,16 @@ const Filter = ({
     const activeFiltersCount = getActiveFiltersCount();
 
     return (
-        <div className="space-y-6">
-            {/* Filter chips header */}
-            {activeFiltersCount > 0 && (
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium">Active Filters</h3>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={onClearFilters}
-                            className="h-6 px-2 text-xs"
-                        >
-                            Clear All
-                        </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                        {Object.entries(filterBy).map(([field, values]) =>
-                            values.map((value) => (
-                                <Badge
-                                    key={`${field}-${value}`}
-                                    variant="secondary"
-                                    className="text-xs"
-                                >
-                                    {formatFieldLabel(field)}: {String(value)}
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
-                                        onClick={() =>
-                                            onFilterChange(field, value, false)
-                                        }
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </Button>
-                                </Badge>
-                            )),
-                        )}
-                    </div>
-                </div>
-            )}
-
+        <div className="w-full">
             {/* Filter sections */}
             <div
-                className={`grid gap-4 ${singleColumn ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
+                className={`grid gap-4 ${singleColumn ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}
             >
                 {Object.entries(facetValues).map(([field, values]) => {
                     if (values.length === 0) return null; // Don't render if there are no options
 
                     const fieldType = getFieldType(field);
 
-                    // Add debugging for field rendering
-                    console.log(`[SearchFilters] Rendering field: ${field}`, {
-                        fieldType,
-                        valuesCount: values.length,
-                        values: values.slice(0, 3), // Show first 3 values for debugging
-                        isIntField: [
-                            'float',
-                            'int32',
-                            'int64',
-                            'double',
-                        ].includes(fieldType),
-                    });
 
                     return (
                         <div key={field} className="w-full">

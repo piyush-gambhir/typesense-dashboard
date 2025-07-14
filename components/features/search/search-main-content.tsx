@@ -1,22 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { CollectionSchema } from '@/hooks/search/use-collection-schema';
 import { FacetValue } from '@/hooks/search/use-facet-management';
 import { SearchResult } from '@/hooks/search/use-search-operations';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-
 import FacetDebugger from './facet-debugger';
-import SearchFiltersSidebar from './search-filters-sidebar';
 import SearchResults from './search-results';
 
 interface SearchMainContentProps {
     collectionSchema: CollectionSchema | null;
     facetValues: Record<string, FacetValue[]>;
-    filterBy: string[];
+    filterBy: Record<string, (string | number | boolean)[]>;
     searchResults: SearchResult[];
     totalResults: number;
     totalPages: number;
@@ -25,6 +21,7 @@ interface SearchMainContentProps {
     loadingDocuments: boolean;
     loadingFilters: boolean;
     facetFields: string[];
+    showFacetDebugger: boolean;
     onFilterChange: (
         field: string,
         value: string | boolean | number,
@@ -47,67 +44,34 @@ export default function SearchMainContent({
     loadingDocuments,
     loadingFilters,
     facetFields,
+    showFacetDebugger,
     onFilterChange,
     onClearFilters,
     onPageChange,
     onDeleteDocument,
-}: SearchMainContentProps) {
-    const [showFacetDebugger, setShowFacetDebugger] = useState<boolean>(false);
-
+}: Readonly<SearchMainContentProps>) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
-            <SearchFiltersSidebar
-                collectionSchema={collectionSchema}
-                facetValues={facetValues}
-                filterBy={filterBy}
-                loadingFilters={loadingFilters}
-                onFilterChange={onFilterChange}
-                onClearFilters={onClearFilters}
+        <div className="space-y-6">
+            {/* Facet Debugger - only show when toggle is enabled */}
+            {showFacetDebugger && (
+                <FacetDebugger
+                    collectionSchema={collectionSchema}
+                    facetValues={facetValues}
+                    facetFields={facetFields}
+                />
+            )}
+
+            {/* Search Results */}
+            <SearchResults
+                searchResults={searchResults}
+                totalResults={totalResults}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                collectionName={collectionName}
+                loadingDocuments={loadingDocuments}
+                onPageChange={onPageChange}
+                onDeleteDocument={onDeleteDocument}
             />
-
-            {/* Results Area */}
-            <div className="lg:col-span-3">
-                <div className="space-y-6">
-                    {/* Debug Controls */}
-                    <div className="flex items-center justify-between">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                                setShowFacetDebugger(!showFacetDebugger)
-                            }
-                        >
-                            {showFacetDebugger ? 'Hide' : 'Show'} Facet Debugger
-                        </Button>
-                    </div>
-
-                    {/* Facet Debugger - only show when toggle is enabled */}
-                    {showFacetDebugger && (
-                        <Card className="border border-border/50">
-                            <CardContent className="p-6">
-                                <FacetDebugger
-                                    collectionSchema={collectionSchema}
-                                    facetValues={facetValues}
-                                    facetFields={facetFields}
-                                />
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {/* Search Results */}
-                    <SearchResults
-                        searchResults={searchResults}
-                        totalResults={totalResults}
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        collectionName={collectionName}
-                        loadingDocuments={loadingDocuments}
-                        onPageChange={onPageChange}
-                        onDeleteDocument={onDeleteDocument}
-                    />
-                </div>
-            </div>
         </div>
     );
 }

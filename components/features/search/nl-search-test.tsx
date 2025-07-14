@@ -1,6 +1,15 @@
 'use client';
 
-import { AlertCircle, Clock, Code, Eye, Play, Search, Sparkles, Zap } from 'lucide-react';
+import {
+    AlertCircle,
+    Clock,
+    Code,
+    Eye,
+    Play,
+    Search,
+    Sparkles,
+    Zap,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { getCollection, getCollections } from '@/lib/typesense/collections';
@@ -14,7 +23,6 @@ import {
 } from '@/lib/typesense/nl-search-models';
 
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +35,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import {
     Select,
     SelectContent,
@@ -40,6 +47,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import PaginationComponent from '@/components/common/pagination';
+import DocumentCard from '@/components/features/documents/document-card';
 import SearchFilters from '@/components/features/search/search-filters';
 
 type FacetValue = {
@@ -159,8 +167,9 @@ function EmptySearchState() {
                             Ready to Search
                         </h3>
                         <p className="text-muted-foreground leading-relaxed max-w-md">
-                            Configure your search parameters and run a natural language query to see results here.
-                            Use AI-powered search to find exactly what you're looking for.
+                            Configure your search parameters and run a natural
+                            language query to see results here. Use AI-powered
+                            search to find exactly what you're looking for.
                         </p>
                     </div>
                 </div>
@@ -169,72 +178,7 @@ function EmptySearchState() {
     );
 }
 
-function ResultCard({ hit, index }: { hit: { document: Record<string, unknown> }; index: number }) {
-    return (
-        <Card className="relative overflow-hidden border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-sm backdrop-blur-sm transition-all hover:shadow-md">
-            <CardContent className="p-6">
-                <div className="space-y-3">
-                    <div className="mb-2">
-                        <span className="font-semibold text-xs md:text-sm block mb-1 text-muted-foreground uppercase tracking-wider">
-                            ID
-                        </span>
-                        <div className="text-sm md:text-base break-all font-mono bg-muted/30 p-2 rounded border">
-                            {String(hit.document.id)}
-                        </div>
-                    </div>
-                    {Object.entries(hit.document)
-                        .filter(([key]) => key !== 'id')
-                        .sort(([keyA], [keyB]) => {
-                            if (
-                                keyA === 'created_at' ||
-                                keyA === 'createdAt' ||
-                                keyA === 'updated_at' ||
-                                keyA === 'updatedAt'
-                            )
-                                return 1;
-                            if (
-                                keyB === 'created_at' ||
-                                keyB === 'createdAt' ||
-                                keyB === 'updated_at' ||
-                                keyB === 'updatedAt'
-                            )
-                                return -1;
-                            return 0;
-                        })
-                        .map(([key, value]) => (
-                            <div key={`${index}-${key}`} className="mb-2">
-                                <span className="font-semibold text-xs md:text-sm block mb-1 text-muted-foreground">
-                                    {key}
-                                </span>
-                                <div className="text-xs md:text-sm">
-                                    {Array.isArray(value) ? (
-                                        <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
-                                            {value.map((item, idx) => (
-                                                <span
-                                                    key={`${index}-${key}-${idx}`}
-                                                    className="inline-block px-2 py-1 bg-muted/50 rounded-md text-xs md:text-sm break-words border"
-                                                >
-                                                    {String(item)}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ) : value === null || value === undefined ? (
-                                        <span className="text-muted-foreground italic">
-                                            Not available
-                                        </span>
-                                    ) : (
-                                        <span className="break-words">
-                                            {String(value)}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
+// Removed ResultCard component - now using DocumentCard from documents feature
 
 export default function NLSearchTest() {
     const { toast } = useToast();
@@ -242,9 +186,14 @@ export default function NLSearchTest() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [collections, setCollections] = useState<string[]>([]);
     const [models, setModels] = useState<NLSearchModel[]>([]);
-    const [searchResults, setSearchResults] = useState<NLSearchResponse | null>(null);
-    const [collectionSchema, setCollectionSchema] = useState<CollectionSchema>(null);
-    const [facetValues, setFacetValues] = useState<Record<string, FacetValue[]>>({});
+    const [searchResults, setSearchResults] = useState<NLSearchResponse | null>(
+        null,
+    );
+    const [collectionSchema, setCollectionSchema] =
+        useState<CollectionSchema>(null);
+    const [facetValues, setFacetValues] = useState<
+        Record<string, FacetValue[]>
+    >({});
     const [filterBy, setFilterBy] = useState<FilterBy>({});
     const [error, setError] = useState<string | null>(null);
 
@@ -292,22 +241,27 @@ export default function NLSearchTest() {
                 if (schemaResult?.success && schemaResult.data) {
                     const transformedSchema = {
                         fields:
-                            schemaResult.data.fields?.map((field: {
-                                name: string;
-                                type: string;
-                                facet?: boolean;
-                            }) => ({
-                                name: field.name,
-                                type: field.type,
-                                facet: field.facet || false,
-                            })) || [],
+                            schemaResult.data.fields?.map(
+                                (field: {
+                                    name: string;
+                                    type: string;
+                                    facet?: boolean;
+                                }) => ({
+                                    name: field.name,
+                                    type: field.type,
+                                    facet: field.facet || false,
+                                }),
+                            ) || [],
                     };
                     setCollectionSchema(transformedSchema);
                 }
 
                 const facetFields =
                     schemaResult.data?.fields
-                        ?.filter((field: { name: string; facet?: boolean }) => field.facet === true)
+                        ?.filter(
+                            (field: { name: string; facet?: boolean }) =>
+                                field.facet === true,
+                        )
                         .map((field: { name: string }) => field.name) || [];
 
                 if (facetFields.length > 0) {
@@ -325,22 +279,30 @@ export default function NLSearchTest() {
                     });
 
                     if (facetResponse?.results?.[0]?.facet_counts) {
-                        const facetCounts = facetResponse.results[0].facet_counts;
+                        const facetCounts =
+                            facetResponse.results[0].facet_counts;
                         const facetData: Record<string, FacetValue[]> = {};
 
-                        facetCounts.forEach((facet: {
-                            field_name: string;
-                            counts?: Array<{
-                                value: string;
-                                count: number;
-                            }>;
-                        }) => {
-                            facetData[facet.field_name] =
-                                facet.counts?.map((count: { value: string; count: number }) => ({
-                                    value: count.value,
-                                    count: count.count,
-                                })) || [];
-                        });
+                        facetCounts.forEach(
+                            (facet: {
+                                field_name: string;
+                                counts?: Array<{
+                                    value: string;
+                                    count: number;
+                                }>;
+                            }) => {
+                                facetData[facet.field_name] =
+                                    facet.counts?.map(
+                                        (count: {
+                                            value: string;
+                                            count: number;
+                                        }) => ({
+                                            value: count.value,
+                                            count: count.count,
+                                        }),
+                                    ) || [];
+                            },
+                        );
 
                         setFacetValues(facetData);
                     }
@@ -351,7 +313,8 @@ export default function NLSearchTest() {
                 console.error('Error fetching collection data:', error);
                 toast({
                     title: 'Error',
-                    description: 'Failed to fetch collection schema and facets.',
+                    description:
+                        'Failed to fetch collection schema and facets.',
                     variant: 'destructive',
                 });
             }
@@ -407,7 +370,11 @@ export default function NLSearchTest() {
 
                 const collectionsResult = await getCollections();
                 if (collectionsResult.success && collectionsResult.data) {
-                    setCollections(collectionsResult.data.map((col: { name: string }) => col.name));
+                    setCollections(
+                        collectionsResult.data.map(
+                            (col: { name: string }) => col.name,
+                        ),
+                    );
                     if (collectionsResult.data.length > 0) {
                         setQuery((prev) => ({
                             ...prev,
@@ -415,7 +382,9 @@ export default function NLSearchTest() {
                         }));
                     }
                 } else {
-                    const errorMsg = collectionsResult.error || 'Failed to fetch collections.';
+                    const errorMsg =
+                        collectionsResult.error ||
+                        'Failed to fetch collections.';
                     setError(errorMsg);
                     toast({
                         title: 'Error',
@@ -434,7 +403,9 @@ export default function NLSearchTest() {
                         }));
                     }
                 } else {
-                    const errorMsg = modelsResult.error || 'Failed to fetch NL search models.';
+                    const errorMsg =
+                        modelsResult.error ||
+                        'Failed to fetch NL search models.';
                     toast({
                         title: 'Error',
                         description: errorMsg,
@@ -462,7 +433,8 @@ export default function NLSearchTest() {
         if (!query.collection || !query.nl_query.trim() || !query.nl_model_id) {
             toast({
                 title: 'Invalid Input',
-                description: 'Please select a collection, model, and enter a query.',
+                description:
+                    'Please select a collection, model, and enter a query.',
                 variant: 'destructive',
             });
             if (inputRef.current) {
@@ -479,7 +451,9 @@ export default function NLSearchTest() {
             } else {
                 toast({
                     title: 'Search Failed',
-                    description: result.error || 'Failed to perform natural language search.',
+                    description:
+                        result.error ||
+                        'Failed to perform natural language search.',
                     variant: 'destructive',
                 });
             }
@@ -507,7 +481,9 @@ export default function NLSearchTest() {
             } else {
                 toast({
                     title: 'Search Failed',
-                    description: result.error || 'Failed to perform natural language search.',
+                    description:
+                        result.error ||
+                        'Failed to perform natural language search.',
                     variant: 'destructive',
                 });
             }
@@ -546,8 +522,8 @@ export default function NLSearchTest() {
         return <ErrorState error={error} />;
     }
 
-    const searchTime = searchResults?.search_time_ms 
-        ? `in ${searchResults.search_time_ms}ms` 
+    const searchTime = searchResults?.search_time_ms
+        ? `in ${searchResults.search_time_ms}ms`
         : '';
 
     return (
@@ -567,13 +543,16 @@ export default function NLSearchTest() {
                         Natural Language Search
                     </h1>
                     <p className="text-muted-foreground">
-                        Search your collections using natural language powered by AI models
+                        Search your collections using natural language powered
+                        by AI models
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <Badge variant="secondary" className="gap-1">
                         <span>{collections.length}</span>
-                        <span>{pluralize('Collection', collections.length)}</span>
+                        <span>
+                            {pluralize('Collection', collections.length)}
+                        </span>
                     </Badge>
                     <Badge variant="secondary" className="gap-1">
                         <span>{models.length}</span>
@@ -613,7 +592,10 @@ export default function NLSearchTest() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {collections.map((collection) => (
-                                        <SelectItem key={collection} value={collection}>
+                                        <SelectItem
+                                            key={collection}
+                                            value={collection}
+                                        >
                                             {collection}
                                         </SelectItem>
                                     ))}
@@ -623,7 +605,8 @@ export default function NLSearchTest() {
 
                         <div className="space-y-2">
                             <Label htmlFor="nl_model_id">
-                                AI Model <span className="text-destructive">*</span>
+                                AI Model{' '}
+                                <span className="text-destructive">*</span>
                             </Label>
                             <Select
                                 value={query.nl_model_id || ''}
@@ -639,8 +622,13 @@ export default function NLSearchTest() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {models.map((model) => (
-                                        <SelectItem key={model.id} value={model.id}>
-                                            {model.model_name || model.name || model.id}
+                                        <SelectItem
+                                            key={model.id}
+                                            value={model.id}
+                                        >
+                                            {model.model_name ||
+                                                model.name ||
+                                                model.id}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -653,7 +641,10 @@ export default function NLSearchTest() {
                                         className="p-0 h-auto text-xs underline"
                                         onClick={() => {
                                             if (typeof window !== 'undefined') {
-                                                window.open('/nl-search-models', '_blank');
+                                                window.open(
+                                                    '/nl-search-models',
+                                                    '_blank',
+                                                );
                                             }
                                         }}
                                     >
@@ -688,7 +679,10 @@ export default function NLSearchTest() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="debug" className="flex items-center gap-2">
+                            <Label
+                                htmlFor="debug"
+                                className="flex items-center gap-2"
+                            >
                                 <Switch
                                     id="debug"
                                     checked={query.debug}
@@ -709,7 +703,8 @@ export default function NLSearchTest() {
 
                     <div className="space-y-2">
                         <Label htmlFor="nl_query">
-                            Natural Language Query <span className="text-destructive">*</span>
+                            Natural Language Query{' '}
+                            <span className="text-destructive">*</span>
                         </Label>
                         <Textarea
                             id="nl_query"
@@ -725,7 +720,10 @@ export default function NLSearchTest() {
                             rows={3}
                             className="resize-none"
                             onKeyDown={(e) => {
-                                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                                if (
+                                    (e.ctrlKey || e.metaKey) &&
+                                    e.key === 'Enter'
+                                ) {
                                     handleSearch();
                                 }
                             }}
@@ -751,7 +749,9 @@ export default function NLSearchTest() {
                     <div className="space-y-2">
                         <Label htmlFor="filter_by">
                             Advanced Filters{' '}
-                            <span className="text-muted-foreground text-xs">(optional)</span>
+                            <span className="text-muted-foreground text-xs">
+                                (optional)
+                            </span>
                         </Label>
                         <SearchFilters
                             collectionSchema={collectionSchema}
@@ -804,38 +804,68 @@ export default function NLSearchTest() {
                                     AI Query Interpretation
                                 </CardTitle>
                                 <CardDescription>
-                                    How the AI model interpreted and processed your natural language query
+                                    How the AI model interpreted and processed
+                                    your natural language query
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <Label className="text-sm font-medium">Search Terms</Label>
+                                        <Label className="text-sm font-medium">
+                                            Search Terms
+                                        </Label>
                                         <div className="mt-1 p-3 bg-muted/30 rounded border text-sm">
-                                            <code>{searchResults.parsed_query.query || 'N/A'}</code>
+                                            <code>
+                                                {searchResults.parsed_query
+                                                    .query || 'N/A'}
+                                            </code>
                                         </div>
                                     </div>
                                     {searchResults.parsed_query.filter_by && (
                                         <div>
-                                            <Label className="text-sm font-medium">Applied Filters</Label>
+                                            <Label className="text-sm font-medium">
+                                                Applied Filters
+                                            </Label>
                                             <div className="mt-1 p-3 bg-muted/30 rounded border text-sm">
-                                                <code>{searchResults.parsed_query.filter_by}</code>
+                                                <code>
+                                                    {
+                                                        searchResults
+                                                            .parsed_query
+                                                            .filter_by
+                                                    }
+                                                </code>
                                             </div>
                                         </div>
                                     )}
                                     {searchResults.parsed_query.sort_by && (
                                         <div>
-                                            <Label className="text-sm font-medium">Sort Order</Label>
+                                            <Label className="text-sm font-medium">
+                                                Sort Order
+                                            </Label>
                                             <div className="mt-1 p-3 bg-muted/30 rounded border text-sm">
-                                                <code>{searchResults.parsed_query.sort_by}</code>
+                                                <code>
+                                                    {
+                                                        searchResults
+                                                            .parsed_query
+                                                            .sort_by
+                                                    }
+                                                </code>
                                             </div>
                                         </div>
                                     )}
                                     {searchResults.parsed_query.facet_by && (
                                         <div>
-                                            <Label className="text-sm font-medium">Facets</Label>
+                                            <Label className="text-sm font-medium">
+                                                Facets
+                                            </Label>
                                             <div className="mt-1 p-3 bg-muted/30 rounded border text-sm">
-                                                <code>{searchResults.parsed_query.facet_by}</code>
+                                                <code>
+                                                    {
+                                                        searchResults
+                                                            .parsed_query
+                                                            .facet_by
+                                                    }
+                                                </code>
                                             </div>
                                         </div>
                                     )}
@@ -855,41 +885,64 @@ export default function NLSearchTest() {
                                     Debug Information
                                 </CardTitle>
                                 <CardDescription>
-                                    Detailed technical information about the search request and AI response
+                                    Detailed technical information about the
+                                    search request and AI response
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <Label className="text-sm font-medium">Request Parameters</Label>
+                                        <Label className="text-sm font-medium">
+                                            Request Parameters
+                                        </Label>
                                         <pre className="mt-1 text-xs bg-muted/30 p-3 rounded border overflow-x-auto">
-                                            {JSON.stringify(searchResults.request_params, null, 2)}
+                                            {JSON.stringify(
+                                                searchResults.request_params,
+                                                null,
+                                                2,
+                                            )}
                                         </pre>
                                     </div>
                                     {searchResults.parsed_nl_query && (
                                         <div>
-                                            <Label className="text-sm font-medium">Parsed NL Query</Label>
+                                            <Label className="text-sm font-medium">
+                                                Parsed NL Query
+                                            </Label>
                                             <pre className="mt-1 text-xs bg-muted/30 p-3 rounded border overflow-x-auto">
-                                                {JSON.stringify(searchResults.parsed_nl_query, null, 2)}
+                                                {JSON.stringify(
+                                                    searchResults.parsed_nl_query,
+                                                    null,
+                                                    2,
+                                                )}
                                             </pre>
                                         </div>
                                     )}
                                     {searchResults.raw_llm_response && (
                                         <div>
-                                            <Label className="text-sm font-medium">Raw AI Response</Label>
+                                            <Label className="text-sm font-medium">
+                                                Raw AI Response
+                                            </Label>
                                             <pre className="mt-1 text-xs bg-muted/30 p-3 rounded border overflow-x-auto">
                                                 {searchResults.raw_llm_response}
                                             </pre>
                                         </div>
                                     )}
-                                    {searchResults.facet_counts && searchResults.facet_counts.length > 0 && (
-                                        <div>
-                                            <Label className="text-sm font-medium">Facet Counts</Label>
-                                            <pre className="mt-1 text-xs bg-muted/30 p-3 rounded border overflow-x-auto">
-                                                {JSON.stringify(searchResults.facet_counts, null, 2)}
-                                            </pre>
-                                        </div>
-                                    )}
+                                    {searchResults.facet_counts &&
+                                        searchResults.facet_counts.length >
+                                            0 && (
+                                            <div>
+                                                <Label className="text-sm font-medium">
+                                                    Facet Counts
+                                                </Label>
+                                                <pre className="mt-1 text-xs bg-muted/30 p-3 rounded border overflow-x-auto">
+                                                    {JSON.stringify(
+                                                        searchResults.facet_counts,
+                                                        null,
+                                                        2,
+                                                    )}
+                                                </pre>
+                                            </div>
+                                        )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -906,38 +959,65 @@ export default function NLSearchTest() {
                             </CardTitle>
                             <CardDescription className="flex items-center justify-between">
                                 <span>
-                                    <span className="font-semibold">{searchResults.found}</span>{' '}
-                                    {pluralize('document', searchResults.found)} found
+                                    <span className="font-semibold">
+                                        {searchResults.found}
+                                    </span>{' '}
+                                    {pluralize('document', searchResults.found)}{' '}
+                                    found
                                     {typeof searchResults.out_of === 'number' &&
                                     searchResults.out_of !== searchResults.found
                                         ? ` (out of ${searchResults.out_of})`
                                         : ''}
                                     {searchTime && ` ${searchTime}`}
                                 </span>
-                                {searchResults.found > 0 && typeof searchResults.search_time_ms === 'number' && (
-                                    <Badge variant="secondary" className="gap-1">
-                                        <Clock className="h-3 w-3" />
-                                        {searchResults.search_time_ms}ms
-                                    </Badge>
-                                )}
+                                {searchResults.found > 0 &&
+                                    typeof searchResults.search_time_ms ===
+                                        'number' && (
+                                        <Badge
+                                            variant="secondary"
+                                            className="gap-1"
+                                        >
+                                            <Clock className="h-3 w-3" />
+                                            {searchResults.search_time_ms}ms
+                                        </Badge>
+                                    )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {searchResults.hits && searchResults.hits.length > 0 ? (
+                            {searchResults.hits &&
+                            searchResults.hits.length > 0 ? (
                                 <>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                        {searchResults.hits.map((hit, index) => (
-                                            <ResultCard key={`result-${index}`} hit={hit} index={index} />
-                                        ))}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {searchResults.hits.map(
+                                            (hit, index) => (
+                                                <DocumentCard
+                                                    key={`result-${index}`}
+                                                    result={hit.document}
+                                                    collectionName={
+                                                        query.collection
+                                                    }
+                                                    onDelete={(documentId) => {
+                                                        toast({
+                                                            title: 'Info',
+                                                            description:
+                                                                'Delete functionality not implemented in NL search test.',
+                                                            variant: 'default',
+                                                        });
+                                                    }}
+                                                />
+                                            ),
+                                        )}
                                     </div>
 
                                     {/* Pagination */}
-                                    {searchResults.found > (query.per_page || 12) && (
+                                    {searchResults.found >
+                                        (query.per_page || 12) && (
                                         <div className="mt-8 flex justify-center">
                                             <PaginationComponent
                                                 currentPage={query.page || 1}
                                                 totalPages={Math.ceil(
-                                                    searchResults.found / (query.per_page || 12),
+                                                    searchResults.found /
+                                                        (query.per_page || 12),
                                                 )}
                                                 onPageChange={handlePageChange}
                                             />
@@ -951,9 +1031,12 @@ export default function NLSearchTest() {
                                             <Search className="h-8 w-8" />
                                         </div>
                                         <div className="space-y-2">
-                                            <h3 className="text-lg font-medium">No documents found</h3>
+                                            <h3 className="text-lg font-medium">
+                                                No documents found
+                                            </h3>
                                             <p className="text-sm">
-                                                Try adjusting your search query or removing some filters
+                                                Try adjusting your search query
+                                                or removing some filters
                                             </p>
                                         </div>
                                     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Database, FileText, Hash } from 'lucide-react';
+import { Database, FileText, Hash } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 
@@ -15,10 +15,11 @@ export default function CollectionHeader({
     name,
     numDocuments,
     fieldsCount,
-    createdAt
-}: CollectionHeaderProps) {
+    createdAt,
+}: Readonly<CollectionHeaderProps>) {
     // Handle edge cases
-    const safeNumDocuments = typeof numDocuments === 'number' ? numDocuments : 0;
+    const safeNumDocuments =
+        typeof numDocuments === 'number' ? numDocuments : 0;
     const safeFieldsCount = typeof fieldsCount === 'number' ? fieldsCount : 0;
     const safeName = name || 'Unknown Collection';
 
@@ -30,8 +31,12 @@ export default function CollectionHeader({
                         <Database className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight break-words">{safeName}</h1>
-                        <p className="text-muted-foreground">Collection overview and schema management</p>
+                        <h1 className="text-3xl font-bold tracking-tight break-words">
+                            {safeName}
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Collection overview and schema management
+                        </p>
                     </div>
                 </div>
             </div>

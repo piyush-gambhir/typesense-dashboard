@@ -35,7 +35,7 @@ export function useSearchOperations(collectionName: string) {
     // Validate required fields
     if (indexFields.length === 0) {
       console.warn('[performSearch] No string index fields available for search');
-      setSearchResults([]);
+      // Don't clear results immediately, let them persist during loading
       setTotalResults(0);
       setTotalPages(1);
       setLoading(false);
@@ -115,7 +115,7 @@ export function useSearchOperations(collectionName: string) {
     } catch (error) {
       console.error('Error performing search:', error);
       setError('Failed to perform search. Please try again.');
-      setSearchResults([]);
+      // Don't clear results on error to prevent jerking
       setTotalResults(0);
       setTotalPages(1);
     } finally {

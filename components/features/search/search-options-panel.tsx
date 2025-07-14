@@ -33,46 +33,43 @@ export default function SearchOptionsPanel({
     sortDropdownOptions,
 }: Readonly<SearchOptionsPanelProps>) {
     return (
-        <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                    <Label className="text-sm">Results per page:</Label>
-                    <Select
-                        value={String(perPage)}
-                        onValueChange={(value) => onPerPageChange(parseInt(value))}
-                    >
-                        <SelectTrigger className="w-20 h-8">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {countDropdownOptions.map((option) => (
-                                <SelectItem key={option.value} value={String(option.value)}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                    <Label className="text-sm">Sort by:</Label>
-                    <Select value={sortBy} onValueChange={onSortByChange}>
-                        <SelectTrigger className="w-36 h-8">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sortDropdownOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+        <div className="flex flex-wrap items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+                <Select
+                    value={String(perPage)}
+                    onValueChange={(value) => onPerPageChange(parseInt(value))}
+                >
+                    <SelectTrigger className="w-20 h-8">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {countDropdownOptions.map((option) => (
+                            <SelectItem key={option.value} value={String(option.value)}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
             
             <div className="flex items-center gap-2">
-                <Label className="text-sm">Debug:</Label>
+                <Label className="text-sm whitespace-nowrap font-medium">Sort by:</Label>
+                <Select value={sortBy} onValueChange={onSortByChange}>
+                    <SelectTrigger className="w-40 h-8">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {sortDropdownOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+                <Label className="text-sm whitespace-nowrap font-medium">Debug mode:</Label>
                 <Switch
                     checked={showFacetDebugger}
                     onCheckedChange={onShowFacetDebuggerChange}

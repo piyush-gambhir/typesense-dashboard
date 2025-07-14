@@ -5,13 +5,13 @@ import { getCollection } from '@/lib/typesense/collections';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+import BulkOperations from '@/components/features/documents/bulk-operations';
+import CollectionHeader from '@/components/features/collections/collection-details/collection-header';
 import CollectionNavigation from '@/components/features/collections/collection-details/collection-navigation';
-import TypesenseSearch from '@/components/features/search/typesense-search';
 
-export default async function page({
+export default async function BulkOperationsPage({
     params,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
     params: Promise<{ collectionName: string }>;
 }) {
     const { collectionName } = await params;
@@ -41,7 +41,15 @@ export default async function page({
     return (
         <>
             <CollectionNavigation collectionName={collection.name} />
-            <TypesenseSearch collectionName={collectionName} />
+            <div className="container mx-auto px-4 py-8 space-y-8">
+                <CollectionHeader
+                    name={collection.name}
+                    numDocuments={collection.num_documents}
+                    fieldsCount={collection.fields?.length || 0}
+                    createdAt={collection.created_at}
+                />
+                <BulkOperations collectionName={collectionName} />
+            </div>
         </>
     );
 }

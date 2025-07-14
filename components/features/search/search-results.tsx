@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import PaginationComponent from '@/components/common/pagination';
 import DocumentCard from '@/components/features/documents/document-card';
@@ -35,17 +36,45 @@ export default function SearchResults({
 }: Readonly<SearchResultsProps>) {
     if (loadingDocuments) {
         return (
-            <div className="space-y-6">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Card key={i} className="border border-border/50">
-                        <CardContent className="p-6">
-                            <div className="space-y-4 animate-pulse">
-                                <div className="h-4 bg-muted rounded w-3/4"></div>
-                                <div className="space-y-2">
-                                    <div className="h-3 bg-muted rounded"></div>
-                                    <div className="h-3 bg-muted rounded w-5/6"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
+                    <Card key={i} className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-lg backdrop-blur-sm">
+                        <div className="p-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <Skeleton className="h-5 w-16" />
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-6 w-6" />
+                                    <Skeleton className="h-6 w-6" />
                                 </div>
                             </div>
+                        </div>
+                        <CardContent className="space-y-4">
+                            {/* ID field skeleton */}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <Skeleton className="h-3 w-3" />
+                                    <Skeleton className="h-4 w-6" />
+                                </div>
+                                <div className="ml-5 flex items-center gap-2">
+                                    <Skeleton className="h-8 flex-1" />
+                                    <Skeleton className="h-6 w-6" />
+                                </div>
+                            </div>
+                            
+                            {/* Other fields skeleton */}
+                            {[1, 2, 3, 4].map((j) => (
+                                <div key={j} className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Skeleton className="h-3 w-3" />
+                                        <Skeleton className="h-4 w-20" />
+                                    </div>
+                                    <div className="ml-5 flex items-center gap-2">
+                                        <Skeleton className="h-8 flex-1" />
+                                        <Skeleton className="h-6 w-6" />
+                                    </div>
+                                    <div className="ml-5 h-px bg-border"></div>
+                                </div>
+                            ))}
                         </CardContent>
                     </Card>
                 ))}
@@ -91,7 +120,7 @@ export default function SearchResults({
     return (
         <div className="space-y-6">
             {/* Results Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {searchResults.map((result) => (
                     <DocumentCard
                         key={result.id}

@@ -6,12 +6,11 @@ import { getCollection } from '@/lib/typesense/collections';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import CollectionNavigation from '@/components/features/collections/collection-details/collection-navigation';
-import TypesenseSearch from '@/components/features/search/typesense-search';
+import ExportDocuments from '@/components/features/documents/export-documents';
 
-export default async function page({
+export default async function ExportDocumentsPage({
     params,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
     params: Promise<{ collectionName: string }>;
 }) {
     const { collectionName } = await params;
@@ -41,7 +40,7 @@ export default async function page({
     return (
         <>
             <CollectionNavigation collectionName={collection.name} />
-            <TypesenseSearch collectionName={collectionName} />
+            <ExportDocuments collectionName={collectionName} />
         </>
     );
 }

@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import CollectionBackupRestore from '@/components/features/collections/collection-backup-restore';
 import CollectionConfigManager from '@/components/features/collections/collection-config-manager';
+import CollectionHeader from '@/components/features/collections/collection-details/collection-header';
+import CollectionNavigation from '@/components/features/collections/collection-details/collection-navigation';
 import CollectionFieldManager from '@/components/features/collections/collection-field-manager';
 import CollectionStats from '@/components/features/collections/collection-stats';
 
@@ -38,14 +40,18 @@ export default async function CollectionManagementPage({
         );
     }
 
+    const collection = collectionResult.data;
+
     return (
-        <div className="container mx-auto p-4 md:p-8">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold">Collection Management</h1>
-                <p className="text-muted-foreground mt-2">
-                    Advanced management tools for collection '{collectionName}'
-                </p>
-            </div>
+        <>
+            <CollectionNavigation collectionName={collection.name} />
+
+            <CollectionHeader
+                name={collection.name}
+                numDocuments={collection.num_documents}
+                fieldsCount={collection.fields?.length || 0}
+                createdAt={collection.created_at}
+            />
 
             <Tabs defaultValue="stats" className="space-y-6">
                 <TabsList className="grid w-full grid-cols-4">
@@ -71,6 +77,6 @@ export default async function CollectionManagementPage({
                     <CollectionConfigManager collectionName={collectionName} />
                 </TabsContent>
             </Tabs>
-        </div>
+        </>
     );
 }

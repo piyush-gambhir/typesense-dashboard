@@ -8,6 +8,7 @@ import {
     ListFilter,
     Settings2,
     TrendingUp,
+    Search,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -44,14 +45,17 @@ export default function AppSidebar({
                 items: [],
             },
             {
-                title: 'Search Tools',
-                url: '/nl-search',
+                title: 'Search Presets',
+                url: '/search-presets',
+                icon: Search,
+                isActive: true,
+                items: [],
+            },
+            {
+                title: 'Natural Language Search',
+                url: '/nl-search-models',
                 icon: Bot,
                 items: [
-                    {
-                        title: 'Natural Language',
-                        url: '/nl-search',
-                    },
                     {
                         title: 'Models',
                         url: '/nl-search-models',
