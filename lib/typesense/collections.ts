@@ -1,11 +1,11 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
-
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getServerTypesenseClient } from '@/lib/typesense/get-server-client';
 
 export type importAction = 'create' | 'update' | 'upsert' | 'emplace';
 
 export async function getCollections() {
     try {
+    const typesenseClient = await getServerTypesenseClient();
         const collections = await typesenseClient.collections().retrieve();
         return {
             success: true,
@@ -22,14 +22,7 @@ export async function getCollections() {
 
 export async function getCollection(collectionName: string) {
     try {
-        if (!typesenseClient?.collections) {
-            console.error('Typesense client is not available');
-            return {
-                success: false,
-                error: 'Typesense client is not available',
-            };
-        }
-
+    const typesenseClient = await getServerTypesenseClient();
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
@@ -56,6 +49,7 @@ export async function getCollection(collectionName: string) {
 
 export async function createCollection(schema: CollectionCreateSchema) {
     try {
+    const typesenseClient = await getServerTypesenseClient();
         const newCollection = await typesenseClient
             .collections()
             .create(schema);
@@ -274,6 +268,7 @@ export async function updateCollection(
 
 export async function deleteCollection(collectionName: string) {
     try {
+    const typesenseClient = await getServerTypesenseClient();
         const deleteResult = await typesenseClient
             .collections(collectionName)
             .delete();
@@ -285,6 +280,7 @@ export async function deleteCollection(collectionName: string) {
 
 export async function listDocuments(collectionName: string) {
     try {
+        const typesenseClient = await getServerTypesenseClient();
         const documents = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -304,6 +300,7 @@ export async function exportCollection({
     includeFields?: string;
     excludeFields?: string;
 }) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         const response = await typesenseClient
             .collections(collectionName)
@@ -355,6 +352,7 @@ export async function createCollectionWithJsonl({
     fields: Array<{ name: string; type: string; facet?: boolean }>;
     fileContent: string;
 }) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         // Create schema with proper typing
         const schema: CollectionCreateSchema = {
@@ -401,6 +399,7 @@ export async function createCollectionWithJsonl({
 
 // Get collection statistics
 export async function getCollectionStats(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         const stats = await typesenseClient
             .collections(collectionName)
@@ -429,6 +428,7 @@ export async function getCollectionStats(collectionName: string) {
 
 // Get collection health status
 export async function getCollectionHealth(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         // Try to access the collection
         const collection = await typesenseClient
@@ -470,6 +470,7 @@ export async function getCollectionHealth(collectionName: string) {
 
 // Validate collection schema
 export async function validateCollectionSchema(schema: CollectionCreateSchema) {
+    const typesenseClient = await getServerTypesenseClient();
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -598,6 +599,7 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
 
 // Get collection configuration
 export async function getCollectionConfig(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         const collection = await typesenseClient
             .collections(collectionName)
@@ -669,6 +671,7 @@ export async function updateCollectionConfig(
 
 // Get collection field details
 export async function getCollectionFields(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         const collection = await typesenseClient
             .collections(collectionName)
@@ -740,6 +743,7 @@ export async function addCollectionFields(
 
 // Get collection backup (export with metadata)
 export async function backupCollection(collectionName: string) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         // Get collection schema
         const collection = await typesenseClient
@@ -782,6 +786,7 @@ export async function backupCollection(collectionName: string) {
 
 // Restore collection from backup
 export async function restoreCollection(backup: any) {
+    const typesenseClient = await getServerTypesenseClient();
     try {
         // Create collection with schema
         const newCollection = await typesenseClient

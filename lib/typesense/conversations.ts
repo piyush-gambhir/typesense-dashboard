@@ -1,4 +1,4 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export interface ConversationMessage {
     role: 'user' | 'assistant';

@@ -1,9 +1,13 @@
 'use client';
 
-import { AlertTriangle, RefreshCw, WifiOff } from 'lucide-react';
+import { AlertTriangle, RefreshCw, WifiOff, Database } from 'lucide-react';
+
+import Link from 'next/link';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { clearConnectionConfigClient } from '@/lib/connection-config-client';
+import { useRouter } from 'next/navigation';
 import {
     Card,
     CardContent,
@@ -11,31 +15,29 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 
 export default function ConnectionErrorPage() {
+    const router = useRouter();
     const handleRetry = () => {
         window.location.reload();
     };
 
-    const checkEnvironmentVariables = () => {
-        const requiredVars = [
-            'TYPESENSE_HOST',
-            'TYPESENSE_PORT',
-            'TYPESENSE_PROTOCOL',
-            'TYPESENSE_API_KEY',
-        ];
-
-        // Note: In client components, we can't access server-side env vars
-        // This is just for display purposes - actual values are server-side only
-        return requiredVars.map((varName) => ({
-            name: varName,
-            isSet: true, // Assume set for display purposes
-            value: 'Check .env',
-        }));
+    const handleUpdateConnection = () => {
+        clearConnectionConfigClient();
+        router.push('/setup');
     };
 
-    const envVars = checkEnvironmentVariables();
+    /*
+     * With the new connection setup flow we store the Typesense connection
+     * details in a secure, HTTP-only cookie when the user goes through the
+     * /setup wizard. If that cookie is missing or the server is unreachable we
+     * land on this page.
+     *
+     * Because this component runs on the client we cannot (and should not)
+     * try to read that cookie here – the cookie is HTTP-only. Instead we just
+     * inform the user that a connection could not be established and offer
+     * actions to retry or open the setup wizard again.
+     */
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -79,66 +81,24 @@ export default function ConnectionErrorPage() {
                             </AlertDescription>
                         </Alert>
 
-                        {/* Environment Variables Status */}
-                        <div className="space-y-3">
-                            <h3 className="font-semibold text-sm">
-                                Environment Configuration
-                            </h3>
-                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                {envVars.map((envVar) => (
-                                    <div
-                                        key={envVar.name}
-                                        className="flex justify-between items-center p-2 bg-muted rounded"
-                                    >
-                                        <span className="font-mono text-xs">
-                                            {envVar.name}
-                                        </span>
-                                        <span
-                                            className={`text-xs px-2 py-1 rounded ${
-                                                envVar.isSet
-                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                            }`}
-                                        >
-                                            {envVar.value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <Separator />
-
-                        {/* Troubleshooting Steps */}
-                        <div className="space-y-3">
-                            <h3 className="font-semibold text-sm">
-                                Troubleshooting Steps
-                            </h3>
-                            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-                                <li>
-                                    Verify your Typesense server is running and
-                                    accessible
-                                </li>
-                                <li>
-                                    Check your environment variables in{' '}
-                                    <code className="bg-muted px-1 rounded">
-                                        .env
-                                    </code>
-                                </li>
-                                <li>
-                                    Ensure your API key is valid and has proper
-                                    permissions
-                                </li>
-                                <li>
-                                    Verify network connectivity to your
-                                    Typesense host
-                                </li>
-                                <li>
-                                    Check firewall settings and port
-                                    accessibility
-                                </li>
-                            </ol>
-                        </div>
+                {/* Helpful next steps */}
+                <div className="space-y-3">
+                    <h3 className="font-semibold text-sm">What next?</h3>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                        <li>
+                            Make sure your Typesense server is running and can
+                            be reached from this dashboard.
+                        </li>
+                        <li>Click <strong>Retry&nbsp;Connection</strong> once the server is available.</li>
+                        <li>
+                            If the connection details have changed open the
+                            <Link href="/setup" className="text-primary underline inline-flex items-center gap-1">
+                                <Database className="h-3 w-3" />Setup&nbsp;wizard
+                            </Link>{' '}
+                            again and save the new details.
+                        </li>
+                    </ol>
+                </div>
                     </CardContent>
                 </Card>
 
@@ -151,15 +111,10 @@ export default function ConnectionErrorPage() {
                         <RefreshCw className="h-4 w-4" />
                         Retry Connection
                     </Button>
-                    {/* <Button variant="outline" asChild>
-                        <Link
-                            href="/settings/general"
-                            className="flex items-center gap-2"
-                        >
-                            <Settings className="h-4 w-4" />
-                            Check Settings
-                        </Link>
-                    </Button> */}
+                    <Button variant="outline" onClick={handleUpdateConnection} className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Edit&nbsp;Connection
+                    </Button>
                 </div>
             </div>
         </div>

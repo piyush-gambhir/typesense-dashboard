@@ -136,7 +136,7 @@ export { getClusterHealth } from './cluster-health';
 export { getTypesenseMetrics } from './get-cluster-metrics';
 
 // Client
-export { default as typesenseClient } from './typesense-client';
+export { default as typesenseClient, getTypesenseClient } from './typesense-client';
 
 // Connection utilities
 export {

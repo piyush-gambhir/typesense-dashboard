@@ -1,8 +1,8 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export async function listAliases() {
     try {
-        const aliases = await typesenseClient.aliases().retrieve();
+        const typesenseClient = getTypesenseClient();        const aliases = await typesenseClient.aliases().retrieve();
         return aliases.aliases;
     } catch (error) {
         console.error('Error listing aliases:', error);
@@ -12,7 +12,7 @@ export async function listAliases() {
 
 export async function getAlias(aliasName: string) {
     try {
-        const alias = await typesenseClient.aliases(aliasName).retrieve();
+        const typesenseClient = getTypesenseClient();        const alias = await typesenseClient.aliases(aliasName).retrieve();
         return alias;
     } catch (error) {
         console.error('Error getting alias:', error);
@@ -22,7 +22,7 @@ export async function getAlias(aliasName: string) {
 
 export async function createAlias(aliasName: string, collectionName: string) {
     try {
-        const newAlias = await typesenseClient.aliases().upsert(aliasName, {
+        const typesenseClient = getTypesenseClient();        const newAlias = await typesenseClient.aliases().upsert(aliasName, {
             collection_name: collectionName,
         });
         return newAlias;
@@ -34,7 +34,7 @@ export async function createAlias(aliasName: string, collectionName: string) {
 
 export async function updateAlias(aliasName: string, collectionName: string) {
     try {
-        const updatedAlias = await typesenseClient.aliases().upsert(aliasName, {
+        const typesenseClient = getTypesenseClient();        const updatedAlias = await typesenseClient.aliases().upsert(aliasName, {
             collection_name: collectionName,
         });
         return updatedAlias;
@@ -46,7 +46,7 @@ export async function updateAlias(aliasName: string, collectionName: string) {
 
 export async function deleteAlias(aliasName: string) {
     try {
-        const deleteResult = await typesenseClient.aliases(aliasName).delete();
+        const typesenseClient = getTypesenseClient();        const deleteResult = await typesenseClient.aliases(aliasName).delete();
         return deleteResult;
     } catch (error) {
         console.error('Error deleting alias:', error);

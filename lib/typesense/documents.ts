@@ -1,4 +1,4 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 
 type SearchQuery = {
     collection: string;
@@ -101,6 +101,7 @@ export async function multiSearch({
 
         console.log('[multiSearch] Processed requests:', multiSearchRequests);
 
+        const typesenseClient = getTypesenseClient();
         const response = await typesenseClient.multiSearch.perform({
             searches: multiSearchRequests,
         });
@@ -437,6 +438,7 @@ export async function bulkDeleteDocuments(
     documentIds: string[],
 ) {
     try {
+        const typesenseClient = getTypesenseClient();
         const deletePromises = documentIds.map((id) =>
             typesenseClient.collections(collectionName).documents(id).delete(),
         );

@@ -1,4 +1,4 @@
-import typesenseClient from '@/lib/typesense/typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export interface SearchOverride {
     id: string;
@@ -18,7 +18,7 @@ export interface SearchOverride {
 export async function listSearchOverrides() {
     try {
         // Get all collections first
-        const collections = await typesenseClient.collections().retrieve();
+        const typesenseClient = getTypesenseClient();        const collections = await typesenseClient.collections().retrieve();
         const allOverrides = [];
 
         // Fetch overrides for each collection

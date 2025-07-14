@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 
 import ConnectionStatus from '@/components/features/settings/connection-status';
+import DisconnectButton from '@/components/features/settings/disconnect-button';
 
 export default function GeneralSettings() {
     return (
@@ -100,6 +101,10 @@ export default function GeneralSettings() {
 
             {/* Connection Status */}
             <ConnectionStatus />
+
+            <div className="flex justify-end">
+                <DisconnectButton />
+            </div>
         </div>
     );
 }

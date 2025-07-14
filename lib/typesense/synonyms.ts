@@ -1,4 +1,4 @@
-import typesenseClient from './typesense-client';
+import { getTypesenseClient } from "@/lib/typesense/typesense-client";
 
 export interface Synonym {
     id: string;
@@ -33,8 +33,9 @@ export async function createSynonym(
     data: CreateSynonymRequest
 ): Promise<{ success: boolean; data?: SynonymResponse; error?: string }> {
     try {
+        const typesenseClient = getTypesenseClient();
         const response = await (
-            typesenseClient.collections(collectionName) as any
+        typesenseClient.collections(collectionName) as any
         )
             .synonyms()
             .upsert(synonymId, data);
@@ -55,8 +56,9 @@ export async function updateSynonym(
     data: CreateSynonymRequest
 ): Promise<{ success: boolean; data?: SynonymResponse; error?: string }> {
     try {
+        const typesenseClient = getTypesenseClient();
         const response = await (
-            typesenseClient.collections(collectionName) as any
+        typesenseClient.collections(collectionName) as any
         )
             .synonyms()
             .upsert(synonymId, data);
@@ -76,8 +78,9 @@ export async function getSynonym(
     synonymId: string
 ): Promise<{ success: boolean; data?: SynonymResponse; error?: string }> {
     try {
+        const typesenseClient = getTypesenseClient();
         const response = await (
-            typesenseClient.collections(collectionName) as any
+        typesenseClient.collections(collectionName) as any
         )
             .synonyms(synonymId)
             .retrieve();
@@ -100,8 +103,9 @@ export async function listSynonyms(
     }
 ): Promise<{ success: boolean; data?: SynonymResponse[]; error?: string }> {
     try {
+        const typesenseClient = getTypesenseClient();
         const response = await (
-            typesenseClient.collections(collectionName) as any
+        typesenseClient.collections(collectionName) as any
         )
             .synonyms()
             .retrieve();
@@ -121,6 +125,7 @@ export async function deleteSynonym(
     synonymId: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
+        const typesenseClient = getTypesenseClient();
         await (
             typesenseClient.collections(collectionName) as any
         )

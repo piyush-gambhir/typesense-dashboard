@@ -6,9 +6,9 @@ import {
     Bot,
     Database,
     ListFilter,
+    Search,
     Settings2,
     TrendingUp,
-    Search,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -52,7 +52,28 @@ export default function AppSidebar({
                 items: [],
             },
             {
-                title: 'Natural Language Search',
+                title: 'Aliases',
+                url: '/aliases',
+                icon: ListFilter,
+                isActive: true,
+                items: [],
+            },
+            {
+                title: 'Stopwords',
+                url: '/stopwords',
+                icon: ListFilter,
+                isActive: true,
+                items: [],
+            },
+            {
+                title: 'Analytics Rules',
+                url: '/analytics-rules',
+                icon: BarChart3,
+                isActive: true,
+                items: [],
+            },
+            {
+                title: 'NL Search',
                 url: '/nl-search-models',
                 icon: Bot,
                 items: [
@@ -67,38 +88,18 @@ export default function AppSidebar({
                 ],
             },
             {
-                title: 'Management',
-                url: '/aliases',
+                title: 'Settings',
+                url: '/settings/general',
                 icon: Settings2,
-                items: [
-                    {
-                        title: 'Aliases',
-                        url: '/aliases',
-                    },
-                    {
-                        title: 'Stopwords',
-                        url: '/stopwords',
-                    },
-                    {
-                        title: 'Analytics Rules',
-                        url: '/analytics-rules',
-                    },
-                ],
+                isActive: true,
+                items: [],
             },
             {
-                title: 'Settings',
-                url: '/settings',
+                title: 'API Keys',
+                url: '/settings/api-keys',
                 icon: Settings2,
-                items: [
-                    {
-                        title: 'General',
-                        url: '/settings/general',
-                    },
-                    {
-                        title: 'API Keys',
-                        url: '/settings/api-keys',
-                    },
-                ],
+                isActive: true,
+                items: [],
             },
         ],
         collections: collectionsData.map((collection: any) => ({
@@ -108,7 +109,11 @@ export default function AppSidebar({
         })),
     };
     return (
-        <Sidebar collapsible="icon" {...props} className="border-r border-border/50">
+        <Sidebar
+            collapsible="icon"
+            {...props}
+            className="border-r border-border/50"
+        >
             <AppSidebarHeader />
             <SidebarContent className="gap-6 py-4">
                 <NavMain items={data.navMain} />
