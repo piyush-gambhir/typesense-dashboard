@@ -30,30 +30,33 @@ export default function Header() {
     const getBreadcrumbIcon = (segment: string) => {
         switch (segment) {
             case 'collections':
-                return <Database className="w-4 h-4" />;
+                return <Database className="w-3.5 h-3.5" />;
             case 'metrics':
-                return <Home className="w-4 h-4" />;
+                return <Home className="w-3.5 h-3.5" />;
             default:
                 return null;
         }
     };
 
     return (
-        <header className="flex h-16 shrink-0 items-center gap-4 justify-between sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50 px-6">
-            <div className="flex items-center gap-4">
-                <SidebarTrigger className="-ml-2" />
-                <Separator orientation="vertical" className="h-6" />
+        <header className="flex h-14 shrink-0 items-center gap-3 justify-between sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/40 px-4 md:px-6">
+            <div className="flex items-center gap-3">
+                <SidebarTrigger className="-ml-1.5 text-muted-foreground hover:text-foreground transition-colors" />
+                <Separator
+                    orientation="vertical"
+                    className="h-5 bg-border/60"
+                />
 
                 <Breadcrumb>
-                    <BreadcrumbList className="flex items-center gap-2">
+                    <BreadcrumbList className="flex items-center gap-1.5">
                         {pathname
                             .split('/')
                             .filter(Boolean)
                             .map((segment, index, array) => (
                                 <React.Fragment key={`${segment}-${index}`}>
-                                    <BreadcrumbItem className="hidden md:flex items-center gap-2">
+                                    <BreadcrumbItem className="hidden md:flex items-center gap-1.5">
                                         {index === array.length - 1 ? (
-                                            <BreadcrumbPage className="flex items-center gap-2 font-semibold text-foreground">
+                                            <BreadcrumbPage className="flex items-center gap-1.5 font-medium text-foreground text-sm">
                                                 {getBreadcrumbIcon(segment)}
                                                 {formatBreadcrumbSegment(
                                                     segment,
@@ -62,7 +65,7 @@ export default function Header() {
                                         ) : (
                                             <BreadcrumbLink
                                                 href={`/${array.slice(0, index + 1).join('/')}`}
-                                                className="flex items-center gap-2 hover:text-foreground transition-colors"
+                                                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm"
                                             >
                                                 {getBreadcrumbIcon(segment)}
                                                 {formatBreadcrumbSegment(
@@ -72,7 +75,7 @@ export default function Header() {
                                         )}
                                     </BreadcrumbItem>
                                     {index < array.length - 1 && (
-                                        <BreadcrumbSeparator className="hidden md:block text-muted-foreground" />
+                                        <BreadcrumbSeparator className="hidden md:block text-border" />
                                     )}
                                 </React.Fragment>
                             ))}
@@ -80,7 +83,7 @@ export default function Header() {
                 </Breadcrumb>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
                 <ThemeToggle />
             </div>
         </header>

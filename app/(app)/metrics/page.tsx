@@ -19,8 +19,8 @@ export default async function page() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Connection Error</AlertTitle>
                         <AlertDescription>
-                            Unable to connect to Typesense server. Please check your
-                            configuration and try again. Error:{' '}
+                            Unable to connect to Typesense server. Please check
+                            your configuration and try again. Error:{' '}
                             {connectionStatus.error}
                         </AlertDescription>
                     </Alert>
@@ -40,8 +40,8 @@ export default async function page() {
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>Connection Error</AlertTitle>
                             <AlertDescription>
-                                Unable to connect to Typesense server. Please check
-                                your configuration and try again.
+                                Unable to connect to Typesense server. Please
+                                check your configuration and try again.
                             </AlertDescription>
                         </Alert>
                     </div>
@@ -54,7 +54,7 @@ export default async function page() {
                 metrics={clusterData?.metrics}
                 collections={{
                     success: true,
-                    data: (clusterData?.collections || []).map((col) => ({
+                    data: (clusterData?.collections || []).map((col: any) => ({
                         ...col,
                         default_sorting_field: col.default_sorting_field ?? '',
                         enable_nested_fields: col.enable_nested_fields ?? false,
@@ -72,7 +72,8 @@ export default async function page() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error Loading Metrics</AlertTitle>
                         <AlertDescription>
-                            Failed to load server metrics. Please try again later.
+                            Failed to load server metrics. Please try again
+                            later.
                         </AlertDescription>
                     </Alert>
                 </div>

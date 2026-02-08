@@ -36,24 +36,26 @@ export function NavMain({
 }) {
     return (
         <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">
+            <SidebarGroupLabel className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
                 Platform
             </SidebarGroupLabel>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="space-y-0.5">
                 {items.map((item) => {
                     if (!item.items || item.items.length === 0) {
                         return (
                             <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton 
-                                    asChild 
+                                <SidebarMenuButton
+                                    asChild
                                     tooltip={item.title}
-                                    className="transition-all duration-200 hover:bg-muted/60 hover:shadow-sm"
+                                    className="transition-colors duration-150 hover:bg-muted/50"
                                 >
                                     <Link href={item.url}>
                                         {item.icon && (
-                                            <item.icon className="h-4 w-4 transition-colors duration-200" />
+                                            <item.icon className="h-4 w-4" />
                                         )}
-                                        <span className="font-medium">{item.title}</span>
+                                        <span className="text-sm">
+                                            {item.title}
+                                        </span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -69,26 +71,28 @@ export function NavMain({
                         >
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
-                                    <SidebarMenuButton 
+                                    <SidebarMenuButton
                                         tooltip={item.title}
-                                        className="transition-all duration-200 hover:bg-muted/60 hover:shadow-sm"
+                                        className="transition-colors duration-150 hover:bg-muted/50"
                                     >
                                         {item.icon && (
-                                            <item.icon className="h-4 w-4 transition-colors duration-200" />
+                                            <item.icon className="h-4 w-4" />
                                         )}
-                                        <span className="font-medium">{item.title}</span>
-                                        <ChevronRight className="ml-auto h-3 w-3 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        <span className="text-sm">
+                                            {item.title}
+                                        </span>
+                                        <ChevronRight className="ml-auto h-3 w-3 transition-transform duration-150 group-data-[state=open]/collapsible:rotate-90" />
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
-                                <CollapsibleContent className="transition-all duration-200">
-                                    <SidebarMenuSub className="ml-4 space-y-1 border-l border-border/50 pl-3">
+                                <CollapsibleContent>
+                                    <SidebarMenuSub className="ml-4 space-y-0.5 border-l border-border/40 pl-3">
                                         {item.items.map((subItem) => (
                                             <SidebarMenuSubItem
                                                 key={subItem.title}
                                             >
-                                                <SidebarMenuSubButton 
+                                                <SidebarMenuSubButton
                                                     asChild
-                                                    className="transition-all duration-200 hover:bg-muted/40 hover:text-foreground"
+                                                    className="transition-colors duration-150 hover:bg-muted/40 hover:text-foreground"
                                                 >
                                                     <Link href={subItem.url}>
                                                         <span className="text-sm">

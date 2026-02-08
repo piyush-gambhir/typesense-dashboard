@@ -52,7 +52,15 @@ export const useCollectionSearchOptions = ({
                         .map((field: any) => field.name);
 
                     if (facetFields.length > 0) {
-                        fetchFacets(facetFields);
+                        // Find a string-type facet field for queryBy (Typesense requires string fields)
+                        const stringFacetField =
+                            schemaResponse.data.fields.find(
+                                (f: any) =>
+                                    f.facet === true &&
+                                    (f.type === 'string' ||
+                                        f.type === 'string[]'),
+                            )?.name || '*';
+                        fetchFacets(facetFields, stringFacetField);
                     }
                 }
             } catch (error) {
@@ -61,14 +69,17 @@ export const useCollectionSearchOptions = ({
             }
         };
 
-        const fetchFacets = async (facetFields: string[]) => {
+        const fetchFacets = async (
+            facetFields: string[],
+            queryByField: string,
+        ) => {
             setLoadingFilters(true);
             try {
                 const queries = [
                     {
                         collection: collectionName,
                         q: '*',
-                        queryBy: facetFields[0] || '*',
+                        queryBy: queryByField,
                         facetBy: facetFields.join(','),
                         maxFacetValues: 10,
                         perPage: 0,

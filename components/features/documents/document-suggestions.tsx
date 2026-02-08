@@ -50,7 +50,9 @@ export default function DocumentSuggestions({
         try {
             const collectionResult = await getCollection(collectionName);
             if (collectionResult?.success && collectionResult.data) {
-                const fields = collectionResult.data.fields || [];
+                const fields = (collectionResult.data.fields || []).filter(
+                    (f: any) => f.type === 'string' || f.type === 'string[]',
+                );
                 setCollectionFields(fields);
                 if (fields.length > 0) {
                     setSelectedField(fields[0].name);

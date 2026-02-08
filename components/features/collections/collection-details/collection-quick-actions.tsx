@@ -23,7 +23,7 @@ export default function CollectionQuickActions({
     onAddField,
     onImportDocuments,
     onExportDocuments,
-    onUpdateSchema
+    onUpdateSchema,
 }: CollectionQuickActionsProps) {
     return (
         <Card className="border border-border/50">
@@ -46,10 +46,12 @@ export default function CollectionQuickActions({
                         </div>
                         <div className="text-left">
                             <div className="font-medium">Add Field</div>
-                            <div className="text-xs text-muted-foreground">Extend schema</div>
+                            <div className="text-xs text-muted-foreground">
+                                Extend schema
+                            </div>
                         </div>
                     </Button>
-                    
+
                     <Button
                         onClick={onImportDocuments}
                         variant="outline"
@@ -60,10 +62,12 @@ export default function CollectionQuickActions({
                         </div>
                         <div className="text-left">
                             <div className="font-medium">Import Documents</div>
-                            <div className="text-xs text-muted-foreground">Bulk upload data</div>
+                            <div className="text-xs text-muted-foreground">
+                                Bulk upload data
+                            </div>
                         </div>
                     </Button>
-                    
+
                     <Button
                         onClick={onExportDocuments}
                         variant="outline"
@@ -74,19 +78,18 @@ export default function CollectionQuickActions({
                         </div>
                         <div className="text-left">
                             <div className="font-medium">Export Documents</div>
-                            <div className="text-xs text-muted-foreground">Download data</div>
+                            <div className="text-xs text-muted-foreground">
+                                Download data
+                            </div>
                         </div>
                     </Button>
                 </div>
-                
+
                 <Separator className="my-6" />
-                
+
                 <div className="flex items-center justify-between">
                     <div className="flex gap-3">
-                        <Button
-                            onClick={onUpdateSchema}
-                            className="bg-gradient-to-r from-primary to-primary/90 shadow-lg"
-                        >
+                        <Button onClick={onUpdateSchema} className="bg-primary">
                             <Settings className="w-4 h-4 mr-2" />
                             Update Schema
                         </Button>

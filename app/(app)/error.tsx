@@ -19,23 +19,30 @@ export default function ErrorPage({
 
     return (
         <div className="h-full flex items-center justify-center bg-background mb-16">
-            <div className="w-full max-w-md p-6 space-y-6 text-center">
-                <h1 className="text-3xl font-bold text-foreground">
-                    Something went wrong!
-                </h1>
-                <p className="text-muted-foreground">
-                    We apologize for the inconvenience.
-                </p>
+            <div className="w-full max-w-sm p-6 space-y-4 text-center animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
+                <div className="space-y-1">
+                    <h1 className="text-base font-medium text-foreground">
+                        Something went wrong
+                    </h1>
+                    <p className="text-xs text-muted-foreground">
+                        An unexpected error occurred.
+                    </p>
+                </div>
 
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="text-left">
                     <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
+                    <AlertTitle className="text-sm">Error</AlertTitle>
+                    <AlertDescription className="text-xs">
                         {error.message || 'An unexpected error occurred.'}
                     </AlertDescription>
                 </Alert>
 
-                <Button onClick={() => reset()} className="w-full">
+                <Button
+                    onClick={() => reset()}
+                    size="sm"
+                    className="w-full text-sm font-medium"
+                >
                     Try again
                 </Button>
             </div>

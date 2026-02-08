@@ -1,7 +1,7 @@
 'use client';
 
-import { ChevronDown, X, Copy, Check } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { Check, ChevronDown, Copy, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,6 @@ const Filter = ({
         }
     }, [isCopied, resetCopyState]);
 
-
     const formatFieldLabel = (field: string): string => {
         return field
             .split('_')
@@ -123,7 +122,7 @@ const Filter = ({
         const isOpen = openPopovers[field] || false;
 
         return (
-            <div className="space-y-3 p-4 border-2 rounded-xl bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
                 <div className="flex items-center justify-between">
                     <Label className="text-sm font-semibold text-foreground truncate">
                         {formatFieldLabel(field)}
@@ -178,7 +177,9 @@ const Filter = ({
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => copyToClipboard(searchQuery)}
+                                            onClick={() =>
+                                                copyToClipboard(searchQuery)
+                                            }
                                             className="h-6 w-6 p-0 hover:bg-muted/50"
                                             title="Copy search text"
                                         >
@@ -274,7 +275,7 @@ const Filter = ({
         const hasAnySelection = currentValues.length > 0;
 
         return (
-            <div className="space-y-3 p-4 border-2 rounded-xl bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
                 <div className="flex items-center justify-between">
                     <Label className="text-sm font-semibold text-foreground truncate">
                         {formatFieldLabel(field)}
@@ -340,7 +341,6 @@ const Filter = ({
                     if (values.length === 0) return null; // Don't render if there are no options
 
                     const fieldType = getFieldType(field);
-
 
                     return (
                         <div key={field} className="w-full">

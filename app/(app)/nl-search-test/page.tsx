@@ -1,13 +1,15 @@
-import { Metadata } from 'next';
-import React from 'react';
+'use client';
 
 import NLSearchTest from '@/components/features/search/nl-search-test';
-
-export const metadata: Metadata = {
-    title: 'Natural Language Search Test - Typesense Dashboard',
-    description: 'Test and debug natural language search queries',
-};
+import { VersionGate } from '@/components/shared/version-gate';
 
 export default function NLSearchTestPage() {
-    return <NLSearchTest />;
+    return (
+        <VersionGate
+            feature="naturalLanguageSearch"
+            featureName="Natural Language Search"
+        >
+            <NLSearchTest />
+        </VersionGate>
+    );
 }

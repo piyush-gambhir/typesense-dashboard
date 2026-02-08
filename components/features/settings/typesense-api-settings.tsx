@@ -1,6 +1,16 @@
 'use client';
 
-import { Check, Copy, Eye, EyeOff, Key, Plus, Shield, Trash2, Users } from 'lucide-react';
+import {
+    Check,
+    Copy,
+    Eye,
+    EyeOff,
+    Key,
+    Plus,
+    Shield,
+    Trash2,
+    Users,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { createApiKey, deleteApiKey } from '@/lib/typesense/api-keys';
@@ -26,7 +36,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,24 +51,76 @@ interface ApiKey {
 }
 
 const availableActions = [
-    { value: 'documents:create', label: 'Create Documents', category: 'Documents' },
-    { value: 'documents:delete', label: 'Delete Documents', category: 'Documents' },
-    { value: 'documents:update', label: 'Update Documents', category: 'Documents' },
-    { value: 'documents:*', label: 'All Document Actions', category: 'Documents' },
-    { value: 'collections:create', label: 'Create Collections', category: 'Collections' },
-    { value: 'collections:delete', label: 'Delete Collections', category: 'Collections' },
-    { value: 'collections:update', label: 'Update Collections', category: 'Collections' },
-    { value: 'collections:*', label: 'All Collection Actions', category: 'Collections' },
+    {
+        value: 'documents:create',
+        label: 'Create Documents',
+        category: 'Documents',
+    },
+    {
+        value: 'documents:delete',
+        label: 'Delete Documents',
+        category: 'Documents',
+    },
+    {
+        value: 'documents:update',
+        label: 'Update Documents',
+        category: 'Documents',
+    },
+    {
+        value: 'documents:*',
+        label: 'All Document Actions',
+        category: 'Documents',
+    },
+    {
+        value: 'collections:create',
+        label: 'Create Collections',
+        category: 'Collections',
+    },
+    {
+        value: 'collections:delete',
+        label: 'Delete Collections',
+        category: 'Collections',
+    },
+    {
+        value: 'collections:update',
+        label: 'Update Collections',
+        category: 'Collections',
+    },
+    {
+        value: 'collections:*',
+        label: 'All Collection Actions',
+        category: 'Collections',
+    },
     { value: 'search', label: 'Search Documents', category: 'Search' },
     { value: 'keys:create', label: 'Create API Keys', category: 'Keys' },
     { value: 'keys:delete', label: 'Delete API Keys', category: 'Keys' },
     { value: 'keys:list', label: 'List API Keys', category: 'Keys' },
     { value: 'keys:*', label: 'All Key Actions', category: 'Keys' },
-    { value: 'curations:upsert', label: 'Manage Curations', category: 'Advanced' },
-    { value: 'curations:delete', label: 'Delete Curations', category: 'Advanced' },
-    { value: 'curations:*', label: 'All Curation Actions', category: 'Advanced' },
-    { value: 'synonyms:upsert', label: 'Manage Synonyms', category: 'Advanced' },
-    { value: 'synonyms:delete', label: 'Delete Synonyms', category: 'Advanced' },
+    {
+        value: 'curations:upsert',
+        label: 'Manage Curations',
+        category: 'Advanced',
+    },
+    {
+        value: 'curations:delete',
+        label: 'Delete Curations',
+        category: 'Advanced',
+    },
+    {
+        value: 'curations:*',
+        label: 'All Curation Actions',
+        category: 'Advanced',
+    },
+    {
+        value: 'synonyms:upsert',
+        label: 'Manage Synonyms',
+        category: 'Advanced',
+    },
+    {
+        value: 'synonyms:delete',
+        label: 'Delete Synonyms',
+        category: 'Advanced',
+    },
     { value: 'synonyms:*', label: 'All Synonym Actions', category: 'Advanced' },
     { value: 'aliases:upsert', label: 'Manage Aliases', category: 'Advanced' },
     { value: 'aliases:delete', label: 'Delete Aliases', category: 'Advanced' },
@@ -68,9 +129,22 @@ const availableActions = [
     { value: 'metrics', label: 'View Metrics', category: 'System' },
 ];
 
-const actionCategories = ['Documents', 'Collections', 'Search', 'Keys', 'Advanced', 'System'];
+const actionCategories = [
+    'Documents',
+    'Collections',
+    'Search',
+    'Keys',
+    'Advanced',
+    'System',
+];
 
-function ApiKeyCard({ apiKey, onDelete }: { apiKey: ApiKey; onDelete: (id: string) => void }) {
+function ApiKeyCard({
+    apiKey,
+    onDelete,
+}: {
+    apiKey: ApiKey;
+    onDelete: (id: string) => void;
+}) {
     const [showValue, setShowValue] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -85,19 +159,22 @@ function ApiKeyCard({ apiKey, onDelete }: { apiKey: ApiKey; onDelete: (id: strin
     };
 
     const getActionBadgeColor = (action: string) => {
-        if (action.includes('*')) return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800/50';
-        if (action.includes('delete')) return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800/50';
-        if (action.includes('create')) return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800/50';
+        if (action.includes('*'))
+            return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800/50';
+        if (action.includes('delete'))
+            return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800/50';
+        if (action.includes('create'))
+            return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800/50';
         return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50';
     };
 
     return (
-        <Card className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-sm backdrop-blur-sm transition-all hover:shadow-md">
+        <Card className="border border-border/50 transition-colors hover:border-border">
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                     <div className="space-y-2">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <div className="p-1.5 bg-primary/10 rounded-lg ring-1 ring-primary/20">
+                            <div className="p-1.5 bg-primary/10 rounded-lg">
                                 <Key className="h-4 w-4 text-primary" />
                             </div>
                             {apiKey.description || 'Unnamed Key'}
@@ -128,22 +205,32 @@ function ApiKeyCard({ apiKey, onDelete }: { apiKey: ApiKey; onDelete: (id: strin
                         </Label>
                         <div className="flex items-center gap-2">
                             <div className="flex-1 p-2 bg-muted/50 rounded border font-mono text-sm">
-                                {showValue ? apiKey.value : '••••••••••••••••••••••••••••••••'}
+                                {showValue
+                                    ? apiKey.value
+                                    : '••••••••••••••••••••••••••••••••'}
                             </div>
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setShowValue(!showValue)}
                             >
-                                {showValue ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                {showValue ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
                             </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => copyToClipboard(apiKey.value!)}
-                                className={cn(copied && "text-emerald-600")}
+                                className={cn(copied && 'text-emerald-600')}
                             >
-                                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                                {copied ? (
+                                    <Check className="h-4 w-4" />
+                                ) : (
+                                    <Copy className="h-4 w-4" />
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -179,7 +266,10 @@ function ApiKeyCard({ apiKey, onDelete }: { apiKey: ApiKey; onDelete: (id: strin
                             <Badge
                                 key={action}
                                 variant="outline"
-                                className={cn("text-xs border", getActionBadgeColor(action))}
+                                className={cn(
+                                    'text-xs border',
+                                    getActionBadgeColor(action),
+                                )}
                             >
                                 {action}
                             </Badge>
@@ -191,26 +281,36 @@ function ApiKeyCard({ apiKey, onDelete }: { apiKey: ApiKey; onDelete: (id: strin
     );
 }
 
-function CreateKeyDialog({ 
-    isOpen, 
-    onOpenChange, 
-    onCreate 
-}: { 
-    isOpen: boolean; 
-    onOpenChange: (open: boolean) => void; 
-    onCreate: (description: string, actions: string[], collections: string[]) => void; 
+function CreateKeyDialog({
+    isOpen,
+    onOpenChange,
+    onCreate,
+}: {
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+    onCreate: (
+        description: string,
+        actions: string[],
+        collections: string[],
+    ) => void;
 }) {
     const [description, setDescription] = useState('');
     const [selectedActions, setSelectedActions] = useState<string[]>([]);
-    const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
-    const [availableCollections, setAvailableCollections] = useState<string[]>([]);
+    const [selectedCollections, setSelectedCollections] = useState<string[]>(
+        [],
+    );
+    const [availableCollections, setAvailableCollections] = useState<string[]>(
+        [],
+    );
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchCollections = async () => {
             const collections = await getCollections();
             if (collections && collections.success && collections.data) {
-                setAvailableCollections(collections.data.map((c) => c.name));
+                setAvailableCollections(
+                    collections.data.map((c: any) => c.name),
+                );
             }
         };
         fetchCollections();
@@ -220,7 +320,8 @@ function CreateKeyDialog({
         if (!description || selectedCollections.length === 0) {
             toast({
                 title: 'Validation Error',
-                description: 'Description and at least one collection are required',
+                description:
+                    'Description and at least one collection are required',
                 variant: 'destructive',
             });
             return;
@@ -239,18 +340,18 @@ function CreateKeyDialog({
     };
 
     const toggleAction = (action: string) => {
-        setSelectedActions(prev => 
-            prev.includes(action) 
-                ? prev.filter(a => a !== action)
-                : [...prev, action]
+        setSelectedActions((prev) =>
+            prev.includes(action)
+                ? prev.filter((a) => a !== action)
+                : [...prev, action],
         );
     };
 
     const toggleCollection = (collection: string) => {
-        setSelectedCollections(prev => 
-            prev.includes(collection) 
-                ? prev.filter(c => c !== collection)
-                : [...prev, collection]
+        setSelectedCollections((prev) =>
+            prev.includes(collection)
+                ? prev.filter((c) => c !== collection)
+                : [...prev, collection],
         );
     };
 
@@ -259,16 +360,17 @@ function CreateKeyDialog({
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <div className="p-1.5 bg-primary/10 rounded-lg ring-1 ring-primary/20">
+                        <div className="p-1.5 bg-primary/10 rounded-lg">
                             <Plus className="h-4 w-4 text-primary" />
                         </div>
                         Create New API Key
                     </DialogTitle>
                     <DialogDescription>
-                        Create a new API key with specific permissions and collection access.
+                        Create a new API key with specific permissions and
+                        collection access.
                     </DialogDescription>
                 </DialogHeader>
-                
+
                 <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-6 py-4">
                         {/* Description */}
@@ -288,11 +390,18 @@ function CreateKeyDialog({
                             <Label>Collections * (Select at least one)</Label>
                             <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto p-3 border rounded-lg bg-muted/20">
                                 {availableCollections.map((collection) => (
-                                    <div key={collection} className="flex items-center space-x-2">
+                                    <div
+                                        key={collection}
+                                        className="flex items-center space-x-2"
+                                    >
                                         <Checkbox
                                             id={`collection-${collection}`}
-                                            checked={selectedCollections.includes(collection)}
-                                            onCheckedChange={() => toggleCollection(collection)}
+                                            checked={selectedCollections.includes(
+                                                collection,
+                                            )}
+                                            onCheckedChange={() =>
+                                                toggleCollection(collection)
+                                            }
                                         />
                                         <Label
                                             htmlFor={`collection-${collection}`}
@@ -312,29 +421,50 @@ function CreateKeyDialog({
 
                         {/* Actions */}
                         <div className="space-y-3">
-                            <Label>Permissions (Optional - defaults to search only)</Label>
+                            <Label>
+                                Permissions (Optional - defaults to search only)
+                            </Label>
                             <div className="space-y-4">
                                 {actionCategories.map((category) => {
-                                    const categoryActions = availableActions.filter(a => a.category === category);
+                                    const categoryActions =
+                                        availableActions.filter(
+                                            (a) => a.category === category,
+                                        );
                                     return (
-                                        <div key={category} className="space-y-2">
-                                            <h4 className="text-sm font-medium text-muted-foreground">{category}</h4>
+                                        <div
+                                            key={category}
+                                            className="space-y-2"
+                                        >
+                                            <h4 className="text-sm font-medium text-muted-foreground">
+                                                {category}
+                                            </h4>
                                             <div className="grid grid-cols-1 gap-2 pl-4">
-                                                {categoryActions.map((action) => (
-                                                    <div key={action.value} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`action-${action.value}`}
-                                                            checked={selectedActions.includes(action.value)}
-                                                            onCheckedChange={() => toggleAction(action.value)}
-                                                        />
-                                                        <Label
-                                                            htmlFor={`action-${action.value}`}
-                                                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                {categoryActions.map(
+                                                    (action) => (
+                                                        <div
+                                                            key={action.value}
+                                                            className="flex items-center space-x-2"
                                                         >
-                                                            {action.label}
-                                                        </Label>
-                                                    </div>
-                                                ))}
+                                                            <Checkbox
+                                                                id={`action-${action.value}`}
+                                                                checked={selectedActions.includes(
+                                                                    action.value,
+                                                                )}
+                                                                onCheckedChange={() =>
+                                                                    toggleAction(
+                                                                        action.value,
+                                                                    )
+                                                                }
+                                                            />
+                                                            <Label
+                                                                htmlFor={`action-${action.value}`}
+                                                                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                            >
+                                                                {action.label}
+                                                            </Label>
+                                                        </div>
+                                                    ),
+                                                )}
                                             </div>
                                         </div>
                                     );
@@ -345,12 +475,19 @@ function CreateKeyDialog({
                 </ScrollArea>
 
                 <DialogFooter className="gap-2">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                    >
                         Cancel
                     </Button>
-                    <Button 
-                        onClick={handleCreate} 
-                        disabled={isLoading || !description || selectedCollections.length === 0}
+                    <Button
+                        onClick={handleCreate}
+                        disabled={
+                            isLoading ||
+                            !description ||
+                            selectedCollections.length === 0
+                        }
                         className="gap-2"
                     >
                         {isLoading ? (
@@ -374,7 +511,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
             <CardContent>
                 <div className="flex flex-col items-center justify-center py-16 space-y-6">
                     <div className="relative">
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center ring-1 ring-primary/20 shadow-lg">
+                        <div className="w-20 h-20 bg-muted/30 rounded-lg flex items-center justify-center">
                             <Key className="h-10 w-10 text-primary" />
                         </div>
                         <div className="absolute -top-1 -right-1">
@@ -388,8 +525,9 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
                             No API Keys Found
                         </h3>
                         <p className="text-muted-foreground leading-relaxed max-w-md">
-                            Get started by creating your first API key to access your Typesense collections.
-                            You can configure specific permissions and collection access.
+                            Get started by creating your first API key to access
+                            your Typesense collections. You can configure
+                            specific permissions and collection access.
                         </p>
                     </div>
                     <Button onClick={onCreateClick} className="gap-2">
@@ -454,45 +592,63 @@ export default function TypesenseApiSettings({
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleCreateKey = async (description: string, actions: string[], collections: string[]) => {
-        const newKey = await createApiKey(description, actions, collections);
+    const handleCreateKey = async (
+        description: string,
+        actions: string[],
+        collections: string[],
+    ) => {
+        try {
+            const newKey = await createApiKey(
+                description,
+                actions,
+                collections,
+            );
 
-        if (newKey) {
-            setApiKeys([
-                ...apiKeys,
-                {
-                    id: newKey.id.toString(),
-                    description: newKey.description,
-                    actions: newKey.actions,
-                    collections: newKey.collections,
-                    value: newKey.value,
-                },
-            ]);
-            toast({
-                title: 'Success',
-                description: `New API key created successfully`,
-            });
-        } else {
+            if (newKey) {
+                setApiKeys([
+                    ...apiKeys,
+                    {
+                        id: newKey.id.toString(),
+                        description: newKey.description,
+                        actions: newKey.actions,
+                        collections: newKey.collections,
+                        value: newKey.value,
+                    },
+                ]);
+                toast({
+                    title: 'Success',
+                    description: `New API key created successfully`,
+                });
+            }
+        } catch (error) {
             toast({
                 title: 'Error',
-                description: 'Failed to create new API key',
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to create new API key',
                 variant: 'destructive',
             });
         }
     };
 
     const handleDeleteKey = async (keyId: string) => {
-        const result = await deleteApiKey(Number(keyId));
-        if (result) {
-            setApiKeys(apiKeys.filter((key) => key.id !== keyId));
-            toast({
-                title: 'Success',
-                description: 'API key deleted successfully',
-            });
-        } else {
+        try {
+            const result = await deleteApiKey(Number(keyId));
+            if (result) {
+                setApiKeys(apiKeys.filter((key) => key.id !== keyId));
+                toast({
+                    title: 'Success',
+                    description: 'API key deleted successfully',
+                });
+            }
+        } catch (error) {
             toast({
                 title: 'Error',
-                description: 'Failed to delete API key',
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to delete API key',
                 variant: 'destructive',
             });
         }
@@ -508,13 +664,14 @@ export default function TypesenseApiSettings({
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 rounded-lg ring-1 ring-primary/20">
+                        <div className="p-2 bg-primary/10 rounded-lg">
                             <Shield className="h-5 w-5 text-primary" />
                         </div>
                         API Key Management
                     </CardTitle>
                     <CardDescription>
-                        Secure access control for your Typesense collections and operations
+                        Secure access control for your Typesense collections and
+                        operations
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -522,7 +679,8 @@ export default function TypesenseApiSettings({
                         <div className="flex items-center gap-4">
                             <Badge variant="secondary" className="gap-1">
                                 <Key className="h-3 w-3" />
-                                {apiKeys.length} {apiKeys.length === 1 ? 'Key' : 'Keys'}
+                                {apiKeys.length}{' '}
+                                {apiKeys.length === 1 ? 'Key' : 'Keys'}
                             </Badge>
                         </div>
                         <CreateKeyDialog
@@ -530,9 +688,9 @@ export default function TypesenseApiSettings({
                             onOpenChange={setIsCreateDialogOpen}
                             onCreate={handleCreateKey}
                         />
-                        <Button 
+                        <Button
                             onClick={() => setIsCreateDialogOpen(true)}
-                            className="gap-2 bg-gradient-to-r from-primary to-primary/90 shadow-lg font-medium"
+                            className="gap-2 bg-primary font-medium"
                         >
                             <Plus className="h-4 w-4" />
                             Create API Key

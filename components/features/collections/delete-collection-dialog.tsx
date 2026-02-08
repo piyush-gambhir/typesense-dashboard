@@ -29,7 +29,12 @@ export default function DeleteCollectionDialog({
 
     const handleDelete = async () => {
         try {
-            await deleteCollection(collectionName);
+            const result = await deleteCollection(collectionName);
+            if (!result) {
+                throw new Error(
+                    `Failed to delete collection '${collectionName}'`,
+                );
+            }
             toast({
                 title: 'Collection Deleted',
                 description: `Collection '${collectionName}' has been successfully deleted.`,

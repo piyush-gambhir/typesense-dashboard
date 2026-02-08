@@ -22,7 +22,7 @@ export default function CollectionAnalytics({
             {/* Header */}
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 rounded-xl ring-1 ring-emerald-500/20">
+                    <div className="p-3 bg-muted/30 rounded-lg">
                         <BarChart3 className="h-6 w-6 text-emerald-600" />
                     </div>
                     <div>

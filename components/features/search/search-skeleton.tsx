@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -25,7 +23,7 @@ const FilterSkeleton = () => (
 );
 
 const DocumentCardSkeleton = () => (
-    <Card className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-lg backdrop-blur-sm">
+    <Card className="border border-border/50">
         <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -49,7 +47,7 @@ const DocumentCardSkeleton = () => (
                     <Skeleton className="h-8 w-8" />
                 </div>
             </div>
-            
+
             {/* Other fields skeleton */}
             {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="space-y-2">

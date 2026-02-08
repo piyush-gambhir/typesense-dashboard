@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -38,7 +36,7 @@ export default function SearchResults({
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
-                    <Card key={i} className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-lg backdrop-blur-sm">
+                    <Card key={i} className="border border-border/50">
                         <div className="p-4">
                             <div className="flex items-center justify-between mb-4">
                                 <Skeleton className="h-5 w-16" />
@@ -60,7 +58,7 @@ export default function SearchResults({
                                     <Skeleton className="h-6 w-6" />
                                 </div>
                             </div>
-                            
+
                             {/* Other fields skeleton */}
                             {[1, 2, 3, 4].map((j) => (
                                 <div key={j} className="space-y-2">

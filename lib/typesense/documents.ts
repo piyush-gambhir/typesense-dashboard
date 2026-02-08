@@ -418,10 +418,9 @@ export async function getDocumentCount(
             .documents()
             .search({
                 q: '*',
-                query_by: 'id',
                 per_page: 0,
                 ...(filterBy && { filter_by: filterBy }),
-            });
+            } as any);
         return searchResult.found || 0;
     } catch (error) {
         console.error(
@@ -506,12 +505,11 @@ export async function getDocumentFieldStats(
             .documents()
             .search({
                 q: '*',
-                query_by: 'id',
                 per_page: 0,
                 facet_by: fieldName,
                 max_facet_values: 1000,
                 ...(filterBy && { filter_by: filterBy }),
-            });
+            } as any);
 
         const facetCounts = searchResult.facet_counts?.[0]?.counts || [];
         const totalCount = searchResult.found || 0;
@@ -617,12 +615,11 @@ export async function getDocumentsByFilter(
             .documents()
             .search({
                 q: '*',
-                query_by: 'id',
                 filter_by: filterBy,
                 ...(sortBy && { sort_by: sortBy }),
                 per_page: perPage,
                 page: page,
-            });
+            } as any);
         return {
             success: true,
             data: documents,
@@ -653,11 +650,10 @@ export async function getAllDocuments(
             .documents()
             .search({
                 q: '*',
-                query_by: 'id',
                 ...(sortBy && { sort_by: sortBy }),
                 per_page: perPage,
                 page: page,
-            });
+            } as any);
         return {
             success: true,
             data: documents,

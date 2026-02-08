@@ -1,8 +1,12 @@
-import { getServerTypesenseClient, getServerConnectionConfig } from '@/lib/typesense/get-server-client';
+import {
+    getServerConnectionConfig,
+    getServerTypesenseClient,
+} from '@/lib/typesense/get-server-client';
 
 export interface ConnectionStatus {
     isConnected: boolean;
     error?: string;
+    serverVersion?: string;
     serverInfo?: {
         host: string;
         port: number;
@@ -15,7 +19,7 @@ export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
     // Get the actual configuration that will be used
     const config = await getServerConnectionConfig();
     const typesenseClient = await getServerTypesenseClient();
-    
+
     const serverInfo = {
         host: config.host,
         port: config.port,
@@ -33,8 +37,22 @@ export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
 
         await Promise.race([connectionPromise, timeoutPromise]);
 
+        // Fetch server version from /debug endpoint
+        let serverVersion: string | undefined;
+        try {
+            const debugInfo = await (typesenseClient as any).apiCall.get(
+                '/debug',
+            );
+            if (debugInfo?.version) {
+                serverVersion = debugInfo.version;
+            }
+        } catch {
+            // version detection is best-effort; don't fail the connection check
+        }
+
         return {
             isConnected: true,
+            serverVersion,
             serverInfo,
             timestamp: new Date().toISOString(),
         };

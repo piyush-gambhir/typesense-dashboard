@@ -118,14 +118,22 @@ function ChartTooltipContent({
     color,
     nameKey,
     labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<'div'> & {
-        hideLabel?: boolean;
-        hideIndicator?: boolean;
-        indicator?: 'line' | 'dot' | 'dashed';
-        nameKey?: string;
-        labelKey?: string;
-    }) {
+}: /* eslint-disable @typescript-eslint/no-explicit-any */
+any & {
+    active?: boolean;
+    payload?: any[];
+    className?: string;
+    hideLabel?: boolean;
+    hideIndicator?: boolean;
+    indicator?: 'line' | 'dot' | 'dashed';
+    nameKey?: string;
+    labelKey?: string;
+    label?: any;
+    labelFormatter?: (label: any, payload: any[]) => React.ReactNode;
+    labelClassName?: string;
+    formatter?: any;
+    color?: string;
+}) {
     const { config } = useChart();
 
     const tooltipLabel = React.useMemo(() => {
@@ -179,7 +187,7 @@ function ChartTooltipContent({
         >
             {!nestLabel ? tooltipLabel : null}
             <div className="grid gap-1.5">
-                {payload.map((item, index) => {
+                {payload.map((item: any, index: number) => {
                     const key = `${nameKey || item.name || item.dataKey || 'value'}`;
                     const itemConfig = getPayloadConfigFromPayload(
                         config,
@@ -280,11 +288,13 @@ function ChartLegendContent({
     payload,
     verticalAlign = 'bottom',
     nameKey,
-}: React.ComponentProps<'div'> &
-    Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
-        hideIcon?: boolean;
-        nameKey?: string;
-    }) {
+}: any & {
+    className?: string;
+    hideIcon?: boolean;
+    payload?: any[];
+    verticalAlign?: 'top' | 'bottom';
+    nameKey?: string;
+}) {
     const { config } = useChart();
 
     if (!payload?.length) {
@@ -299,7 +309,7 @@ function ChartLegendContent({
                 className,
             )}
         >
-            {payload.map((item) => {
+            {payload.map((item: any) => {
                 const key = `${nameKey || item.dataKey || 'value'}`;
                 const itemConfig = getPayloadConfigFromPayload(
                     config,
@@ -373,9 +383,9 @@ function getPayloadConfigFromPayload(
 
 export {
     ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
     ChartLegend,
     ChartLegendContent,
     ChartStyle,
+    ChartTooltip,
+    ChartTooltipContent,
 };

@@ -153,11 +153,17 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
                                         variant="ghost"
                                         size="sm"
                                         className="h-8 w-8 p-0"
-                                        onClick={() => copyToClipboard(String(value))}
-                                        title={isCopied ? 'Copied!' : 'Copy URL'}
+                                        onClick={() =>
+                                            copyToClipboard(String(value))
+                                        }
+                                        title={
+                                            isCopied ? 'Copied!' : 'Copy URL'
+                                        }
                                     >
                                         {isCopied ? (
-                                            <div className="h-4 w-4 text-green-500">✓</div>
+                                            <div className="h-4 w-4 text-green-500">
+                                                ✓
+                                            </div>
                                         ) : (
                                             <Copy className="h-4 w-4" />
                                         )}
@@ -189,7 +195,9 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
                                 title={isCopied ? 'Copied!' : 'Copy URL'}
                             >
                                 {isCopied ? (
-                                    <div className="h-4 w-4 text-green-500">✓</div>
+                                    <div className="h-4 w-4 text-green-500">
+                                        ✓
+                                    </div>
                                 ) : (
                                     <Copy className="h-4 w-4" />
                                 )}
@@ -357,7 +365,7 @@ const DocumentCard = ({
 
     return (
         <>
-            <Card className="border border-border/50 bg-gradient-to-br from-card via-card to-card/95 shadow-lg backdrop-blur-sm">
+            <Card className="border border-border/50">
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                         <div className="space-y-1">

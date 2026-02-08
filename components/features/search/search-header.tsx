@@ -1,11 +1,8 @@
 'use client';
 
-import React from 'react';
-
 import { CollectionSchema } from '@/hooks/search/use-collection-schema';
 import { FacetValue } from '@/hooks/search/use-facet-management';
 
-import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -13,6 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 import SearchBar from './search-bar';
 import SearchErrorAlert from './search-error-alert';
@@ -78,7 +76,8 @@ export default function SearchHeader({
                     Search Documents
                 </h1>
                 <p className="text-muted-foreground">
-                    Search and filter documents in the {collectionName} collection
+                    Search and filter documents in the {collectionName}{' '}
+                    collection
                 </p>
             </div>
 
@@ -96,38 +95,30 @@ export default function SearchHeader({
                     onSearchQueryChange={onSearchQueryChange}
                     placeholder="Search documents across all fields..."
                 />
-                
+
                 {/* Enhanced Search Controls */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl border border-border/60 shadow-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-muted/30 rounded-lg border border-border/60">
                     <div className="flex flex-wrap items-center gap-6">
                         <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-muted-foreground min-w-fit">Results per page:</span>
+                            <span className="text-sm font-medium text-muted-foreground min-w-fit">
+                                Results per page:
+                            </span>
                             <Select
                                 value={String(perPage)}
-                                onValueChange={(value) => onPerPageChange(parseInt(value))}
+                                onValueChange={(value) =>
+                                    onPerPageChange(parseInt(value))
+                                }
                             >
                                 <SelectTrigger className="w-20 h-10 text-sm font-medium border-2 hover:border-primary/50 transition-colors">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {countDropdownOptions.map((option) => (
-                                        <SelectItem key={option.value} value={String(option.value)} className="text-sm">
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-muted-foreground min-w-fit">Sort by:</span>
-                            <Select value={sortBy} onValueChange={onSortByChange}>
-                                <SelectTrigger className="w-40 h-10 text-sm font-medium border-2 hover:border-primary/50 transition-colors">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {sortDropdownOptions.map((option) => (
-                                        <SelectItem key={option.value} value={option.value} className="text-sm">
+                                        <SelectItem
+                                            key={option.value}
+                                            value={String(option.value)}
+                                            className="text-sm"
+                                        >
                                             {option.label}
                                         </SelectItem>
                                     ))}
@@ -136,7 +127,34 @@ export default function SearchHeader({
                         </div>
 
                         <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-muted-foreground min-w-fit">Debug mode:</span>
+                            <span className="text-sm font-medium text-muted-foreground min-w-fit">
+                                Sort by:
+                            </span>
+                            <Select
+                                value={sortBy}
+                                onValueChange={onSortByChange}
+                            >
+                                <SelectTrigger className="w-40 h-10 text-sm font-medium border-2 hover:border-primary/50 transition-colors">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {sortDropdownOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.value}
+                                            value={option.value}
+                                            className="text-sm"
+                                        >
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-muted-foreground min-w-fit">
+                                Debug mode:
+                            </span>
                             <Switch
                                 checked={showFacetDebugger}
                                 onCheckedChange={onShowFacetDebuggerChange}
@@ -144,12 +162,16 @@ export default function SearchHeader({
                             />
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-4">
                         {totalResults > 0 && (
                             <div className="px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20">
-                                <span className="text-sm font-semibold text-primary">{totalResults.toLocaleString()}</span>
-                                <span className="text-sm text-muted-foreground ml-1">results found</span>
+                                <span className="text-sm font-semibold text-primary">
+                                    {totalResults.toLocaleString()}
+                                </span>
+                                <span className="text-sm text-muted-foreground ml-1">
+                                    results found
+                                </span>
                             </div>
                         )}
                     </div>

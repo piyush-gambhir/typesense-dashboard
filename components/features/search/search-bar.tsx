@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { useEffect } from 'react';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useCopyToClipboard } from '@/hooks/shared/use-copy-to-clipboard';
 
 interface SearchBarProps {
@@ -57,7 +56,7 @@ export default function SearchBar({
                 value={searchQuery}
                 onChange={(e) => onSearchQueryChange(e.target.value)}
                 placeholder={placeholder}
-                className="pl-12 pr-14 h-14 text-base border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 bg-background/80"
+                className="pl-12 pr-14 h-14 text-base border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg transition-all duration-200 bg-background/80"
             />
             {searchQuery.trim() && (
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">

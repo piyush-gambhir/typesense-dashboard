@@ -95,7 +95,7 @@ export default function SchemaManagement({
                     </AlertDescription>
                 </Alert>
                 {isJsonMode ? (
-                    <div className="border rounded-xl overflow-hidden bg-gradient-to-br from-background to-muted/20">
+                    <div className="border rounded-lg overflow-hidden">
                         <Editor
                             height="500px"
                             defaultLanguage="json"

@@ -1,14 +1,15 @@
 import { redirect } from 'next/navigation';
 
+import { hasEnvConnectionConfig } from '@/lib/connection-config';
 import { getCollections } from '@/lib/typesense/collections';
 import { checkTypesenseConnection } from '@/lib/typesense/connection-check';
-import { hasEnvConnectionConfig } from '@/lib/connection-config';
 import { cookies } from 'next/headers';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 import Header from '@/components/layout/header';
 import AppSidebar from '@/components/sidebar/app-sidebar';
+import { TypesenseVersionProvider } from '@/providers/typesense-version-provider';
 
 export default async function RootLayout({
     children,
@@ -21,14 +22,19 @@ export default async function RootLayout({
             // Check if we have a valid cookie
             const cookieStore = await cookies();
             const configCookie = cookieStore.get('typesense-connection-config');
-            
+
             if (!configCookie) {
                 redirect('/setup');
             }
-            
+
             try {
                 const parsedConfig = JSON.parse(configCookie.value);
-                if (!parsedConfig.host || !parsedConfig.port || !parsedConfig.protocol || !parsedConfig.apiKey) {
+                if (
+                    !parsedConfig.host ||
+                    !parsedConfig.port ||
+                    !parsedConfig.protocol ||
+                    !parsedConfig.apiKey
+                ) {
                     redirect('/setup');
                 }
             } catch {
@@ -36,7 +42,7 @@ export default async function RootLayout({
             }
         }
 
-        // Check connection status first
+        // Check connection status first (also detects server version)
         const connectionStatus = await checkTypesenseConnection();
 
         // If connection fails, redirect to connection error page
@@ -48,13 +54,20 @@ export default async function RootLayout({
         const collections = await getCollections();
 
         return (
-            <SidebarProvider defaultOpen={false}>
-                <AppSidebar collections={collections} />
-                <SidebarInset>
-                    <Header />
-                    {children}
-                </SidebarInset>
-            </SidebarProvider>
+            <TypesenseVersionProvider
+                serverVersion={connectionStatus.serverVersion}
+            >
+                <SidebarProvider defaultOpen={false}>
+                    <AppSidebar
+                        collections={collections}
+                        serverVersion={connectionStatus.serverVersion}
+                    />
+                    <SidebarInset>
+                        <Header />
+                        {children}
+                    </SidebarInset>
+                </SidebarProvider>
+            </TypesenseVersionProvider>
         );
     } catch (error) {
         // If there's any error during connection check or collection fetch,

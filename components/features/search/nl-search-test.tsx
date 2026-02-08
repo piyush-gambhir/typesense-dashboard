@@ -10,7 +10,7 @@ import {
     Sparkles,
     Zap,
 } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { getCollection, getCollections } from '@/lib/typesense/collections';
 import { multiSearch } from '@/lib/typesense/documents';
@@ -153,7 +153,7 @@ function EmptySearchState() {
             <CardContent>
                 <div className="flex flex-col items-center justify-center py-16 space-y-6">
                     <div className="relative">
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center ring-1 ring-primary/20 shadow-lg">
+                        <div className="w-20 h-20 bg-muted/30 rounded-lg flex items-center justify-center">
                             <Search className="h-10 w-10 text-primary" />
                         </div>
                         <div className="absolute -top-1 -right-1">
@@ -565,7 +565,7 @@ export default function NLSearchTest() {
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 rounded-lg ring-1 ring-primary/20">
+                        <div className="p-2 bg-primary/10 rounded-lg">
                             <Zap className="h-5 w-5 text-primary" />
                         </div>
                         Search Configuration
@@ -771,7 +771,7 @@ export default function NLSearchTest() {
                                 !query.nl_query.trim() ||
                                 !query.nl_model_id
                             }
-                            className="gap-2 bg-gradient-to-r from-primary to-primary/90 shadow-lg font-medium px-8"
+                            className="gap-2 bg-primary font-medium px-8"
                             size="lg"
                         >
                             {isLoading ? (

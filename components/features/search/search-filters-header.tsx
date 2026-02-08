@@ -1,15 +1,9 @@
 'use client';
 
-import React from 'react';
-
 import { CollectionSchema } from '@/hooks/search/use-collection-schema';
 import { FacetValue } from '@/hooks/search/use-facet-management';
 
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { X } from 'lucide-react';
 
 import Filter from './search-filters';
 
@@ -43,7 +37,9 @@ export default function SearchFiltersHeader({
     if (!hasFacetableFields && !loadingFilters) {
         return (
             <div className="text-center py-4">
-                <span className="text-sm text-muted-foreground">No filterable fields available</span>
+                <span className="text-sm text-muted-foreground">
+                    No filterable fields available
+                </span>
             </div>
         );
     }
@@ -54,7 +50,10 @@ export default function SearchFiltersHeader({
                 <div className="h-5 w-20 bg-muted/50 rounded-lg animate-pulse" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className="space-y-3 p-4 border rounded-xl bg-card/50">
+                        <div
+                            key={i}
+                            className="space-y-3 p-4 border rounded-lg bg-card/50"
+                        >
                             <div className="h-4 w-16 bg-muted/50 rounded-lg animate-pulse" />
                             <div className="h-10 w-full bg-muted/50 rounded-lg animate-pulse" />
                         </div>
@@ -67,9 +66,11 @@ export default function SearchFiltersHeader({
     return (
         <div className="space-y-5">
             {/* Enhanced filters header */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/20 to-muted/10 rounded-xl border border-border/50">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
                 <div className="flex items-center gap-2">
-                    <h4 className="text-base font-semibold text-foreground">Filter Results</h4>
+                    <h4 className="text-base font-semibold text-foreground">
+                        Filter Results
+                    </h4>
                     {Object.keys(filterMap).length > 0 && (
                         <span className="px-2 py-1 bg-primary/20 text-primary text-xs font-medium rounded-full">
                             {Object.keys(filterMap).length} active

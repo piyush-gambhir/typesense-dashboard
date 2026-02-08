@@ -23,7 +23,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { StatsGridLoading } from '@/components/ui/loading';
 import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
     Select,
     SelectContent,
@@ -31,6 +30,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DocumentStatsProps {
     collectionName: string;
@@ -68,12 +68,10 @@ export default function DocumentStats({
     const loadCollectionStats = async () => {
         setIsLoading(true);
         try {
-            const [countResult, collectionResult, recentDocsResult] =
-                await Promise.all([
-                    getDocumentCount(collectionName),
-                    getCollection(collectionName),
-                    getAllDocuments(collectionName, 5, 1, 'created_at:desc'),
-                ]);
+            const [countResult, collectionResult] = await Promise.all([
+                getDocumentCount(collectionName),
+                getCollection(collectionName),
+            ]);
 
             if (countResult !== null) {
                 setDocumentCount(countResult);
@@ -86,12 +84,26 @@ export default function DocumentStats({
                 }
             }
 
-            if (recentDocsResult?.success && recentDocsResult.data) {
-                setRecentDocuments(
-                    recentDocsResult.data.hits?.map(
-                        (hit: any) => hit.document,
-                    ) || [],
+            // Fetch recent docs separately — sort by created_at only if collection has it
+            try {
+                const hasCreatedAt = collectionResult?.data?.fields?.some(
+                    (f: any) => f.name === 'created_at',
                 );
+                const recentDocsResult = await getAllDocuments(
+                    collectionName,
+                    5,
+                    1,
+                    hasCreatedAt ? 'created_at:desc' : undefined,
+                );
+                if (recentDocsResult?.success && recentDocsResult.data) {
+                    setRecentDocuments(
+                        recentDocsResult.data.hits?.map(
+                            (hit: any) => hit.document,
+                        ) || [],
+                    );
+                }
+            } catch {
+                // Recent docs fetch is non-critical
             }
         } catch (error) {
             toast({
@@ -336,7 +348,7 @@ export default function DocumentStats({
                         <div className="space-y-8">
                             {/* Field Overview */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="border border-border/50 rounded-lg p-6 bg-gradient-to-br from-blue-50/50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/20">
+                                <div className="border border-border/50 rounded-lg p-6">
                                     <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-300 mb-2">
                                         Total Documents
                                     </h4>
@@ -347,7 +359,7 @@ export default function DocumentStats({
                                         documents with this field
                                     </p>
                                 </div>
-                                <div className="border border-border/50 rounded-lg p-6 bg-gradient-to-br from-green-50/50 to-green-100/50 dark:from-green-950/20 dark:to-green-900/20">
+                                <div className="border border-border/50 rounded-lg p-6">
                                     <h4 className="font-semibold text-sm text-green-700 dark:text-green-300 mb-2">
                                         Unique Values
                                     </h4>
@@ -358,7 +370,7 @@ export default function DocumentStats({
                                         distinct values found
                                     </p>
                                 </div>
-                                <div className="border border-border/50 rounded-lg p-6 bg-gradient-to-br from-purple-50/50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/20">
+                                <div className="border border-border/50 rounded-lg p-6">
                                     <h4 className="font-semibold text-sm text-purple-700 dark:text-purple-300 mb-2">
                                         Uniqueness Ratio
                                     </h4>
@@ -469,7 +481,7 @@ export default function DocumentStats({
 
             {/* Recent Documents */}
             {recentDocuments.length > 0 && (
-                <Card className="border border-border/50 shadow-sm">
+                <Card className="border border-border/50">
                     <CardHeader className="space-y-1">
                         <CardTitle className="text-xl font-semibold">
                             Recent Documents
@@ -483,7 +495,7 @@ export default function DocumentStats({
                             {recentDocuments.map((doc, index) => (
                                 <div
                                     key={index}
-                                    className="border border-border/30 rounded-lg p-5 bg-gradient-to-r from-background to-muted/20 hover:shadow-sm transition-shadow"
+                                    className="border border-border/30 rounded-lg p-5 hover:bg-muted/30 transition-colors"
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-2">

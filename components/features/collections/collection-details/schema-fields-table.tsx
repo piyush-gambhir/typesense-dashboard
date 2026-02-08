@@ -31,7 +31,11 @@ interface Field {
 
 interface SchemaFieldsTableProps {
     fields: Field[];
-    onFieldChange: (index: number, key: keyof Field, value: boolean | string) => void;
+    onFieldChange: (
+        index: number,
+        key: keyof Field,
+        value: boolean | string,
+    ) => void;
 }
 
 const fieldTypes = [
@@ -47,28 +51,49 @@ const fieldTypes = [
     'bool[]',
 ];
 
-export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaFieldsTableProps) {
+export default function SchemaFieldsTable({
+    fields,
+    onFieldChange,
+}: SchemaFieldsTableProps) {
     return (
-        <div className="border rounded-xl overflow-hidden bg-gradient-to-br from-background to-muted/20">
+        <div className="border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/50">
-                            <TableHead className="font-semibold">Field Name</TableHead>
-                            <TableHead className="font-semibold">Data Type</TableHead>
-                            <TableHead className="font-semibold text-center">Facet</TableHead>
-                            <TableHead className="font-semibold text-center">Index</TableHead>
-                            <TableHead className="font-semibold text-center">Optional</TableHead>
-                            <TableHead className="font-semibold text-center">Sort</TableHead>
-                            <TableHead className="font-semibold text-center">Store</TableHead>
+                            <TableHead className="font-semibold">
+                                Field Name
+                            </TableHead>
+                            <TableHead className="font-semibold">
+                                Data Type
+                            </TableHead>
+                            <TableHead className="font-semibold text-center">
+                                Facet
+                            </TableHead>
+                            <TableHead className="font-semibold text-center">
+                                Index
+                            </TableHead>
+                            <TableHead className="font-semibold text-center">
+                                Optional
+                            </TableHead>
+                            <TableHead className="font-semibold text-center">
+                                Sort
+                            </TableHead>
+                            <TableHead className="font-semibold text-center">
+                                Store
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {fields.map((field, index) => {
-                            const isNewField = field.name.startsWith('new_field_');
+                            const isNewField =
+                                field.name.startsWith('new_field_');
 
                             return (
-                                <TableRow key={field.name} className="border-border/50">
+                                <TableRow
+                                    key={field.name}
+                                    className="border-border/50"
+                                >
                                     <TableCell className="font-medium">
                                         {isNewField ? (
                                             <Input
@@ -85,7 +110,10 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                             />
                                         ) : (
                                             <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className="font-mono text-xs">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="font-mono text-xs"
+                                                >
                                                     {field.name}
                                                 </Badge>
                                             </div>
@@ -96,7 +124,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                             <Select
                                                 value={field.type}
                                                 onValueChange={(value) =>
-                                                    onFieldChange(index, 'type', value)
+                                                    onFieldChange(
+                                                        index,
+                                                        'type',
+                                                        value,
+                                                    )
                                                 }
                                             >
                                                 <SelectTrigger className="w-full">
@@ -104,14 +136,22 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {fieldTypes.map((type) => (
-                                                        <SelectItem key={type} value={type}>
-                                                            <code className="text-xs">{type}</code>
+                                                        <SelectItem
+                                                            key={type}
+                                                            value={type}
+                                                        >
+                                                            <code className="text-xs">
+                                                                {type}
+                                                            </code>
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
                                         ) : (
-                                            <Badge variant="secondary" className="font-mono text-xs">
+                                            <Badge
+                                                variant="secondary"
+                                                className="font-mono text-xs"
+                                            >
                                                 {field.type}
                                             </Badge>
                                         )}
@@ -120,7 +160,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                         <Switch
                                             checked={field.facet}
                                             onCheckedChange={(checked) =>
-                                                onFieldChange(index, 'facet', checked)
+                                                onFieldChange(
+                                                    index,
+                                                    'facet',
+                                                    checked,
+                                                )
                                             }
                                             disabled={!isNewField}
                                         />
@@ -129,7 +173,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                         <Switch
                                             checked={field.index}
                                             onCheckedChange={(checked) =>
-                                                onFieldChange(index, 'index', checked)
+                                                onFieldChange(
+                                                    index,
+                                                    'index',
+                                                    checked,
+                                                )
                                             }
                                             disabled={!isNewField}
                                         />
@@ -138,7 +186,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                         <Switch
                                             checked={field.optional}
                                             onCheckedChange={(checked) =>
-                                                onFieldChange(index, 'optional', checked)
+                                                onFieldChange(
+                                                    index,
+                                                    'optional',
+                                                    checked,
+                                                )
                                             }
                                             disabled={!isNewField}
                                         />
@@ -147,7 +199,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                         <Switch
                                             checked={field.sort}
                                             onCheckedChange={(checked) =>
-                                                onFieldChange(index, 'sort', checked)
+                                                onFieldChange(
+                                                    index,
+                                                    'sort',
+                                                    checked,
+                                                )
                                             }
                                             disabled={!isNewField}
                                         />
@@ -156,7 +212,11 @@ export default function SchemaFieldsTable({ fields, onFieldChange }: SchemaField
                                         <Switch
                                             checked={field.store}
                                             onCheckedChange={(checked) =>
-                                                onFieldChange(index, 'store', checked)
+                                                onFieldChange(
+                                                    index,
+                                                    'store',
+                                                    checked,
+                                                )
                                             }
                                             disabled={!isNewField}
                                         />

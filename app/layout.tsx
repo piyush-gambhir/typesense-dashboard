@@ -1,3 +1,4 @@
+import { NeueMontreal } from '@/fonts/fonts';
 import { Providers } from '@/providers/providers';
 
 import type { Metadata } from 'next';
@@ -5,8 +6,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'Typesese Dashboard',
-    description: 'Typesese Dashboard',
+    title: 'Typesense Dashboard',
+    description: 'Modern search analytics & management for Typesense',
 };
 
 export default function RootLayout({
@@ -16,7 +17,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`antialiased`} suppressHydrationWarning>
+            <body
+                className={`${NeueMontreal.variable} font-sans antialiased`}
+                suppressHydrationWarning
+            >
                 <Providers>{children}</Providers>
             </body>
         </html>

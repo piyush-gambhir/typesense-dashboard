@@ -27,7 +27,7 @@ export default function CollectionHeader({
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl ring-1 ring-primary/20 shadow-sm">
+                    <div className="p-3 bg-muted/30 rounded-lg">
                         <Database className="h-6 w-6 text-primary" />
                     </div>
                     <div>
