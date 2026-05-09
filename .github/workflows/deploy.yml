@@ -1,0 +1,56 @@
+# Vercel deployment workflow.
+#
+# Currently DISABLED for automatic triggers — only fires when manually run from
+# the GitHub UI. To enable on push, uncomment the `push:` block below.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - development
+  # push:
+  #   branches: [release]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Deploy
+        run: |
+          # Reconstruct the deploy env file from secrets so scripts/deploy.sh works the same locally and in CI.
+          cat > ".env.deploy.${ENV}" <<EOF
+          VERCEL_TOKEN=${VERCEL_TOKEN}
+          VERCEL_SCOPE=${VERCEL_SCOPE}
+          VERCEL_PROJECT_ID=${VERCEL_PROJECT_ID}
+          EOF
+          bash scripts/deploy.sh "$ENV"
+        env:
+          ENV: ${{ inputs.environment || 'production' }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
