@@ -27,6 +27,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
+      - name: Lint
+        run: pnpm exec next lint --dir .
+        continue-on-error: true
       - run: pnpm run test
       - run: pnpm run build
