@@ -1,14 +1,14 @@
 # Dockerfile.development
-FROM node:20-alpine
+FROM node:24.21.0-alpine
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@12.11.2 --activate
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json file
-COPY package.json ./
+# Copy package.json and pnpm-workspace.yaml
+COPY package.json pnpm-workspace.yaml ./
 
 # Install dependencies using pnpm
 RUN pnpm install
