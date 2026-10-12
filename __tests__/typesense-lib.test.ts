@@ -523,7 +523,7 @@ describe('Search Overrides', () => {
         const overridesChain2 = {
             retrieve: vi.fn().mockResolvedValue({ overrides: [{ id: 'o2' }] }),
         };
-        let callCount = 0;
+        const callCount = 0;
         mockClient.collections.mockImplementation((name?: string) => {
             if (!name)
                 return {

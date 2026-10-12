@@ -7,7 +7,7 @@
         "dev": "cross-env NODE_ENV=development next dev --turbopack",
         "build": "cross-env next build --turbopack",
         "start": "cross-env NODE_ENV=production next start",
-        "lint": "next lint",
+        "lint": "eslint .",
         "test": "vitest run",
         "test:watch": "vitest",
         "clean": "rimraf .next && rimraf node_modules"
@@ -67,14 +67,13 @@
         "zod": "^4.6.6"
     },
     "devDependencies": {
-        "@eslint/eslintrc": "^3.3.7",
         "@tailwindcss/postcss": "^4.3.3",
         "@trivago/prettier-plugin-sort-imports": "^6.0.2",
         "@types/node": "^24.19.2",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitest/coverage-v8": "^4.1.11",
-        "eslint": "^10.0.0",
+        "eslint": "^9.39.5",
         "eslint-config-next": "16.4.0",
         "husky": "^9.1.7",
         "lint-staged": "^16.4.0",
