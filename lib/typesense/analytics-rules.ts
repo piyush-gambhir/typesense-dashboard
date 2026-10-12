@@ -1,10 +1,14 @@
+import { AnalyticsRuleSchema } from 'typesense/lib/Typesense/AnalyticsRule';
+
 import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 
 export async function listAnalyticsRules() {
     try {
         const typesenseClient = getTypesenseClient();
-        const rules = await typesenseClient.analytics.rules().retrieve();
-        return rules.rules;
+        // Typesense v30 returns an array, older servers return { rules: [...] }.
+        const rules = (await typesenseClient.analytics.rules().retrieve()) as
+            AnalyticsRuleSchema[] | { rules: AnalyticsRuleSchema[] };
+        return Array.isArray(rules) ? rules : rules.rules;
     } catch (error) {
         console.error('Error listing analytics rules:', error);
         return null;

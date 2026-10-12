@@ -1,6 +1,8 @@
 packages:
   - "."
-onlyBuiltDependencies:
-    - '@tailwindcss/oxide'
-    - sharp
-    - unrs-resolver
+allowBuilds:
+  "@tailwindcss/oxide": true
+  sharp: true
+  unrs-resolver: true
+overrides:
+  "monaco-editor>dompurify": 3.4.16
