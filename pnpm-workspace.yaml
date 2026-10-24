@@ -18,5 +18,7 @@ minimumReleaseAgeExclude:
   - eslint-config-next@16.4.3
   - next@16.4.3
   - "@next/bundle-analyzer@16.4.3"
+  - dompurify@3.4.17
 overrides:
-  "monaco-editor>dompurify": 3.4.16
+  monaco-editor>dompurify: 3.4.17
+  dompurify@>=3.0.0 <3.4.17: 3.4.17
