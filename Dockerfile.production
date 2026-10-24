@@ -1,5 +1,5 @@
 # Dockerfile.production
-FROM node:24.21.0-alpine
+FROM node:24.22.1-alpine
 
 # Install pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@12.11.2 --activate
