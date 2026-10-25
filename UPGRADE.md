@@ -6,7 +6,11 @@ Reviewed on 25 October 2026 against `d75f9b2` on the default `release` branch.
 
 Development and Docker use Node 26.12.1 and pnpm 12.15.0. Vercel currently
 supports Node 24, so its manual deployment workflow stays on 24.22.1. CI checks
-both versions. No deployment workflow was enabled or invoked.
+both versions. No repository deployment workflow was enabled or invoked.
+The separate Vercel Git integration builds previews and deploys the `release`
+branch to production automatically. The preview build and authenticated setup
+response pass; an invalid connection request returns HTTP 400 without contacting
+a Typesense server. Production promotion requires the owner decision before merge.
 [Supported Vercel runtimes](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
 
 TypeScript 7.0.2 performs the main typecheck. Next.js, ESLint, and import tooling
