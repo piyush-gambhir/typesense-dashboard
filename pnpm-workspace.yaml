@@ -19,6 +19,7 @@ minimumReleaseAgeExclude:
   - next@16.4.3
   - "@next/bundle-analyzer@16.4.3"
   - dompurify@3.4.17
+  - react-resizable-panels@4.15.0
 overrides:
   monaco-editor>dompurify: 3.4.17
   dompurify@>=3.0.0 <3.4.17: 3.4.17
