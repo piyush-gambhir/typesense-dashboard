@@ -77,8 +77,6 @@ export default function TypesenseCollectionDetails({
                 updatedCollectionData = collection; // Schema is already updated in state for table mode
             }
 
-            console.log('Sending update data:', updatedCollectionData);
-
             const updatedCollection = await updateCollection(
                 collection.name,
                 updatedCollectionData,

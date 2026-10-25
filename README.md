@@ -120,8 +120,8 @@ typesense-dashboard/
 
 ### Prerequisites
 
-- **Node.js** v20 or later
-- **pnpm** v8 or later (recommended) or npm/yarn
+- **Node.js** 26.12.1 for local development and Docker; Node 24.22.1 remains supported for Vercel
+- **pnpm** 12.15.0 (pinned in `packageManager`)
 - **Typesense Server** v27.1 or later (local or cloud)
 
 ### Installation
@@ -613,6 +613,8 @@ Application and server configuration:
 | `pnpm build`      | Build for production                    |
 | `pnpm start`      | Start production server                 |
 | `pnpm lint`       | Run ESLint                              |
+| `pnpm typecheck` | Generate Next.js types and check with TypeScript 7 |
+| `pnpm typecheck:compat` | Check TypeScript 6 API compatibility |
 | `pnpm test`       | Run tests once                          |
 | `pnpm test:watch` | Run tests in watch mode                 |
 | `pnpm clean`      | Clean build artifacts and node_modules  |
@@ -783,8 +785,8 @@ The dashboard includes several optimizations:
 
 - Clear Next.js cache: `rm -rf .next`
 - Reinstall dependencies: `pnpm clean && pnpm install`
-- Check Node.js version (requires v20+)
-- Verify no TypeScript errors: `pnpm build`
+- Check Node.js version against `.nvmrc` and the supported versions in `package.json`
+- Verify both compilers: `pnpm typecheck` and `pnpm typecheck:compat`
 
 #### Feature Not Showing
 

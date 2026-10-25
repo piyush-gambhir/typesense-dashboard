@@ -82,27 +82,9 @@ export async function updateCollection(
             );
         }
 
-        // First, let's verify the collection exists and get its current state
-        console.log('Checking if collection exists:', collectionName);
-
-        // Test if we can access the API at all
-        try {
-            const collections = await typesenseClient.collections().retrieve();
-            console.log(
-                'Available collections:',
-                collections.map((c: any) => c.name),
-            );
-        } catch (apiError) {
-            console.error('Cannot access Typesense API:', apiError);
-            throw new Error(
-                'Cannot access Typesense API. Check your connection settings and API key.',
-            );
-        }
-
         const existingCollection = await typesenseClient
             .collections(collectionName)
             .retrieve();
-        console.log('Existing collection:', existingCollection);
 
         // Check if we're trying to modify existing fields (which is not allowed)
         if (existingCollection.fields && schema.fields) {
@@ -153,7 +135,6 @@ export async function updateCollection(
 
             if (newFields.length === 0) {
                 console.log('No new fields to add');
-                // If no new fields, we can still update other properties
             } else {
                 // Check if we're trying to modify existing fields
                 const modifiedFields = schema.fields.filter((field: any) => {
@@ -232,19 +213,15 @@ export async function updateCollection(
             }
         }
 
-        if (schema.default_sorting_field !== undefined) {
-            updateData.default_sorting_field = schema.default_sorting_field;
+        // These collection options are fixed at creation time.
+        for (const key of ['default_sorting_field', 'enable_nested_fields'] as const) {
+            if (schema[key] !== undefined && schema[key] !== existingCollection[key]) {
+                throw new Error(`${key} cannot be changed on an existing collection`);
+            }
         }
-
-        if (schema.enable_nested_fields !== undefined) {
-            updateData.enable_nested_fields = schema.enable_nested_fields;
-        }
-
-        console.log('Updating collection with data:', updateData);
 
         // Check if we have any data to update
         if (Object.keys(updateData).length === 0) {
-            console.log('No data to update');
             return existingCollection; // Return the existing collection if nothing to update
         }
 

@@ -78,7 +78,7 @@ export default function CollectionOverviewStats({
                         {daysOld}d
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                        {new Date(createdAt * 1000).toLocaleDateString()}
+                        {new Date(createdAt * 1000).toLocaleDateString('en-US', { timeZone: 'UTC' })}
                     </p>
                 </CardContent>
             </Card>
