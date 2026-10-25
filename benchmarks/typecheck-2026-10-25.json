@@ -1,0 +1,38 @@
+{
+  "measuredAt": "2026-10-25T18:20:38.132Z",
+  "node": "v26.12.1",
+  "versions": {
+    ".": {
+      "ts6": "Version 6.0.3",
+      "ts7": "Version 7.0.2"
+    }
+  },
+  "warmupRounds": 1,
+  "rounds": 5,
+  "mode": "Identical sources and dependencies; no emit; incremental disabled; alternating order; local shared development host",
+  "samples": {
+    ".": {
+      "ts6": [
+        2547.215625,
+        2580.8026249999994,
+        2642.8722500000003,
+        2624.485917,
+        2580.0124579999992
+      ],
+      "ts7": [
+        428.11854200000016,
+        427.9334170000002,
+        423.6976250000007,
+        426.0759170000001,
+        443.89933400000155
+      ]
+    }
+  },
+  "summary": {
+    ".": {
+      "ts6Ms": 2580.8026249999994,
+      "ts7Ms": 427.9334170000002,
+      "speedup": 6.030850881178083
+    }
+  }
+}

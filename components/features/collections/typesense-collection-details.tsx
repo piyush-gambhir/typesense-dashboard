@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { updateCollection } from '@/lib/typesense/collections';
+import { getCollection, updateCollection } from '@/lib/typesense/collections';
 
 import { toast } from '@/hooks/use-toast';
 
@@ -77,15 +77,18 @@ export default function TypesenseCollectionDetails({
                 updatedCollectionData = collection; // Schema is already updated in state for table mode
             }
 
-            console.log('Sending update data:', updatedCollectionData);
-
             const updatedCollection = await updateCollection(
                 collection.name,
                 updatedCollectionData,
             );
 
             if (updatedCollection) {
-                setCollection(updatedCollection as CollectionDetails);
+                // The update response contains changed fields, not the full collection.
+                const refreshedCollection = await getCollection(collection.name);
+                if (!refreshedCollection.success) {
+                    throw new Error(refreshedCollection.error);
+                }
+                setCollection(refreshedCollection.data);
                 toast({
                     title: 'Schema Updated',
                     description:
