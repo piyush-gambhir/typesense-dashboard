@@ -120,7 +120,7 @@ typesense-dashboard/
 
 ### Prerequisites
 
-- **Node.js** 26.12.1 for local development and Docker; Node 24.22.1 remains supported for Vercel
+- **Node.js** 26.13.0 for local development and Docker; Node Vercel selects Node 26 through `engines.node`
 - **pnpm** 12.15.0 (pinned in `packageManager`)
 - **Typesense Server** v27.1 or later (local or cloud)
 
@@ -607,17 +607,17 @@ Application and server configuration:
 
 ### Available Scripts
 
-| Script            | Description                             |
-| ----------------- | --------------------------------------- |
-| `pnpm dev`        | Start development server with Turbopack |
-| `pnpm build`      | Build for production                    |
-| `pnpm start`      | Start production server                 |
-| `pnpm lint`       | Run ESLint                              |
-| `pnpm typecheck` | Generate Next.js types and check with TypeScript 7 |
-| `pnpm typecheck:compat` | Check TypeScript 6 API compatibility |
-| `pnpm test`       | Run tests once                          |
-| `pnpm test:watch` | Run tests in watch mode                 |
-| `pnpm clean`      | Clean build artifacts and node_modules  |
+| Script                  | Description                                        |
+| ----------------------- | -------------------------------------------------- |
+| `pnpm dev`              | Start development server with Turbopack            |
+| `pnpm build`            | Build for production                               |
+| `pnpm start`            | Start production server                            |
+| `pnpm lint`             | Run ESLint                                         |
+| `pnpm typecheck`        | Generate Next.js types and check with TypeScript 7 |
+| `pnpm typecheck:compat` | Check TypeScript 6 API compatibility               |
+| `pnpm test`             | Run tests once                                     |
+| `pnpm test:watch`       | Run tests in watch mode                            |
+| `pnpm clean`            | Clean build artifacts and node_modules             |
 
 ### Testing
 
