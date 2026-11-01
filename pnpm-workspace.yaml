@@ -5,6 +5,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
+  - follow-redirects@1.16.2
   - "@next/env@16.4.3"
   - "@next/eslint-plugin-next@16.4.3"
   - "@next/swc-darwin-arm64@16.4.3"
@@ -21,5 +22,6 @@ minimumReleaseAgeExclude:
   - dompurify@3.4.17
   - react-resizable-panels@4.15.0
 overrides:
+  "follow-redirects@>=1.16.0 <=1.16.1": 1.16.2
   monaco-editor>dompurify: 3.4.17
   dompurify@>=3.0.0 <3.4.17: 3.4.17
