@@ -7,14 +7,14 @@ export interface NLSearchModel {
     system_prompt?: string;
     max_bytes?: number;
     temperature?: number;
-    // Additional config for different providers
-    api_base?: string; // For self-hosted models
-    project_id?: string; // For GCP Vertex AI
-    region?: string; // For GCP Vertex AI
-    account_id?: string; // For Cloudflare Workers AI
-    namespace_id?: string; // For Cloudflare Workers AI
-    api_token?: string; // For Cloudflare Workers AI
-    // Legacy fields for backward compatibility
+
+    api_base?: string;
+    project_id?: string;
+    region?: string;
+    account_id?: string;
+    namespace_id?: string;
+    api_token?: string;
+
     name?: string;
     model_type?: string;
     model_config?: {
@@ -44,7 +44,7 @@ export interface CreateNLSearchModelRequest {
         system_prompt?: string;
         max_tokens?: number;
         temperature?: number;
-        // Additional config for different providers
+
         api_base?: string;
         project_id?: string;
         region?: string;
@@ -116,11 +116,11 @@ export interface NLSearchResponse {
     raw_llm_response?: string;
 }
 
-// Create a new NL search model
+
 export async function createNLSearchModel(model: CreateNLSearchModelRequest) {
     try {
         const typesenseClient = await getTypesenseClient();
-        // Use the generic API call method since nlSearchModels may not be in types yet
+
         const response = await (typesenseClient as any).apiCall.post(
             '/nl_search_models',
             model,
@@ -138,14 +138,14 @@ export async function createNLSearchModel(model: CreateNLSearchModelRequest) {
     }
 }
 
-// List all NL search models
+
 export async function listNLSearchModels() {
     try {
         const typesenseClient = await getTypesenseClient();
         const response = await (typesenseClient as any).apiCall.get(
             '/nl_search_models',
         );
-        // The API returns an array directly, not wrapped in a models property
+
         const models = Array.isArray(response)
             ? response
             : response.models || [];
@@ -163,7 +163,7 @@ export async function listNLSearchModels() {
     }
 }
 
-// Get a specific NL search model
+
 export async function getNLSearchModel(modelId: string) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -183,7 +183,7 @@ export async function getNLSearchModel(modelId: string) {
     }
 }
 
-// Update an NL search model
+
 export async function updateNLSearchModel(
     modelId: string,
     updates: UpdateNLSearchModelRequest,
@@ -207,7 +207,7 @@ export async function updateNLSearchModel(
     }
 }
 
-// Delete an NL search model
+
 export async function deleteNLSearchModel(modelId: string) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -226,7 +226,7 @@ export async function deleteNLSearchModel(modelId: string) {
     }
 }
 
-// Perform natural language search
+
 export async function naturalLanguageSearch(
     query: NLSearchQuery,
 ): Promise<{ success: boolean; data?: NLSearchResponse; error?: string }> {
@@ -270,7 +270,7 @@ export async function naturalLanguageSearch(
     }
 }
 
-// Get available model types and their configurations
+
 export function getAvailableModelTypes() {
     return [
         {
@@ -386,7 +386,7 @@ export function getAvailableModelTypes() {
     ];
 }
 
-// Default system prompts for different use cases
+
 export function getDefaultSystemPrompts() {
     return {
         ecommerce: `You are a search assistant for an e-commerce platform. Parse user queries into structured search parameters.

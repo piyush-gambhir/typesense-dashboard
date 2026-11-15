@@ -24,7 +24,7 @@ export function convertUnixTimestamp(
     },
 ): { date: string; time: string } {
     try {
-        // Convert Unix timestamp (in seconds) to milliseconds
+
         const date = new Date(timestamp * 1000);
 
         const formattedDate = new Intl.DateTimeFormat(

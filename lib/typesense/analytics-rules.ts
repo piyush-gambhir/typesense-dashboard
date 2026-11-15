@@ -5,7 +5,7 @@ import { getTypesenseClient } from '@/lib/typesense/typesense-client';
 export async function listAnalyticsRules() {
     try {
         const typesenseClient = getTypesenseClient();
-        // Typesense v30 returns an array, older servers return { rules: [...] }.
+
         const rules = (await typesenseClient.analytics.rules().retrieve()) as
             AnalyticsRuleSchema[] | { rules: AnalyticsRuleSchema[] };
         return Array.isArray(rules) ? rules : rules.rules;

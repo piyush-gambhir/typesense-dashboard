@@ -19,7 +19,7 @@ export default function CreateCollectionDialog() {
 
     const handleSuccess = () => {
         setOpen(false);
-        // Refresh collections list if needed
+
         window.location.reload();
     };
 

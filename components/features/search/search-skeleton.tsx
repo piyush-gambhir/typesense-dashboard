@@ -36,7 +36,7 @@ const DocumentCardSkeleton = () => (
             </div>
         </CardHeader>
         <CardContent className="space-y-4">
-            {/* ID field skeleton */}
+            {                       }
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <Skeleton className="h-3 w-3" />
@@ -48,7 +48,7 @@ const DocumentCardSkeleton = () => (
                 </div>
             </div>
 
-            {/* Other fields skeleton */}
+            {                           }
             {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -75,27 +75,27 @@ const SearchSkeleton = () => (
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Filters Column */}
+                    {                    }
                     <div className="col-span-1">
                         <FilterSkeleton />
                     </div>
 
-                    {/* Results Column */}
+                    {                    }
                     <div className="lg:col-span-3">
-                        {/* Controls */}
+                        {              }
                         <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center mb-4 gap-4">
                             <Skeleton className="h-10 w-[180px]" />
                             <Skeleton className="h-10 w-[180px]" />
                         </div>
 
-                        {/* Results Grid */}
+                        {                  }
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
                                 <DocumentCardSkeleton key={i} />
                             ))}
                         </div>
 
-                        {/* Pagination */}
+                        {                }
                         <div className="mt-6 flex justify-center">
                             <div className="flex items-center space-x-2">
                                 <Skeleton className="h-8 w-8" />

@@ -11,14 +11,14 @@ const connectionSchema = z.object({
 });
 
 const COOKIE_NAME = 'typesense-connection-config';
-const COOKIE_MAX_AGE = 14 * 24 * 60 * 60; // 14 days in seconds
+const COOKIE_MAX_AGE = 14 * 24 * 60 * 60;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const config = connectionSchema.parse(body);
 
-    // Save the connection config to cookies
+
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, JSON.stringify(config), {
       maxAge: COOKIE_MAX_AGE,
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       path: '/',
     });
 
-    // Reset the Typesense client so it picks up the new config
+
     resetTypesenseClient();
 
     return NextResponse.json({ success: true });

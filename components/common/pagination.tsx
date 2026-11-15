@@ -1,4 +1,4 @@
-// components/PaginationComponent.tsx
+
 import React, { useMemo } from 'react';
 
 import {
@@ -27,13 +27,13 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
     className,
 }) => {
     const paginationRange = useMemo(() => {
-        const totalPagesToShow = 7; // Number of pagination items to show
+        const totalPagesToShow = 7;
         if (totalPages <= totalPagesToShow) {
             return Array.from({ length: totalPages }, (_, i) => i + 1);
         }
 
-        const startPages = [1, 2]; // First pages to always show
-        const endPages = [totalPages - 1, totalPages]; // Last pages to always show
+        const startPages = [1, 2];
+        const endPages = [totalPages - 1, totalPages];
         const middleRange = [];
 
         if (currentPage > 3 && currentPage < totalPages - 2) {
@@ -50,7 +50,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
             ...middleRange,
             currentPage < totalPages - 3 ? '...' : null,
             ...endPages,
-        ].filter(Boolean); // Remove null values
+        ].filter(Boolean);
     }, [currentPage, totalPages]);
 
     if (totalPages <= 1) {

@@ -14,7 +14,7 @@ import DisconnectButton from '@/components/features/settings/disconnect-button';
 export default function GeneralSettings() {
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -35,7 +35,7 @@ export default function GeneralSettings() {
                 </div>
             </div>
 
-            {/* Configuration Guide */}
+            {                         }
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -127,7 +127,7 @@ export default function GeneralSettings() {
                 </CardContent>
             </Card>
 
-            {/* Connection Status */}
+            {                       }
             <ConnectionStatus />
 
             <div className="flex justify-end">

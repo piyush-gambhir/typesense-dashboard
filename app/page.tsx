@@ -7,7 +7,7 @@ export default function Home() {
         <div className="min-h-screen bg-background relative">
             <div className="container mx-auto px-6 py-8">
                 <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-                    {/* Hero Section */}
+                    {                  }
                     <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-2 duration-300">
                         <div className="flex items-center justify-center mb-6 gap-3">
                             <div className="w-9 h-9 bg-primary rounded-md flex items-center justify-center">
@@ -35,7 +35,7 @@ export default function Home() {
                                 and monitor performance.
                             </p>
 
-                            {/* Feature highlights — flat, no cards */}
+                            {                                           }
                             <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground mb-10">
                                 <span className="flex items-center gap-1.5">
                                     <svg
@@ -91,7 +91,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
+                    {                    }
                     <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300 delay-100">
                         <Link href="/collections">
                             <Button

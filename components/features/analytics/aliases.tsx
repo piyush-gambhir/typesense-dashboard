@@ -146,7 +146,7 @@ export default function Aliases() {
         loadData();
     }, []);
 
-    // Filter aliases based on search term
+
     useEffect(() => {
         if (!searchTerm.trim()) {
             setFilteredAliases(aliases);
@@ -308,7 +308,7 @@ export default function Aliases() {
 
     return (
         <div className="container mx-auto p-6 space-y-6">
-            {/* Information Alert */}
+            {                       }
             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
                 <Link className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <AlertDescription className="text-blue-800 dark:text-blue-200">
@@ -347,7 +347,7 @@ export default function Aliases() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                    {/* Search and Actions Bar */}
+                    {                            }
                     <div className="flex items-center justify-between gap-4">
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -458,7 +458,7 @@ export default function Aliases() {
 
                     <Separator />
 
-                    {/* Aliases Table */}
+                    {                   }
                     {isLoading ? (
                         <div className="py-12">
                             <LoadingSpinner text="Loading aliases..." />
@@ -631,7 +631,7 @@ export default function Aliases() {
                 </CardContent>
             </Card>
 
-            {/* Edit Alias Dialog */}
+            {                       }
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
@@ -702,7 +702,7 @@ export default function Aliases() {
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
+            {                                }
             <Dialog
                 open={isDeleteDialogOpen}
                 onOpenChange={setIsDeleteDialogOpen}

@@ -152,7 +152,7 @@
         @apply outline-2 outline-offset-2 outline-ring/40;
     }
 
-    /* Crisp headings */
+
     h1, h2, h3, h4, h5, h6 {
         letter-spacing: -0.025em;
     }

@@ -31,7 +31,7 @@ export default function SearchFiltersSidebar({
     onFilterChange,
     onClearFilters,
 }: SearchFiltersSidebarProps) {
-    // filterBy is already in the correct format
+
     const filterMap = filterBy;
 
     return (

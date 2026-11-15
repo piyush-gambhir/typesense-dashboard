@@ -9,23 +9,23 @@ import { useTypesenseVersion } from '@/providers/typesense-version-provider';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface VersionGateProps {
-    /** The feature key to check against the connected server version */
+
     feature: FeatureKey;
-    /** Human-readable feature name for the error message */
+
     featureName: string;
-    /** Content to render when the feature is available */
+
     children: React.ReactNode;
 }
 
-/**
- * Conditionally renders children only if the connected Typesense server
- * supports the given feature. Otherwise shows a helpful message indicating
- * the minimum version required.
- *
- * When the server version is unknown (detection failed), children are
- * rendered anyway (permissive fallback) — the API call itself will surface
- * any actual incompatibility.
- */
+
+
+
+
+
+
+
+
+
 export function VersionGate({
     feature,
     featureName,
@@ -33,7 +33,7 @@ export function VersionGate({
 }: VersionGateProps) {
     const { hasFeature, label, detected } = useTypesenseVersion();
 
-    // If version was not detected or the feature is available, render children
+
     if (!detected || hasFeature(feature)) {
         return <>{children}</>;
     }

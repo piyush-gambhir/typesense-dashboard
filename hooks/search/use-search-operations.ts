@@ -33,12 +33,12 @@ export function useSearchOperations(collectionName: string) {
             }
             setError(null);
 
-            // Validate required fields
+
             if (indexFields.length === 0) {
                 console.warn(
                     '[performSearch] No string index fields available for search',
                 );
-                // Don't clear results immediately, let them persist during loading
+
                 setTotalResults(0);
                 setTotalPages(1);
                 setLoading(false);
@@ -47,11 +47,11 @@ export function useSearchOperations(collectionName: string) {
                 return;
             }
 
-            // Build filter string properly - only include non-empty filters
+
             const validFilters = filterBy.filter((filter) => {
                 if (!filter || filter.trim() === '') return false;
 
-                // Validate filter format - should be field:=value
+
                 if (!filter.includes(':=')) {
                     console.warn(
                         '[performSearch] Invalid filter format:',
@@ -131,7 +131,7 @@ export function useSearchOperations(collectionName: string) {
             } catch (error) {
                 console.error('Error performing search:', error);
                 setError('Failed to perform search. Please try again.');
-                // Don't clear results on error to prevent jerking
+
                 setTotalResults(0);
                 setTotalPages(1);
             } finally {

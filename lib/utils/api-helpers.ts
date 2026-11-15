@@ -1,6 +1,6 @@
 import { toast } from '@/hooks/use-toast';
 
-// Standard API response type
+
 export interface ApiResponse<T = any> {
     success: boolean;
     data?: T;
@@ -8,7 +8,7 @@ export interface ApiResponse<T = any> {
     message?: string;
 }
 
-// Error handling utilities
+
 export class ApiError extends Error {
     constructor(
         message: string,
@@ -20,7 +20,7 @@ export class ApiError extends Error {
     }
 }
 
-// Standardized error handler
+
 export function handleApiError(error: unknown, context?: string): ApiResponse {
     console.error(context ? `[${context}]` : '[API Error]', error);
 
@@ -44,7 +44,7 @@ export function handleApiError(error: unknown, context?: string): ApiResponse {
     };
 }
 
-// Toast helpers for consistent notifications
+
 export const apiToast = {
     success: (message: string, description?: string) => {
         toast({
@@ -102,7 +102,7 @@ export const apiToast = {
     },
 };
 
-// Async operation wrapper with error handling
+
 export async function withErrorHandling<T>(
     operation: () => Promise<T>,
     context?: string,
@@ -118,7 +118,7 @@ export async function withErrorHandling<T>(
     }
 }
 
-// Form submission helper
+
 export async function handleFormSubmission<T extends Record<string, any>>(
     data: T,
     submitFn: (data: T) => Promise<any>,
@@ -153,7 +153,7 @@ export async function handleFormSubmission<T extends Record<string, any>>(
     }
 }
 
-// Collection operation helpers
+
 export const collectionHelpers = {
     async create(data: any, onSuccess?: () => void) {
         return handleFormSubmission(
@@ -208,7 +208,7 @@ export const collectionHelpers = {
     },
 };
 
-// Document operation helpers
+
 export const documentHelpers = {
     async create(collectionName: string, data: any, onSuccess?: () => void) {
         return handleFormSubmission(
@@ -272,7 +272,7 @@ export const documentHelpers = {
     },
 };
 
-// Generic data fetching with error handling
+
 export async function fetchWithErrorHandling<T>(
     fetchFn: () => Promise<T>,
     fallback?: T,
@@ -287,7 +287,7 @@ export async function fetchWithErrorHandling<T>(
             return fallback;
         }
 
-        // Show error toast for failed fetches
+
         apiToast.error(
             'Failed to load data',
             error instanceof Error ? error.message : 'Please try again',

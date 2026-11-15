@@ -32,7 +32,7 @@ interface SearchHeaderProps {
     sortDropdownOptions: { label: string; value: string }[];
     showFacetDebugger: boolean;
     onShowFacetDebuggerChange: (checked: boolean) => void;
-    // Filter props
+
     collectionSchema: CollectionSchema | null;
     facetValues: Record<string, FacetValue[]>;
     filterBy: Record<string, (string | number | boolean)[]>;
@@ -61,7 +61,7 @@ export default function SearchHeader({
     sortDropdownOptions,
     showFacetDebugger,
     onShowFacetDebuggerChange,
-    // Filter props
+
     collectionSchema,
     facetValues,
     filterBy,
@@ -87,16 +87,16 @@ export default function SearchHeader({
                 onDismiss={onDismissError}
             />
 
-            {/* Unified Search Interface */}
+            {                              }
             <div className="space-y-8">
-                {/* Search Bar */}
+                {                }
                 <SearchBar
                     searchQuery={searchQuery}
                     onSearchQueryChange={onSearchQueryChange}
                     placeholder="Search documents across all fields..."
                 />
 
-                {/* Enhanced Search Controls */}
+                {                              }
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-muted/30 rounded-lg border border-border/60">
                     <div className="flex flex-wrap items-center gap-6">
                         <div className="flex items-center gap-3">
@@ -177,7 +177,7 @@ export default function SearchHeader({
                     </div>
                 </div>
 
-                {/* Inline Filters */}
+                {                    }
                 <SearchFiltersHeader
                     collectionSchema={collectionSchema}
                     facetValues={facetValues}

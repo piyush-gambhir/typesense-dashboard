@@ -168,7 +168,7 @@ export default function ClusterOperations() {
                 </p>
             </div>
 
-            {/* Status Overview */}
+            {                     }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="border rounded-lg p-4 space-y-2">
                     <div className="flex items-center gap-2 text-sm font-medium">
@@ -209,11 +209,11 @@ export default function ClusterOperations() {
                 </div>
             </div>
 
-            {/* Operations */}
+            {                }
             <div>
                 <h2 className="text-lg font-medium mb-3">Operations</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* Snapshot */}
+                    {              }
                     <div className="border rounded-lg p-4 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium">
@@ -274,7 +274,7 @@ export default function ClusterOperations() {
                         </Dialog>
                     </div>
 
-                    {/* Compact */}
+                    {             }
                     <div className="border rounded-lg p-4 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium">
@@ -307,7 +307,7 @@ export default function ClusterOperations() {
                         </Button>
                     </div>
 
-                    {/* Re-elect Leader */}
+                    {                     }
                     <div className="border rounded-lg p-4 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium">
@@ -341,7 +341,7 @@ export default function ClusterOperations() {
                         </Button>
                     </div>
 
-                    {/* Clear Cache */}
+                    {                 }
                     <div className="border rounded-lg p-4 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium">Clear Cache</p>
@@ -372,7 +372,7 @@ export default function ClusterOperations() {
                         </Button>
                     </div>
 
-                    {/* Slow Request Log */}
+                    {                      }
                     <div className="border rounded-lg p-4 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium">
@@ -437,7 +437,7 @@ export default function ClusterOperations() {
                 </div>
             </div>
 
-            {/* API Stats */}
+            {               }
             {statsData && (
                 <div>
                     <h2 className="text-lg font-medium mb-3">API Stats</h2>

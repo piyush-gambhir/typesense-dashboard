@@ -64,7 +64,7 @@ export default function EditNLSearchModelDialog({
 
     useEffect(() => {
         if (open) {
-            // Reset form data when model changes
+
             const newData = {
                 api_key: model.api_key || '',
                 system_prompt: model.system_prompt || '',
@@ -89,7 +89,7 @@ export default function EditNLSearchModelDialog({
         setIsLoading(true);
 
         try {
-            // Only send fields that have changed
+
             const changedFields: Record<string, unknown> = {};
 
             if (formData.api_key !== originalData.api_key) {
@@ -105,7 +105,7 @@ export default function EditNLSearchModelDialog({
                 changedFields.temperature = formData.temperature;
             }
 
-            // Only update if there are changes
+
             if (Object.keys(changedFields).length === 0) {
                 toast({
                     title: 'No Changes',

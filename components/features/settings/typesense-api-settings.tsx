@@ -196,7 +196,7 @@ function ApiKeyCard({
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* API Key Value */}
+                {                   }
                 {apiKey.value && (
                     <div className="space-y-2">
                         <Label className="text-sm font-medium flex items-center gap-2">
@@ -236,7 +236,7 @@ function ApiKeyCard({
                     </div>
                 )}
 
-                {/* Collections */}
+                {                 }
                 <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
                         <Users className="h-3 w-3" />
@@ -255,7 +255,7 @@ function ApiKeyCard({
                     </div>
                 </div>
 
-                {/* Actions */}
+                {             }
                 <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
                         <Shield className="h-3 w-3" />
@@ -373,7 +373,7 @@ function CreateKeyDialog({
 
                 <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-6 py-4">
-                        {/* Description */}
+                        {                 }
                         <div className="space-y-2">
                             <Label htmlFor="description">Description *</Label>
                             <Input
@@ -385,7 +385,7 @@ function CreateKeyDialog({
                             />
                         </div>
 
-                        {/* Collections */}
+                        {                 }
                         <div className="space-y-3">
                             <Label>Collections * (Select at least one)</Label>
                             <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto p-3 border rounded-lg bg-muted/20">
@@ -419,7 +419,7 @@ function CreateKeyDialog({
                             </div>
                         </div>
 
-                        {/* Actions */}
+                        {             }
                         <div className="space-y-3">
                             <Label>
                                 Permissions (Optional - defaults to search only)
@@ -660,7 +660,7 @@ export default function TypesenseApiSettings({
 
     return (
         <div className="space-y-8">
-            {/* Overview Stats */}
+            {                    }
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -699,7 +699,7 @@ export default function TypesenseApiSettings({
                 </CardContent>
             </Card>
 
-            {/* API Keys Grid */}
+            {                   }
             {apiKeys.length === 0 ? (
                 <EmptyState onCreateClick={() => setIsCreateDialogOpen(true)} />
             ) : (

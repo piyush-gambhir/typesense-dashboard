@@ -21,10 +21,10 @@ interface SearchContainerProps {
 export default function SearchContainer({
     collectionName,
 }: Readonly<SearchContainerProps>) {
-    // Facet debugger state
+
     const [showFacetDebugger, setShowFacetDebugger] = useState<boolean>(false);
 
-    // Initialize all hooks first (before any early returns)
+
     const {
         searchQuery,
         perPage,
@@ -50,7 +50,7 @@ export default function SearchContainer({
         setError: setSchemaError,
     } = useCollectionSchema(collectionName);
 
-    // Convert filterBy object to Typesense filter string
+
     const convertFilterByToString = (filterObj: Record<string, (string | number | boolean)[]>): string => {
         const filterParts: string[] = [];
 
@@ -72,11 +72,11 @@ export default function SearchContainer({
         return filterParts.join(' && ');
     };
 
-    // Debounced values for search
+
     const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
     const debouncedFilterBy = useDebounce<Record<string, (string | number | boolean)[]>>(filterBy, 500);
     
-    // Convert filter object to string array for hooks
+
     const debouncedFilterByArray = useMemo(() => {
         const filterString = convertFilterByToString(debouncedFilterBy);
         return filterString ? [filterString] : [];
@@ -103,7 +103,7 @@ export default function SearchContainer({
         setError: setSearchError,
     } = useSearchOperations(collectionName);
 
-    // Perform search when dependencies change
+
     useEffect(() => {
         if (indexFields.length > 0 && !isInitialLoad) {
             performSearch(
@@ -126,7 +126,7 @@ export default function SearchContainer({
         performSearch,
     ]);
 
-    // Trigger initial search when schema is loaded
+
     useEffect(() => {
         if (indexFields.length > 0 && isInitialLoad) {
             performSearch(
@@ -140,7 +140,7 @@ export default function SearchContainer({
         }
     }, [indexFields, isInitialLoad, performSearch, debouncedSearchQuery, currentPage, perPage, sortBy, debouncedFilterByArray]);
 
-    // Filter management
+
     const handleFilterChange = (
         field: string,
         value: string | boolean | number,
@@ -170,7 +170,7 @@ export default function SearchContainer({
     const handleDeleteDocumentWithRefresh = async (documentId: string) => {
         const success = await handleDeleteDocument(documentId);
         if (success) {
-            // Refresh search results after deletion
+
             performSearch(
                 debouncedSearchQuery,
                 indexFields,
@@ -182,7 +182,7 @@ export default function SearchContainer({
         }
     };
 
-    // Validate collection name
+
     if (!collectionName || typeof collectionName !== 'string') {
         return (
             <div className="p-8">
@@ -195,7 +195,7 @@ export default function SearchContainer({
         );
     }
 
-    // Show skeleton on initial load
+
     if (isInitialLoad && (searchLoading || facetsLoading || schemaLoading)) {
         return <SearchSkeleton />;
     }
@@ -234,7 +234,7 @@ export default function SearchContainer({
                 sortDropdownOptions={sortDropdownOptions}
                 showFacetDebugger={showFacetDebugger}
                 onShowFacetDebuggerChange={setShowFacetDebugger}
-                // Filter props
+
                 collectionSchema={collectionSchema}
                 facetValues={facetValues}
                 filterBy={filterBy}

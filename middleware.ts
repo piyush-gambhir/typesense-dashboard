@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Name of the http-only cookie that stores the Typesense connection details.
+
 const COOKIE_NAME = 'typesense-connection-config';
 
 interface ConnectionConfig {
@@ -47,7 +47,7 @@ function getConfigFromCookie(request: NextRequest): ConnectionConfig | null {
 }
 
 async function canConnect(config: ConnectionConfig): Promise<boolean> {
-    // Use the built-in fetch to query Typesense health endpoint.
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 2000);
     try {
@@ -69,14 +69,14 @@ async function canConnect(config: ConnectionConfig): Promise<boolean> {
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Paths that should never be redirected by this middleware
+
     const exemptPaths = ['/_next', '/favicon', '/robots.txt', '/sitemap.xml'];
 
     if (exemptPaths.some((p) => pathname.startsWith(p))) {
         return NextResponse.next();
     }
 
-    // Obtain connection configuration
+
     const envConfig = getConfigFromEnv();
     const cookieConfig = getConfigFromCookie(request);
     const config = envConfig || cookieConfig;
@@ -85,21 +85,21 @@ export async function middleware(request: NextRequest) {
     const onErrorPage = pathname.startsWith('/connection-error');
 
     if (!config) {
-        // No connection details at all → always go to /setup (except when we are already there)
+
         if (!onSetupPage) {
             const url = new URL('/setup', request.url);
             return NextResponse.redirect(url);
         }
 
-        // Already on /setup
+
         return NextResponse.next();
     }
 
-    // We do have connection details, ensure we can connect
+
     const isReachable = await canConnect(config);
 
     if (!isReachable) {
-        // Details are present, but server is not reachable
+
         if (!onErrorPage) {
             const url = new URL('/connection-error', request.url);
             return NextResponse.redirect(url);
@@ -110,7 +110,7 @@ export async function middleware(request: NextRequest) {
         const url = new URL('/metrics', request.url);
         return NextResponse.redirect(url);
     }
-    // Connection is healthy
+
     if (onSetupPage || onErrorPage) {
         const url = new URL('/metrics', request.url);
         return NextResponse.redirect(url);
@@ -119,7 +119,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-// Apply to all routes except static assets inside /_next
+
 export const config = {
     matcher: '/((?!api/|_next/).*)',
 };

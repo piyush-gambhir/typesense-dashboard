@@ -42,7 +42,7 @@ export default function CollectionBackupRestore({
         setBackupProgress(0);
 
         try {
-            // Simulate progress
+
             const progressInterval = setInterval(() => {
                 setBackupProgress((prev) => {
                     if (prev >= 90) {
@@ -111,12 +111,12 @@ export default function CollectionBackupRestore({
             const fileContent = await backupFile.text();
             const backup = JSON.parse(fileContent);
 
-            // Validate backup structure
+
             if (!backup.collection_schema || !backup.documents) {
                 throw new Error('Invalid backup file format');
             }
 
-            // Simulate progress
+
             const progressInterval = setInterval(() => {
                 setRestoreProgress((prev) => {
                     if (prev >= 90) {
@@ -164,7 +164,7 @@ export default function CollectionBackupRestore({
 
     return (
         <div className="space-y-6">
-            {/* Backup Section */}
+            {                    }
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
@@ -229,7 +229,7 @@ export default function CollectionBackupRestore({
 
             <Separator />
 
-            {/* Restore Section */}
+            {                     }
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
@@ -282,7 +282,7 @@ export default function CollectionBackupRestore({
                 </CardContent>
             </Card>
 
-            {/* Backup Information */}
+            {                        }
             {backupData && (
                 <Card>
                     <CardHeader>

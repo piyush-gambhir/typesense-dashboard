@@ -11,7 +11,7 @@ export interface DebugInfo {
     version: string;
 }
 
-// Create a snapshot of the database
+
 export async function createSnapshot(snapshotPath: string) {
     try {
         const typesenseClient = getTypesenseClient();
@@ -31,7 +31,7 @@ export async function createSnapshot(snapshotPath: string) {
     }
 }
 
-// Compact the database
+
 export async function compactDatabase() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -51,7 +51,7 @@ export async function compactDatabase() {
     }
 }
 
-// Re-elect the leader node (cluster mode)
+
 export async function reelectLeader() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -71,8 +71,8 @@ export async function reelectLeader() {
     }
 }
 
-// Toggle slow request log threshold
-// Set to -1 to disable, or a positive integer for milliseconds
+
+
 export async function toggleSlowRequestLog(logSlowRequestsTimeMs: number) {
     try {
         const typesenseClient = getTypesenseClient();
@@ -93,7 +93,7 @@ export async function toggleSlowRequestLog(logSlowRequestsTimeMs: number) {
     }
 }
 
-// Clear the search cache
+
 export async function clearCache() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -113,7 +113,7 @@ export async function clearCache() {
     }
 }
 
-// Get debug info (state + version)
+
 export async function getDebugInfo() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -131,7 +131,7 @@ export async function getDebugInfo() {
     }
 }
 
-// Get API stats
+
 export async function getApiStats() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -151,7 +151,7 @@ export async function getApiStats() {
     }
 }
 
-// Get cluster health status
+
 export async function getHealthStatus() {
     try {
         const typesenseClient = getTypesenseClient();

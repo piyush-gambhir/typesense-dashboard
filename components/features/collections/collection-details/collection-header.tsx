@@ -17,7 +17,7 @@ export default function CollectionHeader({
     fieldsCount,
     createdAt,
 }: Readonly<CollectionHeaderProps>) {
-    // Handle edge cases
+
     const safeNumDocuments =
         typeof numDocuments === 'number' ? numDocuments : 0;
     const safeFieldsCount = typeof fieldsCount === 'number' ? fieldsCount : 0;

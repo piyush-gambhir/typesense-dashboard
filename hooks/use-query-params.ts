@@ -6,13 +6,13 @@ const useQueryParams = () => {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Memoize queryParams to avoid recreation unless searchParams changes
+
     const queryParams = useMemo(
         () => Object.fromEntries(searchParams.entries()),
         [searchParams],
     );
 
-    // Memoize buildNewUrl to keep it stable unless pathname changes
+
     const buildNewUrl = useCallback(
         (updatedSearchParams: URLSearchParams) => {
             const queryString = updatedSearchParams.toString();
@@ -21,7 +21,7 @@ const useQueryParams = () => {
         [pathname],
     );
 
-    // Set a single query parameter
+
     const setQueryParam = useCallback(
         (key: string, value: string) => {
             const updatedSearchParams = new URLSearchParams(searchParams);
@@ -32,7 +32,7 @@ const useQueryParams = () => {
         [searchParams, router, buildNewUrl],
     );
 
-    // Set multiple query parameters
+
     const setQueryParams = useCallback(
         (newQueryParams: Record<string, string>) => {
             if (
@@ -56,7 +56,7 @@ const useQueryParams = () => {
         [searchParams, router, buildNewUrl],
     );
 
-    // Delete a single query parameter
+
     const deleteQueryParam = useCallback(
         (key: string) => {
             const updatedSearchParams = new URLSearchParams(searchParams);
@@ -67,7 +67,7 @@ const useQueryParams = () => {
         [searchParams, router, buildNewUrl],
     );
 
-    // Delete multiple query parameters
+
     const deleteQueryParams = useCallback(
         (keys: string[]) => {
             if (!Array.isArray(keys)) {
@@ -81,7 +81,7 @@ const useQueryParams = () => {
         [searchParams, router, buildNewUrl],
     );
 
-    // Clear all query parameters
+
     const clearQueryParams = useCallback(() => {
         const updatedSearchParams = new URLSearchParams();
         const newUrl = buildNewUrl(updatedSearchParams);

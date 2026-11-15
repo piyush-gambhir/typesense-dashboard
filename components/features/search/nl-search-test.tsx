@@ -109,16 +109,16 @@ function LoadingState() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="space-y-8">
-                {/* Header Skeleton */}
+                {                     }
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-80" />
                     <Skeleton className="h-4 w-96" />
                 </div>
 
-                {/* Configuration Skeleton */}
+                {                            }
                 <SearchConfigurationSkeleton />
 
-                {/* Empty State Skeleton */}
+                {                          }
                 <Card className="border border-border/50">
                     <CardContent>
                         <div className="flex flex-col items-center justify-center py-16 space-y-4">
@@ -178,7 +178,7 @@ function EmptySearchState() {
     );
 }
 
-// Removed ResultCard component - now using DocumentCard from documents feature
+
 
 export default function NLSearchTest() {
     const { toast } = useToast();
@@ -209,7 +209,7 @@ export default function NLSearchTest() {
 
     const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-    // Convert filterBy object to Typesense filter string
+
     const convertFilterByToString = (filterObj: FilterBy): string => {
         const filterParts: string[] = [];
 
@@ -231,7 +231,7 @@ export default function NLSearchTest() {
         return filterParts.join(' && ');
     };
 
-    // Fetch collection schema and facet values when collection changes
+
     useEffect(() => {
         const fetchCollectionData = async () => {
             if (!query.collection) return;
@@ -323,7 +323,7 @@ export default function NLSearchTest() {
         fetchCollectionData();
     }, [query.collection, toast]);
 
-    // Update query.filter_by when filterBy object changes
+
     useEffect(() => {
         const filterString = convertFilterByToString(filterBy);
         setQuery((prev) => ({
@@ -362,7 +362,7 @@ export default function NLSearchTest() {
         setFilterBy({});
     };
 
-    // Fetch collections and models on component mount
+
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -499,7 +499,7 @@ export default function NLSearchTest() {
         }
     };
 
-    // Keyboard shortcut: Cmd/Ctrl+Enter to search
+
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (
@@ -528,7 +528,7 @@ export default function NLSearchTest() {
 
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -561,7 +561,7 @@ export default function NLSearchTest() {
                 </div>
             </div>
 
-            {/* Search Configuration */}
+            {                          }
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -790,10 +790,10 @@ export default function NLSearchTest() {
                 </CardContent>
             </Card>
 
-            {/* Results Section */}
+            {                     }
             {searchResults && (
                 <div className="space-y-8">
-                    {/* Parsed Query Section */}
+                    {                          }
                     {searchResults.parsed_query && (
                         <Card className="border border-border/50">
                             <CardHeader>
@@ -874,7 +874,7 @@ export default function NLSearchTest() {
                         </Card>
                     )}
 
-                    {/* Debug Info Section */}
+                    {                        }
                     {query.debug && (
                         <Card className="border border-border/50">
                             <CardHeader>
@@ -948,7 +948,7 @@ export default function NLSearchTest() {
                         </Card>
                     )}
 
-                    {/* Search Results Section */}
+                    {                            }
                     <Card className="border border-border/50">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -1009,7 +1009,7 @@ export default function NLSearchTest() {
                                         )}
                                     </div>
 
-                                    {/* Pagination */}
+                                    {                }
                                     {searchResults.found >
                                         (query.per_page || 12) && (
                                         <div className="mt-8 flex justify-center">
@@ -1047,7 +1047,7 @@ export default function NLSearchTest() {
                 </div>
             )}
 
-            {/* Empty State */}
+            {                 }
             {!searchResults && <EmptySearchState />}
         </div>
     );

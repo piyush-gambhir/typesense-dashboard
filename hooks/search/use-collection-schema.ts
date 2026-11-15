@@ -43,13 +43,13 @@ export function useCollectionSchema(collectionName: string) {
                     schemaResponse?.data?.fields &&
                     Array.isArray(schemaResponse.data.fields)
                 ) {
-                    // Store all facetable fields for UI rendering
+
                     const allFacetFields =
                         schemaResponse.data.fields
                             ?.filter((field: any) => field.facet === true)
                             .map((field: any) => field.name) ?? [];
 
-                    // Filter index fields to only include string and string[] types for query_by
+
                     const indexFields =
                         schemaResponse.data.fields
                             ?.filter(
@@ -60,7 +60,7 @@ export function useCollectionSchema(collectionName: string) {
                             )
                             .map((field: any) => field.name) ?? [];
 
-                    // Filter sort fields to exclude unsortable types
+
                     const sortFields =
                         schemaResponse.data.fields?.filter((field: any) => {
                             if (field.sort !== true) return false;
@@ -84,7 +84,7 @@ export function useCollectionSchema(collectionName: string) {
                     setFacetFields(allFacetFields);
                     setIndexFields(indexFields);
 
-                    // Set dropdown options
+
                     const sortOptions = [
                         { label: 'Relevance', value: 'relevance' },
                     ];
@@ -96,7 +96,7 @@ export function useCollectionSchema(collectionName: string) {
                             fieldName.charAt(0).toUpperCase() +
                             fieldName.slice(1);
 
-                        // For numeric fields, add both ascending and descending options
+
                         if (
                             ['int32', 'int64', 'float', 'double'].includes(
                                 fieldType,

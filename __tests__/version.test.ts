@@ -10,7 +10,7 @@ import {
     parseVersion,
 } from '@/lib/typesense/version';
 
-// ─── parseVersion ────────────────────────────────────────────────────────────
+
 
 describe('parseVersion', () => {
     it('parses old 0.x.y format', () => {
@@ -44,7 +44,7 @@ describe('parseVersion', () => {
     });
 });
 
-// ─── compareVersions ─────────────────────────────────────────────────────────
+
 
 describe('compareVersions', () => {
     it('equal versions return 0', () => {
@@ -90,7 +90,7 @@ describe('compareVersions', () => {
     });
 });
 
-// ─── isVersionAtLeast ────────────────────────────────────────────────────────
+
 
 describe('isVersionAtLeast', () => {
     it('returns true when version equals minimum', () => {
@@ -116,7 +116,7 @@ describe('isVersionAtLeast', () => {
     });
 });
 
-// ─── isFeatureAvailable ──────────────────────────────────────────────────────
+
 
 describe('isFeatureAvailable', () => {
     it('core features available on v0.25', () => {
@@ -167,7 +167,7 @@ describe('isFeatureAvailable', () => {
     });
 });
 
-// ─── getAvailableFeatures ────────────────────────────────────────────────────
+
 
 describe('getAvailableFeatures', () => {
     it('v0.25 gets core features only', () => {
@@ -209,7 +209,7 @@ describe('getAvailableFeatures', () => {
     });
 });
 
-// ─── formatVersion ───────────────────────────────────────────────────────────
+
 
 describe('formatVersion', () => {
     it('formats old-style version', () => {

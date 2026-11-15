@@ -16,7 +16,7 @@ export interface ConnectionStatus {
 }
 
 export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
-    // Get the actual configuration that will be used
+
     const config = await getServerConnectionConfig();
     const typesenseClient = await getServerTypesenseClient();
 
@@ -27,17 +27,17 @@ export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
     };
 
     try {
-        // Create a timeout promise to avoid hanging during build
+
         const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Connection timeout')), 5000); // 5 second timeout
+            setTimeout(() => reject(new Error('Connection timeout')), 5000);
         });
 
-        // Try to fetch collections as a simple connectivity test
+
         const connectionPromise = typesenseClient.collections().retrieve();
 
         await Promise.race([connectionPromise, timeoutPromise]);
 
-        // Fetch server version from /debug endpoint
+
         let serverVersion: string | undefined;
         try {
             const debugInfo = await (typesenseClient as any).apiCall.get(
@@ -47,7 +47,7 @@ export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
                 serverVersion = debugInfo.version;
             }
         } catch {
-            // version detection is best-effort; don't fail the connection check
+
         }
 
         return {
@@ -62,7 +62,7 @@ export async function checkTypesenseConnection(): Promise<ConnectionStatus> {
         let errorMessage = 'Unknown connection error';
 
         if (error instanceof Error) {
-            // Handle specific error types
+
             if (error.message.includes('ECONNREFUSED')) {
                 errorMessage = 'Connection refused - server may not be running';
             } else if (error.message.includes('ENOTFOUND')) {

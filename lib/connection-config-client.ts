@@ -3,7 +3,7 @@
 import { TypesenseConnectionConfig } from './connection-config';
 
 const COOKIE_NAME = 'typesense-connection-config';
-const COOKIE_MAX_AGE = 14 * 24 * 60 * 60; // 14 days in seconds
+const COOKIE_MAX_AGE = 14 * 24 * 60 * 60;
 
 export function getConnectionConfigClient(): TypesenseConnectionConfig | null {
   if (typeof window === 'undefined') {

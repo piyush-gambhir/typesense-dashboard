@@ -28,10 +28,10 @@ export default function SearchFiltersHeader({
     onFilterChange,
     onClearFilters,
 }: SearchFiltersHeaderProps) {
-    // filterBy is already in the correct format
+
     const filterMap = filterBy;
 
-    // Check if we have any facetable fields available
+
     const hasFacetableFields = Object.keys(facetValues).length > 0;
 
     if (!hasFacetableFields && !loadingFilters) {
@@ -65,7 +65,7 @@ export default function SearchFiltersHeader({
 
     return (
         <div className="space-y-5">
-            {/* Enhanced filters header */}
+            {                             }
             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
                 <div className="flex items-center gap-2">
                     <h4 className="text-base font-semibold text-foreground">
@@ -89,7 +89,7 @@ export default function SearchFiltersHeader({
                 )}
             </div>
 
-            {/* Enhanced filters layout */}
+            {                             }
             <div className="w-full">
                 <Filter
                     collectionSchema={collectionSchema}

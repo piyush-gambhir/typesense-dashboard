@@ -47,7 +47,7 @@ export default function SearchResults({
                             </div>
                         </div>
                         <CardContent className="space-y-4">
-                            {/* ID field skeleton */}
+                            {                       }
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Skeleton className="h-3 w-3" />
@@ -59,7 +59,7 @@ export default function SearchResults({
                                 </div>
                             </div>
 
-                            {/* Other fields skeleton */}
+                            {                           }
                             {[1, 2, 3, 4].map((j) => (
                                 <div key={j} className="space-y-2">
                                     <div className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export default function SearchResults({
 
     return (
         <div className="space-y-6">
-            {/* Results Grid */}
+            {                  }
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {searchResults.map((result) => (
                     <DocumentCard
@@ -129,7 +129,7 @@ export default function SearchResults({
                 ))}
             </div>
 
-            {/* Pagination */}
+            {                }
             {totalPages > 1 && (
                 <div className="flex justify-center">
                     <PaginationComponent

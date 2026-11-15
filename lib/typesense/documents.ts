@@ -59,7 +59,7 @@ export async function multiSearch({
                 exhaustive_search: query.exhaustiveSearch ?? true,
             };
 
-            // Only add query_by if it's not empty and not just '*'
+
             if (
                 query.queryBy &&
                 query.queryBy.trim() !== '' &&
@@ -68,23 +68,23 @@ export async function multiSearch({
                 request.query_by = query.queryBy;
             }
 
-            // Only add non-empty filter_by
+
             if (query.filterBy && query.filterBy.trim() !== '') {
                 request.filter_by = query.filterBy;
             }
 
-            // Only add non-empty sort_by
+
             if (query.sortBy && query.sortBy.trim() !== '') {
                 request.sort_by = query.sortBy;
             }
 
-            // Only add non-empty facet_by
+
             if (query.facetBy && query.facetBy.trim() !== '') {
                 request.facet_by = query.facetBy;
                 request.max_facet_values = query.maxFacetValues ?? 10;
             }
 
-            // Only add non-empty highlight_full_fields
+
             if (
                 query.highlightFullFields &&
                 query.highlightFullFields.trim() !== ''
@@ -92,12 +92,12 @@ export async function multiSearch({
                 request.highlight_full_fields = query.highlightFullFields;
             }
 
-            // Only add non-empty facet_query
+
             if (query.facetQuery && query.facetQuery.trim() !== '') {
                 request.facet_query = query.facetQuery;
             }
 
-            // Only add non-empty groupBy
+
             if (query.groupBy && query.groupBy.trim() !== '') {
                 request.group_by = query.groupBy;
             }
@@ -125,7 +125,7 @@ export async function multiSearch({
     }
 }
 
-// Create a document in a collection
+
 export async function createDocument(
     collectionName: string,
     document: Record<string, unknown>,
@@ -146,7 +146,7 @@ export async function createDocument(
     }
 }
 
-// Retrieve a specific document by ID
+
 export async function getDocumentById(
     collectionName: string,
     documentId: string,
@@ -167,7 +167,7 @@ export async function getDocumentById(
     }
 }
 
-// Update a specific document by ID
+
 export async function updateDocument(
     collectionName: string,
     documentId: string,
@@ -189,7 +189,7 @@ export async function updateDocument(
     }
 }
 
-// Delete a specific document by ID
+
 export async function deleteDocument(
     collectionName: string,
     documentId: string,
@@ -210,7 +210,7 @@ export async function deleteDocument(
     }
 }
 
-// Delete multiple documents by query filter
+
 export async function deleteDocumentsByQuery(
     collectionName: string,
     filterBy: string,
@@ -235,7 +235,7 @@ export async function deleteDocumentsByQuery(
     }
 }
 
-// Upsert a document (insert or update)
+
 export async function upsertDocument(
     collectionName: string,
     document: Record<string, unknown>,
@@ -256,7 +256,7 @@ export async function upsertDocument(
     }
 }
 
-// Search documents in a collection
+
 export async function searchDocuments(
     collectionName: string,
     query: string,
@@ -289,7 +289,7 @@ export async function searchDocuments(
     }
 }
 
-// Bulk create multiple documents
+
 export async function bulkCreateDocuments(
     collectionName: string,
     documents: Record<string, unknown>[],
@@ -321,7 +321,7 @@ export async function bulkCreateDocuments(
     }
 }
 
-// Bulk update multiple documents
+
 export async function bulkUpdateDocuments(
     collectionName: string,
     documents: Record<string, unknown>[],
@@ -353,7 +353,7 @@ export async function bulkUpdateDocuments(
     }
 }
 
-// Bulk upsert multiple documents
+
 export async function bulkUpsertDocuments(
     collectionName: string,
     documents: Record<string, unknown>[],
@@ -385,7 +385,7 @@ export async function bulkUpsertDocuments(
     }
 }
 
-// Emplace document (create only if doesn't exist)
+
 export async function emplaceDocument(
     collectionName: string,
     document: Record<string, unknown>,
@@ -406,7 +406,7 @@ export async function emplaceDocument(
     }
 }
 
-// Get document count in collection
+
 export async function getDocumentCount(
     collectionName: string,
     filterBy?: string,
@@ -431,7 +431,7 @@ export async function getDocumentCount(
     }
 }
 
-// Check if document exists
+
 export async function documentExists(
     collectionName: string,
     documentId: string,
@@ -448,7 +448,7 @@ export async function documentExists(
     }
 }
 
-// Bulk delete documents by IDs
+
 export async function bulkDeleteDocuments(
     collectionName: string,
     documentIds: string[],
@@ -492,7 +492,7 @@ export async function bulkDeleteDocuments(
     }
 }
 
-// Get document field statistics
+
 export async function getDocumentFieldStats(
     collectionName: string,
     fieldName: string,
@@ -536,7 +536,7 @@ export async function getDocumentFieldStats(
     }
 }
 
-// Get document metadata
+
 export async function getDocumentMetadata(
     collectionName: string,
     documentId: string,
@@ -548,12 +548,12 @@ export async function getDocumentMetadata(
             .documents(documentId)
             .retrieve();
 
-        // Extract metadata fields (common metadata fields)
+
         const metadata = {
             id: (document as any).id,
             created_at: (document as any).created_at,
             updated_at: (document as any).updated_at,
-            // Add any other metadata fields that might exist
+
         };
 
         return {
@@ -572,7 +572,7 @@ export async function getDocumentMetadata(
     }
 }
 
-// Update document metadata
+
 export async function updateDocumentMetadata(
     collectionName: string,
     documentId: string,
@@ -600,7 +600,7 @@ export async function updateDocumentMetadata(
     }
 }
 
-// Get documents by filter (without search)
+
 export async function getDocumentsByFilter(
     collectionName: string,
     filterBy: string,
@@ -636,7 +636,7 @@ export async function getDocumentsByFilter(
     }
 }
 
-// Get all documents in collection (paginated)
+
 export async function getAllDocuments(
     collectionName: string,
     perPage: number = 100,
@@ -670,14 +670,14 @@ export async function getAllDocuments(
     }
 }
 
-// Validate document against collection schema
+
 export async function validateDocument(
     collectionName: string,
     document: Record<string, unknown>,
 ) {
     try {
         const typesenseClient = getTypesenseClient();
-        // Get collection schema first
+
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
@@ -685,14 +685,14 @@ export async function validateDocument(
         const validationErrors: string[] = [];
         const fields = collection.fields || [];
 
-        // Check required fields
+
         fields.forEach((field) => {
             if (!field.optional && !(field.name in document)) {
                 validationErrors.push(`Missing required field: ${field.name}`);
             }
         });
 
-        // Check field types (basic validation)
+
         Object.entries(document).forEach(([key, value]) => {
             const field = fields.find((f) => f.name === key);
             if (field) {
@@ -798,7 +798,7 @@ export async function validateDocument(
     }
 }
 
-// Get document suggestions (for autocomplete)
+
 export async function getDocumentSuggestions(
     collectionName: string,
     query: string,

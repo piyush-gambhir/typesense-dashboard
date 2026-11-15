@@ -16,12 +16,12 @@ export function ThemeToggle() {
     const { theme, setTheme, systemTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
-    // Ensure component is mounted before checking the theme
+
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // Determine the current theme
+
     const currentTheme = theme === 'system' ? systemTheme : theme;
 
     if (!mounted) {

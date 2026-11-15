@@ -22,7 +22,7 @@ export default function BreadcrumbNav() {
         const href = '/' + segments.slice(0, index + 1).join('/');
         const isLast = index === segments.length - 1;
 
-        // Format segment name for display
+
         const name = segment
             .split('-')
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

@@ -9,14 +9,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import TypesenseApiSettings from '@/components/features/settings/typesense-api-settings';
 
 export default async function page() {
-    // Check connection first
+
     const connectionStatus = await checkTypesenseConnection();
 
     if (!connectionStatus.isConnected) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="space-y-8">
-                    {/* Header */}
+                    {            }
                     <div className="flex items-center justify-between">
                         <div className="space-y-2">
                             <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -36,7 +36,7 @@ export default async function page() {
                         </div>
                     </div>
 
-                    {/* Connection Error */}
+                    {                      }
                     <div className="max-w-2xl mx-auto">
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
@@ -56,7 +56,7 @@ export default async function page() {
     try {
         const apiKeysResponse = await listApiKeys();
 
-        // Convert the response to the expected format
+
         const apiKeys = (apiKeysResponse?.keys || []).map((key) => ({
             id: key.id,
             description: key.description || '',
@@ -67,7 +67,7 @@ export default async function page() {
 
         return (
             <div className="container mx-auto px-4 py-8 space-y-8">
-                {/* Header */}
+                {            }
                 <div className="flex items-center justify-between">
                     <div className="space-y-2">
                         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -87,7 +87,7 @@ export default async function page() {
                     </div>
                 </div>
 
-                {/* API Settings */}
+                {                  }
                 <TypesenseApiSettings initialApiKeys={apiKeys} />
             </div>
         );
@@ -95,7 +95,7 @@ export default async function page() {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="space-y-8">
-                    {/* Header */}
+                    {            }
                     <div className="flex items-center justify-between">
                         <div className="space-y-2">
                             <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -115,7 +115,7 @@ export default async function page() {
                         </div>
                     </div>
 
-                    {/* Error State */}
+                    {                 }
                     <div className="max-w-2xl mx-auto">
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />

@@ -29,7 +29,7 @@ export const useCollectionSearchOptions = ({
                 const schemaResponse = await getCollection(collectionName);
 
                 if (schemaResponse?.success && schemaResponse.data?.fields) {
-                    // Filter for sort fields
+
                     const sortFields = schemaResponse.data.fields
                         .filter((field: any) => field.sort === true)
                         .map((field: any) => ({
@@ -46,13 +46,13 @@ export const useCollectionSearchOptions = ({
                         );
                     setSortFields(sortFields);
 
-                    // Filter for facet fields
+
                     const facetFields = schemaResponse.data.fields
                         .filter((field: any) => field.facet === true)
                         .map((field: any) => field.name);
 
                     if (facetFields.length > 0) {
-                        // Find a string-type facet field for queryBy (Typesense requires string fields)
+
                         const stringFacetField =
                             schemaResponse.data.fields.find(
                                 (f: any) =>

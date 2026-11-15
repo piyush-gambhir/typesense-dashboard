@@ -16,7 +16,7 @@ const SearchComponent = () => {
             : queryParams.q || '',
     );
 
-    // Update search input when queryParams change
+
     useEffect(() => {
         const newQuery = Array.isArray(queryParams.q)
             ? queryParams.q[0] || ''
@@ -59,7 +59,7 @@ const SearchComponent = () => {
                 <Button onClick={handleSearch}>Search</Button>
             </div>
 
-            {/* Display query parameters for demonstration */}
+            {                                                }
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <h3 className="font-bold mb-2">Current Query Params:</h3>
                 <pre className="text-sm overflow-auto">

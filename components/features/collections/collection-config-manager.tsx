@@ -85,7 +85,7 @@ export default function CollectionConfigManager({
         const newLocalConfig = { ...localConfig, [key]: value };
         setLocalConfig(newLocalConfig);
 
-        // Check if there are changes
+
         const hasChanges =
             config &&
             (newLocalConfig.default_sorting_field !==
@@ -111,7 +111,7 @@ export default function CollectionConfigManager({
                         'Collection configuration has been updated successfully',
                 });
                 setHasChanges(false);
-                fetchConfig(); // Refresh the config
+                fetchConfig();
             } else {
                 throw new Error(
                     result.error || 'Failed to update configuration',
@@ -228,7 +228,7 @@ export default function CollectionConfigManager({
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {/* Collection Information */}
+                    {                            }
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-muted-foreground">
@@ -266,13 +266,13 @@ export default function CollectionConfigManager({
 
                     <Separator />
 
-                    {/* Configuration Options */}
+                    {                           }
                     <div className="space-y-6">
                         <h3 className="text-lg font-semibold">
                             Configuration Options
                         </h3>
 
-                        {/* Default Sorting Field */}
+                        {                           }
                         <div className="space-y-2">
                             <Label htmlFor="default-sorting">
                                 Default Sorting Field
@@ -311,7 +311,7 @@ export default function CollectionConfigManager({
                             </p>
                         </div>
 
-                        {/* Nested Fields */}
+                        {                   }
                         <div className="space-y-2">
                             <div className="flex items-center space-x-2">
                                 <Switch
@@ -340,7 +340,7 @@ export default function CollectionConfigManager({
 
                     <Separator />
 
-                    {/* Field Summary */}
+                    {                   }
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Field Summary</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

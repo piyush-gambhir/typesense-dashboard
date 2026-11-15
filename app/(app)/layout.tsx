@@ -17,9 +17,9 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     try {
-        // Check if we have a valid connection config
+
         if (!hasEnvConnectionConfig()) {
-            // Check if we have a valid cookie
+
             const cookieStore = await cookies();
             const configCookie = cookieStore.get('typesense-connection-config');
 
@@ -42,15 +42,15 @@ export default async function RootLayout({
             }
         }
 
-        // Check connection status first (also detects server version)
+
         const connectionStatus = await checkTypesenseConnection();
 
-        // If connection fails, redirect to connection error page
+
         if (!connectionStatus.isConnected) {
             redirect('/connection-error');
         }
 
-        // Only fetch collections if connection is successful
+
         const collections = await getCollections();
 
         return (
@@ -70,8 +70,8 @@ export default async function RootLayout({
             </TypesenseVersionProvider>
         );
     } catch (error) {
-        // If there's any error during connection check or collection fetch,
-        // redirect to connection error page instead of failing the build
+
+
         console.error('Error in layout:', error);
         redirect('/connection-error');
     }

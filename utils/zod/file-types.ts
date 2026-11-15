@@ -1,4 +1,4 @@
-// Image File Types
+
 export const imageFileTypes = [
     'image/png',
     'image/jpeg',
@@ -6,7 +6,7 @@ export const imageFileTypes = [
     'image/gif',
 ];
 
-// Video File Types
+
 export const videoFileTypes = [
     'video/mp4',
     'video/mkv',
@@ -14,10 +14,10 @@ export const videoFileTypes = [
     'video/mov',
 ];
 
-// Audio File Types
+
 export const audioFileTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg'];
 
-// Document File Types
+
 export const documentFileTypes = [
     'application/pdf',
     'application/msword',

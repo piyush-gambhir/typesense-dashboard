@@ -133,7 +133,7 @@ export default function CollectionFieldManager({
     };
 
     const handleAddFields = async () => {
-        // Validate fields
+
         const validFields = newFields.filter(
             (field) => field.name.trim() !== '',
         );
@@ -146,7 +146,7 @@ export default function CollectionFieldManager({
             return;
         }
 
-        // Check for duplicate field names
+
         const fieldNames = validFields.map((f) => f.name);
         const existingFieldNames = fields.map((f) => f.name);
         const duplicates = fieldNames.filter((name) =>
@@ -175,7 +175,7 @@ export default function CollectionFieldManager({
                 });
                 setIsAddDialogOpen(false);
                 setNewFields([]);
-                fetchFields(); // Refresh the fields list
+                fetchFields();
             } else {
                 throw new Error(result.error || 'Failed to add fields');
             }

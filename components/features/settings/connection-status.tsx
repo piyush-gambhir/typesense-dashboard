@@ -34,7 +34,7 @@ export default async function ConnectionStatus() {
 
     return (
         <div className="space-y-8">
-            {/* Connection Status */}
+            {                       }
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -162,7 +162,7 @@ export default async function ConnectionStatus() {
                 </CardContent>
             </Card>
 
-            {/* Environment Variables */}
+            {                           }
             <Card className="border border-border/50">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">

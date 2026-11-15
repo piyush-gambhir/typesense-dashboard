@@ -17,12 +17,12 @@ export interface SearchOverride {
 
 export async function listSearchOverrides() {
     try {
-        // Get all collections first
+
         const typesenseClient = getTypesenseClient();
         const collections = await typesenseClient.collections().retrieve();
         const allOverrides = [];
 
-        // Fetch overrides for each collection
+
         for (const collection of collections) {
             try {
                 const overrides = await typesenseClient
@@ -30,7 +30,7 @@ export async function listSearchOverrides() {
                     .overrides()
                     .retrieve();
                 if (overrides.overrides) {
-                    // Add collection name to each override for display
+
                     const collectionOverrides = overrides.overrides.map(
                         (override: any) => ({
                             ...override,
@@ -124,7 +124,7 @@ export async function deleteSearchOverride(
     }
 }
 
-// Helper function to validate override data
+
 export function validateOverrideData(override: any): {
     valid: boolean;
     errors: string[];
