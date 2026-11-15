@@ -160,13 +160,13 @@ function MetricCard({
 function MetricsSkeleton() {
     return (
         <div className="space-y-8">
-            {/* Header skeleton */}
+            {                     }
             <div className="space-y-2">
                 <Skeleton className="h-8 w-80" />
                 <Skeleton className="h-4 w-96" />
             </div>
 
-            {/* Status section skeleton */}
+            {                             }
             <div className="space-y-4">
                 <Skeleton className="h-6 w-32" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -190,7 +190,7 @@ function MetricsSkeleton() {
                 </div>
             </div>
 
-            {/* Resources section skeleton */}
+            {                                }
             <div className="space-y-4">
                 <Skeleton className="h-6 w-40" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -251,7 +251,7 @@ export default function TypesenseServerMetrics({
             if (metrics) {
                 const metricsData = metrics;
 
-                // Step 1: Dynamically create `cpuUsage` object
+
                 const cpuUsage = Object.keys(metricsData)
                     .filter(
                         (key) =>
@@ -264,7 +264,7 @@ export default function TypesenseServerMetrics({
                         return acc;
                     }, {});
 
-                // Step 2: Calculate Disk Usage
+
                 const totalDisk = parseFloat(
                     String(metricsData.system_disk_total_bytes),
                 );
@@ -279,7 +279,7 @@ export default function TypesenseServerMetrics({
                     ),
                 };
 
-                // Step 3: Calculate Memory Usage
+
                 const totalMemory = parseFloat(
                     String(metricsData.system_memory_total_bytes),
                 );
@@ -308,7 +308,7 @@ export default function TypesenseServerMetrics({
                             : 0,
                 };
 
-                // Step 4: Calculate Network Data
+
                 const networkData = {
                     receivedBytes: parseInt(
                         String(metricsData.system_network_received_bytes),
@@ -320,7 +320,7 @@ export default function TypesenseServerMetrics({
                     ),
                 };
 
-                // Step 5: Handle Typesense-specific Memory Metrics
+
                 const typesenseMemoryMetrics = {
                     activeBytes: parseInt(
                         String(metricsData.typesense_memory_active_bytes),
@@ -401,7 +401,7 @@ export default function TypesenseServerMetrics({
 
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-bold tracking-tight">
@@ -431,7 +431,7 @@ export default function TypesenseServerMetrics({
                 </Alert>
             )}
 
-            {/* Status Overview */}
+            {                     }
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <h2 className="text-xl font-semibold">Status Overview</h2>
@@ -486,7 +486,7 @@ export default function TypesenseServerMetrics({
 
             <Separator />
 
-            {/* Resource Usage */}
+            {                    }
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Resource Usage</h2>
                 
@@ -522,7 +522,7 @@ export default function TypesenseServerMetrics({
 
             <Separator />
 
-            {/* Network & Typesense Memory */}
+            {                                }
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Advanced Metrics</h2>
                 
@@ -613,7 +613,7 @@ export default function TypesenseServerMetrics({
                 </div>
             </div>
 
-            {/* Footer */}
+            {            }
             <div className="flex items-center justify-center pt-4">
                 <p className="text-sm text-muted-foreground">
                     Last updated: {new Date().toLocaleTimeString()}

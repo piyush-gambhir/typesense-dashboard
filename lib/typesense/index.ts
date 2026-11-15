@@ -1,4 +1,4 @@
-// Collections
+
 export {
     getCollections,
     getCollection,
@@ -21,7 +21,7 @@ export {
     type importAction,
 } from './collections';
 
-// Documents
+
 export {
     multiSearch,
     createDocument,
@@ -47,7 +47,7 @@ export {
     getDocumentSuggestions,
 } from './documents';
 
-// API Keys
+
 export {
     createApiKey,
     retrieveApiKeyById,
@@ -55,7 +55,7 @@ export {
     deleteApiKey,
 } from './api-keys';
 
-// Aliases
+
 export {
     listAliases,
     getAlias,
@@ -64,14 +64,14 @@ export {
     deleteAlias,
 } from './aliases';
 
-// Analytics Rules
+
 export {
     listAnalyticsRules,
     createAnalyticsRule,
     deleteAnalyticsRule,
 } from './analytics-rules';
 
-// Search Overrides
+
 export {
     listSearchOverrides,
     getSearchOverride,
@@ -82,10 +82,10 @@ export {
     type SearchOverride,
 } from './search-overrides';
 
-// Stopwords
+
 export { listStopwords, upsertStopwords, deleteStopwords } from './stopwords';
 
-// Synonyms
+
 export {
     createSynonym,
     updateSynonym,
@@ -99,7 +99,7 @@ export {
     type ListSynonymsResponse,
 } from './synonyms';
 
-// Natural Language Search
+
 export {
     createNLSearchModel,
     listNLSearchModels,
@@ -111,7 +111,7 @@ export {
     getDefaultSystemPrompts,
 } from './nl-search-models';
 
-// Conversations
+
 export {
     createConversation,
     listConversations,
@@ -131,14 +131,14 @@ export {
     type ConversationSearchResponse,
 } from './conversations';
 
-// Cluster Health & Metrics
+
 export { getClusterHealth } from './cluster-health';
 export { getTypesenseMetrics } from './get-cluster-metrics';
 
-// Client
+
 export { default as typesenseClient, getTypesenseClient } from './typesense-client';
 
-// Connection utilities
+
 export {
     checkTypesenseConnection,
     isTypesenseAvailable,

@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import TypesenseServerMetrics from '@/components/features/analytics/typesense-server-metrics';
 
 export default async function page() {
-    // Check connection first
+
     const connectionStatus = await checkTypesenseConnection();
 
     if (!connectionStatus.isConnected) {

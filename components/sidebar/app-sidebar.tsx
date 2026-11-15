@@ -28,22 +28,22 @@ export default function AppSidebar({
     collections: any;
     serverVersion?: string | null;
 }>) {
-    // Handle the new collections data structure
+
     const collectionsData =
         collections?.success && collections?.data ? collections.data : [];
 
-    /**
-     * Check if a feature is available on the connected server.
-     * When version is unknown (null/undefined), we allow everything —
-     * the feature page itself will show an appropriate error if the
-     * server doesn't actually support it.
-     */
+
+
+
+
+
+
     const has = (feature: FeatureKey): boolean => {
         if (!serverVersion) return true;
         return isFeatureAvailable(feature, serverVersion);
     };
 
-    // Build nav items, filtering out features unavailable on this server
+
     const navMain: {
         title: string;
         url: string;

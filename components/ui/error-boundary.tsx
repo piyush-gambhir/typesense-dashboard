@@ -76,7 +76,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 }
 
-// Error display components
+
 interface ErrorStateProps {
     title?: string;
     message?: string;
@@ -125,7 +125,7 @@ export function EmptyState({
     );
 }
 
-// Hook for standardized error handling
+
 export function useErrorHandler() {
     const handleError = (error: unknown, context?: string) => {
         console.error(context ? `[${context}]` : '[Error]', error);

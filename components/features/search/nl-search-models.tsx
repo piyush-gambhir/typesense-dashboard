@@ -38,7 +38,7 @@ import EditNLSearchModelDialog from '@/components/features/search/edit-nl-search
 function NLSearchModelsSkeleton() {
     return (
         <div className="space-y-6">
-            {/* Header skeleton */}
+            {                     }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-80" />
@@ -47,7 +47,7 @@ function NLSearchModelsSkeleton() {
                 <Skeleton className="h-10 w-32" />
             </div>
 
-            {/* Table skeleton */}
+            {                    }
             <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-6">
                     <div className="space-y-4">
@@ -84,7 +84,7 @@ export default function NLSearchModels() {
         null,
     );
 
-    // const availableModelTypes = getAvailableModelTypes();
+
 
     const fetchModels = useCallback(async () => {
         setLoading(true);
@@ -171,7 +171,7 @@ export default function NLSearchModels() {
 
     return (
         <div className="space-y-6 container mx-auto px-4 py-8">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-tight">
@@ -188,7 +188,7 @@ export default function NLSearchModels() {
                 </Button>
             </div>
 
-            {/* Content */}
+            {             }
             <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-6">
                     {models.length === 0 ? (
@@ -297,7 +297,7 @@ export default function NLSearchModels() {
                 </CardContent>
             </Card>
 
-            {/* Dialogs */}
+            {             }
             <CreateNLSearchModelDialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}

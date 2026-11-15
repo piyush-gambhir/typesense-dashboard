@@ -52,7 +52,7 @@ export default function SearchMainContent({
 }: Readonly<SearchMainContentProps>) {
     return (
         <div className="space-y-6">
-            {/* Facet Debugger - only show when toggle is enabled */}
+            {                                                       }
             {showFacetDebugger && (
                 <FacetDebugger
                     collectionSchema={collectionSchema}
@@ -61,7 +61,7 @@ export default function SearchMainContent({
                 />
             )}
 
-            {/* Search Results */}
+            {                    }
             <SearchResults
                 searchResults={searchResults}
                 totalResults={totalResults}

@@ -47,13 +47,13 @@ export default function ImportDocuments({
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setFile(selectedFile);
-            setImportLog([]); // Clear import log when new file selected
+            setImportLog([]);
         }
     };
 
     const handleRemoveFile = () => {
         setFile(null);
-        setImportLog([]); // Clear import log when file is removed
+        setImportLog([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -71,7 +71,7 @@ export default function ImportDocuments({
 
         setIsImporting(true);
         setProgress(0);
-        setImportLog([]); // Clear import log when starting new import
+        setImportLog([]);
 
         try {
             const fileContent = await file.text();
@@ -177,7 +177,7 @@ export default function ImportDocuments({
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid w-full items-center gap-6">
-                        {/* File Upload Area */}
+                        {                      }
                         <div className="space-y-3">
                             <Label
                                 htmlFor="file"
@@ -249,7 +249,7 @@ export default function ImportDocuments({
                                 </div>
                             </div>
                         </div>
-                        {/* Import Action */}
+                        {                   }
                         <div className="space-y-3">
                             <Label
                                 htmlFor="action"

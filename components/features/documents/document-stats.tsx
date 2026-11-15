@@ -84,7 +84,7 @@ export default function DocumentStats({
                 }
             }
 
-            // Fetch recent docs separately — sort by created_at only if collection has it
+
             try {
                 const hasCreatedAt = collectionResult?.data?.fields?.some(
                     (f: any) => f.name === 'created_at',
@@ -103,7 +103,7 @@ export default function DocumentStats({
                     );
                 }
             } catch {
-                // Recent docs fetch is non-critical
+
             }
         } catch (error) {
             toast({
@@ -190,7 +190,7 @@ export default function DocumentStats({
 
     return (
         <div className="space-y-8">
-            {/* Header */}
+            {            }
             <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight">
                     Collection Statistics
@@ -201,7 +201,7 @@ export default function DocumentStats({
                 </p>
             </div>
 
-            {/* Overview Cards */}
+            {                    }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="border border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -261,7 +261,7 @@ export default function DocumentStats({
                 </Card>
             </div>
 
-            {/* Field Statistics */}
+            {                      }
             <Card className="border border-border/50 shadow-sm">
                 <CardHeader className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export default function DocumentStats({
 
                     {fieldStats && !isLoadingFieldStats && (
                         <div className="space-y-8">
-                            {/* Field Overview */}
+                            {                    }
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="border border-border/50 rounded-lg p-6">
                                     <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-300 mb-2">
@@ -390,7 +390,7 @@ export default function DocumentStats({
                                 </div>
                             </div>
 
-                            {/* Top Values Distribution */}
+                            {                             }
                             <div>
                                 <h4 className="font-semibold mb-4">
                                     Top Values Distribution
@@ -430,7 +430,7 @@ export default function DocumentStats({
                                 </div>
                             </div>
 
-                            {/* Value Distribution Chart */}
+                            {                              }
                             {fieldStats.valueDistribution.length > 0 && (
                                 <div>
                                     <h4 className="font-semibold mb-4">
@@ -479,7 +479,7 @@ export default function DocumentStats({
                 </CardContent>
             </Card>
 
-            {/* Recent Documents */}
+            {                      }
             {recentDocuments.length > 0 && (
                 <Card className="border border-border/50">
                     <CardHeader className="space-y-1">
@@ -547,7 +547,7 @@ export default function DocumentStats({
                 </Card>
             )}
 
-            {/* Refresh Button */}
+            {                    }
             <div className="flex justify-center">
                 <Button onClick={loadCollectionStats} variant="outline">
                     Refresh Statistics

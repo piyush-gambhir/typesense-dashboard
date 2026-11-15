@@ -20,7 +20,7 @@ export default function SearchBar({
 }: Readonly<SearchBarProps>) {
     const { copyToClipboard, isCopied, resetCopyState } = useCopyToClipboard();
 
-    // Reset copy state after 2 seconds
+
     useEffect(() => {
         if (isCopied) {
             const timer = setTimeout(resetCopyState, 2000);

@@ -59,7 +59,7 @@ export function LoadingSpinner({
     );
 }
 
-// Card loading skeleton
+
 export function CardLoading({ 
     className, 
     title = true, 
@@ -84,7 +84,7 @@ export function CardLoading({
     );
 }
 
-// Table loading skeleton
+
 export function TableLoading({ 
     rows = 5, 
     columns = 4,
@@ -114,7 +114,7 @@ export function TableLoading({
     );
 }
 
-// Stats grid loading skeleton
+
 export function StatsGridLoading({ 
     items = 4,
     className 
@@ -135,7 +135,7 @@ export function StatsGridLoading({
     );
 }
 
-// Full page loading
+
 export function PageLoading({ text }: { text?: string }) {
     return (
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -147,7 +147,7 @@ export function PageLoading({ text }: { text?: string }) {
     );
 }
 
-// Button loading state
+
 export function ButtonLoading({ 
     children, 
     loading = false,

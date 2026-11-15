@@ -152,7 +152,7 @@ export default function CurationsContainer({ collectionName }: CurationsContaine
         </CardContent>
       </Card>
 
-      {/* Create Dialog */}
+      {                   }
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -193,7 +193,7 @@ export default function CurationsContainer({ collectionName }: CurationsContaine
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
+      {                 }
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -234,7 +234,7 @@ export default function CurationsContainer({ collectionName }: CurationsContaine
         </DialogContent>
       </Dialog>
 
-      {/* Delete Dialog */}
+      {                   }
       <DeleteConfirmationDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

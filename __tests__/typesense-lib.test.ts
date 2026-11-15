@@ -1,12 +1,12 @@
-/**
- * Comprehensive tests for all Typesense lib functions.
- * Uses mocked Typesense client to test logic without a running server.
- */
+
+
+
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// ─── Mock: typesense-client ──────────────────────────────────────────────────
-// Build a chainable mock that mirrors the Typesense JS client surface.
-// Avoid recursive creation to prevent infinite loops / OOM.
+
+
+
 
 function createLeafChain(): any {
     return {
@@ -22,10 +22,10 @@ function createLeafChain(): any {
 }
 
 function createMockClient(): any {
-    // Create stable sub-chain instances that are reused across calls.
-    // This ensures that when test code sets up mocks like
-    // mockClient.aliases().upsert = fn, the same instance is returned
-    // when the lib code calls mockClient.aliases().upsert(...)
+
+
+
+
 
     const defaultColLeaf = createLeafChain();
     defaultColLeaf.documents = vi.fn().mockReturnValue(createLeafChain());
@@ -42,9 +42,9 @@ function createMockClient(): any {
     defaultRulesLeaf.upsert = vi.fn().mockResolvedValue({});
 
     const client: any = {
-        // collections() without arg returns the default chain.
-        // collections('name') also returns it by default.
-        // Tests can override via mockClient.collections.mockReturnValue(...)
+
+
+
         collections: vi.fn().mockReturnValue(defaultColLeaf),
         keys: vi.fn().mockReturnValue(defaultKeysLeaf),
         aliases: vi.fn().mockReturnValue(defaultAliasesLeaf),
@@ -74,7 +74,7 @@ vi.mock('@/lib/typesense/typesense-client', () => {
     };
 });
 
-// Mock the server client (used by connection-check.ts)
+
 vi.mock('@/lib/typesense/get-server-client', () => {
     return {
         getServerTypesenseClient: async () => mockClient,
@@ -87,12 +87,12 @@ vi.mock('@/lib/typesense/get-server-client', () => {
     };
 });
 
-// Mock next/headers for get-server-client
+
 vi.mock('next/headers', () => ({
     cookies: async () => ({ get: () => undefined }),
 }));
 
-// ─── Tests ───────────────────────────────────────────────────────────────────
+
 
 beforeEach(() => {
     mockClient = createMockClient();
@@ -102,9 +102,9 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 1. ALIASES
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Aliases', () => {
     let listAliases: any,
         getAlias: any,
@@ -140,8 +140,8 @@ describe('Aliases', () => {
 
     it('getAlias retrieves specific alias', async () => {
         const aliasData = { name: 'my-alias', collection_name: 'my-col' };
-        // getAlias('name') calls typesenseClient.aliases('name').retrieve()
-        // Since our mock returns the same chain for any arg, just set retrieve on it
+
+
         mockClient.aliases().retrieve.mockResolvedValue(aliasData);
         const result = await getAlias('my-alias');
         expect(result).toEqual(aliasData);
@@ -179,9 +179,9 @@ describe('Aliases', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 2. API KEYS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('API Keys', () => {
     let createApiKey: any,
         retrieveApiKeyById: any,
@@ -246,9 +246,9 @@ describe('API Keys', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 3. ANALYTICS RULES
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Analytics Rules', () => {
     let listAnalyticsRules: any,
         createAnalyticsRule: any,
@@ -337,9 +337,9 @@ describe('Analytics Rules', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 4. STOPWORDS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Stopwords', () => {
     let listStopwords: any, upsertStopwords: any, deleteStopwords: any;
 
@@ -399,9 +399,9 @@ describe('Stopwords', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 5. SYNONYMS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Synonyms', () => {
     let createSynonym: any,
         updateSynonym: any,
@@ -466,7 +466,7 @@ describe('Synonyms', () => {
         expect(result.success).toBe(true);
     });
 
-    // Validate synonym data (pure function)
+
     it('validateSynonymData - valid data', () => {
         const result = validateSynonymData({ synonyms: ['fast', 'quick'] });
         expect(result.valid).toBe(true);
@@ -490,9 +490,9 @@ describe('Synonyms', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 6. SEARCH OVERRIDES (CURATIONS)
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Search Overrides', () => {
     let listSearchOverrides: any,
         getSearchOverride: any,
@@ -512,11 +512,11 @@ describe('Search Overrides', () => {
     });
 
     it('listSearchOverrides aggregates overrides across collections', async () => {
-        // Mock collections().retrieve() to return 2 collections
+
         mockClient
             .collections()
             .retrieve.mockResolvedValue([{ name: 'col1' }, { name: 'col2' }]);
-        // Mock per-collection overrides
+
         const overridesChain1 = {
             retrieve: vi.fn().mockResolvedValue({ overrides: [{ id: 'o1' }] }),
         };
@@ -586,7 +586,7 @@ describe('Search Overrides', () => {
         expect(result).toEqual({ id: 'o1' });
     });
 
-    // validateOverrideData (pure function)
+
     it('validateOverrideData - valid data', () => {
         const result = validateOverrideData({
             rule: { query: 'test' },
@@ -617,9 +617,9 @@ describe('Search Overrides', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 7. STEMMING
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Stemming', () => {
     let listStemmingDictionaries: any,
         getStemmingDictionary: any,
@@ -692,7 +692,7 @@ describe('Stemming', () => {
         const result = await importStemmingDictionary('en-dict', words);
         expect(result.success).toBe(true);
 
-        // Verify the JSONL format
+
         const expectedJsonl =
             '{"word":"running","root":"run"}\n{"word":"swimming","root":"swim"}';
         expect(mockClient.apiCall.post).toHaveBeenCalledWith(
@@ -712,9 +712,9 @@ describe('Stemming', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 8. CLUSTER OPERATIONS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Cluster Operations', () => {
     let createSnapshot: any,
         compactDatabase: any,
@@ -831,9 +831,9 @@ describe('Cluster Operations', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 9. COLLECTIONS (server-side)
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Collections', () => {
     let getCollections: any,
         getCollection: any,
@@ -919,9 +919,9 @@ describe('Collections', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 10. DOCUMENTS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Documents', () => {
     let createDocument: any,
         getDocumentById: any,
@@ -949,7 +949,7 @@ describe('Documents', () => {
             documents: () => documentsChain,
         });
         const result = await createDocument('col', doc);
-        // createDocument returns raw data or null
+
         expect(result).toEqual(doc);
     });
 
@@ -969,12 +969,12 @@ describe('Documents', () => {
     it('getDocumentById retrieves document', async () => {
         const doc = { id: '1', title: 'Test' };
         const retrieveFn = vi.fn().mockResolvedValue(doc);
-        // documents(id) returns a chain with retrieve
+
         mockClient.collections.mockReturnValue({
             documents: vi.fn().mockReturnValue({ retrieve: retrieveFn }),
         });
         const result = await getDocumentById('col', '1');
-        // getDocumentById returns raw data or null
+
         expect(result).toEqual(doc);
     });
 
@@ -1005,7 +1005,7 @@ describe('Documents', () => {
         mockClient.collections.mockReturnValue({
             documents: () => documentsChain,
         });
-        // searchDocuments(collectionName, query, queryBy, ...)
+
         const result = await searchDocuments('col', 'test', 'title');
         expect(result).toEqual(searchResult);
         expect(result.found).toBe(5);
@@ -1019,15 +1019,15 @@ describe('Documents', () => {
         const result = await multiSearch({
             searchQueries: [{ collection: 'col', q: 'test', queryBy: 'title' }],
         });
-        // multiSearch returns the response directly or null
+
         expect(result).toBeDefined();
         expect(result!.results).toHaveLength(1);
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 11. NL SEARCH MODELS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('NL Search Models', () => {
     let createNLSearchModel: any,
         listNLSearchModels: any,
@@ -1110,9 +1110,9 @@ describe('NL Search Models', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 12. CONVERSATIONS
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Conversations', () => {
     let createConversation: any, listConversations: any, getConversation: any;
 
@@ -1177,9 +1177,9 @@ describe('Conversations', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 13. CONNECTION CONFIG
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Connection Config', () => {
     let getConnectionConfigFromEnv: any,
         hasEnvConnectionConfig: any,
@@ -1221,7 +1221,7 @@ describe('Connection Config', () => {
             protocol: 'https',
             apiKey: 'secret',
         });
-        // Cleanup
+
         delete process.env.TYPESENSE_HOST;
         delete process.env.TYPESENSE_PORT;
         delete process.env.TYPESENSE_PROTOCOL;
@@ -1234,12 +1234,12 @@ describe('Connection Config', () => {
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 14. TYPESENSE CLIENT
-// ═══════════════════════════════════════════════════════════════════════════════
+
+
+
 describe('Typesense Client', () => {
     it('createTypesenseClient creates a client with config', async () => {
-        // Since we're mocking the module, test that the mock returns our mockClient
+
         const { getTypesenseClient } =
             await import('@/lib/typesense/typesense-client');
         const client = getTypesenseClient();

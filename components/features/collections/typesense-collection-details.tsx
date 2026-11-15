@@ -74,7 +74,7 @@ export default function TypesenseCollectionDetails({
                     return;
                 }
             } else {
-                updatedCollectionData = collection; // Schema is already updated in state for table mode
+                updatedCollectionData = collection;
             }
 
             const updatedCollection = await updateCollection(
@@ -83,7 +83,7 @@ export default function TypesenseCollectionDetails({
             );
 
             if (updatedCollection) {
-                // The update response contains changed fields, not the full collection.
+
                 const refreshedCollection = await getCollection(collection.name);
                 if (!refreshedCollection.success) {
                     throw new Error(refreshedCollection.error);
@@ -146,7 +146,7 @@ export default function TypesenseCollectionDetails({
         router.push(`/collections/${collection.name}/documents/export`);
     };
 
-    // Handle edge cases
+
     if (!collection || !collection.name) {
         return (
             <div className="container mx-auto px-4 py-8">

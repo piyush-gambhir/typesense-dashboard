@@ -84,7 +84,7 @@ export default function CreateNLSearchModelDialog({
                     max_bytes: formData.max_bytes,
                     temperature: formData.temperature,
                 },
-                collections: [], // You may want to allow user input for this
+                collections: [],
             };
             const result = await createNLSearchModel(payload);
             if (result.success) {
@@ -94,7 +94,7 @@ export default function CreateNLSearchModelDialog({
                 });
                 onSuccess();
                 onOpenChange(false);
-                // Reset form
+
                 setFormData({
                     id: '',
                     model_name: '',

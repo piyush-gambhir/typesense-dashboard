@@ -63,7 +63,7 @@ const Filter = ({
     );
     const { copyToClipboard, isCopied, resetCopyState } = useCopyToClipboard();
 
-    // Reset copy state after 2 seconds
+
     useEffect(() => {
         if (isCopied) {
             const timer = setTimeout(resetCopyState, 2000);
@@ -112,7 +112,7 @@ const Filter = ({
         const currentValues = filterBy[field] || [];
         const searchQuery = searchQueries[field] || '';
 
-        // Filter values based on search query
+
         const filteredValues = values.filter((facet) =>
             String(facet.value)
                 .toLowerCase()
@@ -240,7 +240,7 @@ const Filter = ({
                     </PopoverContent>
                 </Popover>
 
-                {/* Show selected values as chips */}
+                {                                   }
                 {currentValues.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                         {currentValues.map((value) => (
@@ -298,18 +298,18 @@ const Filter = ({
                     <Switch
                         checked={isTrueSelected}
                         onCheckedChange={(checked) => {
-                            // Clear any existing filters for this field first
+
                             if (isTrueSelected) {
                                 onFilterChange(field, true, false);
                             }
                             if (isFalseSelected) {
                                 onFilterChange(field, false, false);
                             }
-                            // Set the new value based on toggle state
+
                             if (checked) {
                                 onFilterChange(field, true, true);
                             }
-                            // If unchecked, we don't set any filter (shows "Any")
+
                         }}
                         className="data-[state=checked]:bg-primary"
                     />
@@ -319,13 +319,13 @@ const Filter = ({
     };
 
     const renderNumberFilter = (field: string, values: FacetValue[]) => {
-        // Don't filter out values - let all values through and let the UI handle them
-        // This ensures we don't accidentally hide valid int field values
+
+
         if (values.length === 0) {
             return null;
         }
 
-        // For number filters, show the values as multi-select like strings
+
         return renderMultiSelectFilter(field, values);
     };
 
@@ -333,12 +333,12 @@ const Filter = ({
 
     return (
         <div className="w-full">
-            {/* Filter sections */}
+            {                     }
             <div
                 className={`grid gap-4 ${singleColumn ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}
             >
                 {Object.entries(facetValues).map(([field, values]) => {
-                    if (values.length === 0) return null; // Don't render if there are no options
+                    if (values.length === 0) return null;
 
                     const fieldType = getFieldType(field);
 

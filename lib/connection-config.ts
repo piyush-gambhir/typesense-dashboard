@@ -13,7 +13,7 @@ export function getConnectionConfigFromEnv(): TypesenseConnectionConfig | null {
     apiKey: process.env.TYPESENSE_API_KEY,
   };
 
-  // If all env vars are present, use them
+
   if (envConfig.host && envConfig.port && envConfig.protocol && envConfig.apiKey) {
     return {
       host: envConfig.host,

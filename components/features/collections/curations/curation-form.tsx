@@ -64,7 +64,7 @@ export default function CurationForm({
   return (
     <TooltipProvider>
       <div className="space-y-6">
-        {/* Basic Information */}
+        {                       }
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -143,7 +143,7 @@ export default function CurationForm({
 
         <Separator />
 
-        {/* Advanced Configuration */}
+        {                            }
         <Tabs defaultValue="includes" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="includes">Force Include</TabsTrigger>

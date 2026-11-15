@@ -43,7 +43,7 @@ export default function GlobalPresetsList({
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCollection, setSelectedCollection] = useState<string>('all');
 
-    // Filter overrides based on search term and collection
+
     const filteredOverrides = overrides.filter((override) => {
         const matchesSearch =
             !searchTerm.trim() ||
@@ -72,7 +72,7 @@ export default function GlobalPresetsList({
 
     return (
         <div className="space-y-4">
-            {/* Filters */}
+            {             }
             <div className="flex gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -101,7 +101,7 @@ export default function GlobalPresetsList({
                 </Select>
             </div>
 
-            {/* Table */}
+            {           }
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const config = connectionSchema.parse(body);
 
-    // Create a temporary client with the provided configuration
+
     const testClient = new Client({
       nodes: [
         {
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       connectionTimeoutSeconds: 10,
     });
 
-    // Test the connection by attempting to retrieve cluster health
+
     await testClient.health.retrieve();
 
     return NextResponse.json({ success: true });

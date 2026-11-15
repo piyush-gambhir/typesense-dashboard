@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Local Vercel deploy. Run as `bash scripts/deploy.sh [production|development]`.
-#
-# Reads credentials from .env.deploy.<env> (gitignored).
-# See .env.deploy.example for the full list.
+
+
+
+
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ if [[ ! -f "$DEPLOY_ENV_FILE" ]]; then
   exit 1
 fi
 
-# Load deploy creds (and don't echo them)
+
 set -a
 # shellcheck disable=SC1090
 source "$DEPLOY_ENV_FILE"

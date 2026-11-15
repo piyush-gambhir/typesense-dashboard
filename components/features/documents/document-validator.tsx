@@ -158,7 +158,7 @@ export default function DocumentValidator({
 
                     {validationResult && (
                         <div className="space-y-4">
-                            {/* Validation Summary */}
+                            {                        }
                             <Alert
                                 className={
                                     validationResult.isValid
@@ -191,7 +191,7 @@ export default function DocumentValidator({
                                 </div>
                             </Alert>
 
-                            {/* Field Counts */}
+                            {                  }
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="border rounded-lg p-4">
                                     <h4 className="font-semibold text-sm text-muted-foreground">
@@ -211,7 +211,7 @@ export default function DocumentValidator({
                                 </div>
                             </div>
 
-                            {/* Validation Errors */}
+                            {                       }
                             {!validationResult.isValid &&
                                 validationResult.errors.length > 0 && (
                                     <div className="border rounded-lg p-4 bg-red-50">
@@ -243,7 +243,7 @@ export default function DocumentValidator({
                                     </div>
                                 )}
 
-                            {/* Validation Success Details */}
+                            {                                }
                             {validationResult.isValid && (
                                 <div className="border rounded-lg p-4 bg-green-50">
                                     <h4 className="font-semibold text-green-800 mb-3 flex items-center">

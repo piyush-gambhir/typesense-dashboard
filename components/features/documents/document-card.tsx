@@ -54,7 +54,7 @@ interface ResultFieldProps {
 const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
     const { copyToClipboard, isCopied, resetCopyState } = useCopyToClipboard();
 
-    // Reset copy state after 2 seconds
+
     useEffect(() => {
         if (isCopied) {
             const timer = setTimeout(() => {
@@ -261,7 +261,7 @@ const ResultField: React.FC<ResultFieldProps> = ({ field, value }) => {
             );
         }
 
-        // Special handling for ID field with copy button
+
         if (field.toLowerCase() === 'id') {
             return (
                 <div className="flex items-center gap-2">
@@ -411,32 +411,32 @@ const DocumentCard = ({
                         )}
                     </div>
 
-                    {/* <div className="flex items-center justify-between pt-2">
-                        <div className="flex gap-2">
-                            <Link
-                                href={`/collections/${collectionName}/document/${result.id}`}
-                                className="flex-1"
-                            >
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-2"
-                                >
-                                    <Edit className="h-4 w-4" />
-                                    Edit Document
-                                </Button>
-                            </Link>
-                        </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
-                            onClick={() => setIsDeleteDialogOpen(true)}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            Delete
-                        </Button>
-                    </div> */}
+                    {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                             }
                 </CardContent>
             </Card>
 

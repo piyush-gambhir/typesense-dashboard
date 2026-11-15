@@ -107,7 +107,7 @@ export default function DocumentSuggestions({
     const handleQueryChange = (value: string) => {
         setQuery(value);
         if (value.trim() && selectedField) {
-            // Debounce the search
+
             const timeoutId = setTimeout(() => {
                 getSuggestions();
             }, 300);
@@ -158,7 +158,7 @@ export default function DocumentSuggestions({
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {/* Field Selection */}
+                    {                     }
                     <div className="flex flex-col space-y-3">
                         <Label htmlFor="field-select">Select Field</Label>
                         <Select
@@ -190,7 +190,7 @@ export default function DocumentSuggestions({
                         </Select>
                     </div>
 
-                    {/* Query Input */}
+                    {                 }
                     <div className="flex flex-col space-y-3">
                         <Label htmlFor="query-input">Search Query</Label>
                         <div className="relative">
@@ -207,7 +207,7 @@ export default function DocumentSuggestions({
                         </div>
                     </div>
 
-                    {/* Limit Selection */}
+                    {                     }
                     <div className="flex flex-col space-y-3">
                         <Label htmlFor="limit-select">Results Limit</Label>
                         <Select
@@ -232,7 +232,7 @@ export default function DocumentSuggestions({
                         </Select>
                     </div>
 
-                    {/* Loading State */}
+                    {                   }
                     {isLoading && (
                         <div className="flex items-center justify-center py-8">
                             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
@@ -242,7 +242,7 @@ export default function DocumentSuggestions({
                         </div>
                     )}
 
-                    {/* Suggestions Results */}
+                    {                         }
                     {!isLoading && suggestions.length > 0 && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
@@ -279,7 +279,7 @@ export default function DocumentSuggestions({
                         </div>
                     )}
 
-                    {/* No Results */}
+                    {                }
                     {!isLoading && query.trim() && suggestions.length === 0 && (
                         <div className="text-center py-8 text-muted-foreground">
                             <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -290,7 +290,7 @@ export default function DocumentSuggestions({
                         </div>
                     )}
 
-                    {/* Instructions */}
+                    {                  }
                     {!query.trim() && (
                         <div className="text-center py-8 text-muted-foreground">
                             <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />

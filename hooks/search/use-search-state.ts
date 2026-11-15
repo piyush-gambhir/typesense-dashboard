@@ -9,7 +9,7 @@ export interface SearchState {
 }
 
 export function useSearchState() {
-  // Initialize state with local state only (no URL params)
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [perPage, setPerPage] = useState<number>(12);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -54,21 +54,21 @@ export function useSearchState() {
   }, []);
 
   return {
-    // State
+
     searchQuery,
     perPage,
     currentPage,
     sortBy,
     filterBy,
     
-    // Setters
+
     setSearchQuery,
     setPerPage,
     setCurrentPage,
     setSortBy,
     setFilterBy,
     
-    // Actions
+
     updateSearchQuery,
     updatePerPage,
     updateSortBy,

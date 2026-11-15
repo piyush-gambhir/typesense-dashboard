@@ -81,13 +81,13 @@ export default function DocumentForm({
         defaultValues: {},
     });
 
-    // Generate dynamic form schema based on collection fields
+
     const generateFormSchema = useCallback(
         (fields: CollectionField[]) => {
             const dynamicSchema: Record<string, z.ZodTypeAny> = {};
 
             fields.forEach((field: CollectionField) => {
-                if (mode === 'create' && field.name === 'id') return; // Skip ID for creation
+                if (mode === 'create' && field.name === 'id') return;
 
                 let fieldSchema: z.ZodTypeAny;
 
@@ -126,7 +126,7 @@ export default function DocumentForm({
                         fieldSchema = z.unknown();
                 }
 
-                // Handle optional fields
+
                 if (field.optional) {
                     fieldSchema = fieldSchema.optional();
                 }
@@ -139,14 +139,14 @@ export default function DocumentForm({
         [mode],
     );
 
-    // Fetch data based on mode
+
     useEffect(() => {
         const fetchData = async () => {
             setIsInitialLoading(true);
 
             try {
                 if (mode === 'edit' && documentId) {
-                    // Edit mode: fetch both document and schema
+
                     const [doc, schemaResult] = await Promise.all([
                         getDocumentById(collectionName, documentId),
                         getCollection(collectionName),
@@ -164,7 +164,7 @@ export default function DocumentForm({
                         );
                         setFormSchema(dynamicSchema);
 
-                        // Reset form with fetched data
+
                         form.reset(formData);
                     } else {
                         toast({
@@ -175,7 +175,7 @@ export default function DocumentForm({
                         });
                     }
                 } else {
-                    // Create mode: only fetch schema
+
                     const schemaResult = await getCollection(collectionName);
 
                     if (schemaResult?.success && schemaResult.data) {
@@ -187,7 +187,7 @@ export default function DocumentForm({
                         );
                         setFormSchema(dynamicSchema);
 
-                        // Set default values for create mode
+
                         const defaultValues: Record<string, unknown> = {};
                         schema.fields?.forEach((field: CollectionField) => {
                             if (field.name === 'id') return;
@@ -278,7 +278,7 @@ export default function DocumentForm({
         }
     };
 
-    // Render field based on type
+
     const renderField = (field: CollectionField) => {
         const fieldName = field.name;
         const isReadOnly = mode === 'edit' && field.name === 'id';
@@ -437,7 +437,7 @@ export default function DocumentForm({
                                                             parsed,
                                                         );
                                                     } catch {
-                                                        // Invalid JSON, keep the text as is
+
                                                         formField.onChange(
                                                             e.target.value,
                                                         );

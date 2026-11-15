@@ -16,7 +16,7 @@ export const useCopyToClipboard = (): UseCopyToClipboardReturn => {
                 setIsCopied(true);
                 return true;
             } else {
-                // Fallback for older browsers or non-secure contexts
+
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
                 textArea.style.position = 'fixed';

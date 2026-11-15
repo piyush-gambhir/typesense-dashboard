@@ -118,7 +118,7 @@ export default function CollectionSchemaValidator({
 
                 {validationResult && (
                     <div className="space-y-4">
-                        {/* Errors */}
+                        {            }
                         {validationResult.errors.length > 0 && (
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
@@ -148,7 +148,7 @@ export default function CollectionSchemaValidator({
                             </div>
                         )}
 
-                        {/* Warnings */}
+                        {              }
                         {validationResult.warnings.length > 0 && (
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
@@ -178,7 +178,7 @@ export default function CollectionSchemaValidator({
                             </div>
                         )}
 
-                        {/* Success Message */}
+                        {                     }
                         {validationResult.success &&
                             validationResult.errors.length === 0 && (
                                 <div className="flex items-center space-x-2 p-3 bg-green-50 rounded-md border border-green-200">
@@ -192,7 +192,7 @@ export default function CollectionSchemaValidator({
 
                         <Separator />
 
-                        {/* Schema Summary */}
+                        {                    }
                         <div className="space-y-2">
                             <h4 className="font-medium">Schema Summary</h4>
                             <div className="grid grid-cols-2 gap-4 text-sm">

@@ -87,7 +87,7 @@ export interface ConversationSearchResponse {
     conversation_context?: ConversationMessage[];
 }
 
-// Create a new conversation
+
 export async function createConversation(request: CreateConversationRequest) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -109,7 +109,7 @@ export async function createConversation(request: CreateConversationRequest) {
     }
 }
 
-// List all conversations
+
 export async function listConversations(params?: {
     collection_name?: string;
     model_id?: string;
@@ -147,7 +147,7 @@ export async function listConversations(params?: {
     }
 }
 
-// Get a specific conversation
+
 export async function getConversation(conversationId: string) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -168,7 +168,7 @@ export async function getConversation(conversationId: string) {
     }
 }
 
-// Update a conversation
+
 export async function updateConversation(
     conversationId: string,
     updates: UpdateConversationRequest,
@@ -193,7 +193,7 @@ export async function updateConversation(
     }
 }
 
-// Delete a conversation
+
 export async function deleteConversation(conversationId: string) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -213,7 +213,7 @@ export async function deleteConversation(conversationId: string) {
     }
 }
 
-// Perform a conversational search (adds context from previous messages)
+
 export async function conversationSearch(
     request: ConversationSearchRequest,
 ): Promise<{
@@ -237,8 +237,8 @@ export async function conversationSearch(
                 facet_by: request.facet_by,
                 max_facet_values: request.max_facet_values,
                 model_id: request.model_id,
-                include_context: request.include_context !== false, // Default to true
-                context_window: request.context_window || 5, // Last 5 messages by default
+                include_context: request.include_context !== false,
+                context_window: request.context_window || 5,
             },
         );
 
@@ -255,7 +255,7 @@ export async function conversationSearch(
     }
 }
 
-// Add a message to a conversation (for manual tracking)
+
 export async function addMessageToConversation(
     conversationId: string,
     message: ConversationMessage,
@@ -280,13 +280,13 @@ export async function addMessageToConversation(
     }
 }
 
-// Get conversation history/messages
+
 export async function getConversationMessages(
     conversationId: string,
     params?: {
         limit?: number;
         offset?: number;
-        since?: number; // timestamp
+        since?: number;
     },
 ) {
     try {
@@ -319,7 +319,7 @@ export async function getConversationMessages(
     }
 }
 
-// Clear conversation history (keep conversation but remove messages)
+
 export async function clearConversationHistory(conversationId: string) {
     try {
         const typesenseClient = await getTypesenseClient();
@@ -339,7 +339,7 @@ export async function clearConversationHistory(conversationId: string) {
     }
 }
 
-// Export conversation to various formats
+
 export async function exportConversation(
     conversationId: string,
     format: 'json' | 'csv' | 'txt' = 'json',

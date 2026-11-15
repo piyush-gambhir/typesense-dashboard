@@ -93,7 +93,7 @@ export function useFacetManagement(
         return;
       }
 
-      // Build filter string for facets
+
       const validFilters = filterBy.filter((filter) => {
         if (!filter || filter.trim() === '') return false;
         if (!filter.includes(':=')) {

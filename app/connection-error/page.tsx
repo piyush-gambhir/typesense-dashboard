@@ -20,22 +20,22 @@ export default function ConnectionErrorPage() {
         router.push('/setup');
     };
 
-    /*
-     * With the new connection setup flow we store the Typesense connection
-     * details in a secure, HTTP-only cookie when the user goes through the
-     * /setup wizard. If that cookie is missing or the server is unreachable we
-     * land on this page.
-     *
-     * Because this component runs on the client we cannot (and should not)
-     * try to read that cookie here – the cookie is HTTP-only. Instead we just
-     * inform the user that a connection could not be established and offer
-     * actions to retry or open the setup wizard again.
-     */
+
+
+
+
+
+
+
+
+
+
+
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {/* Header */}
+                {            }
                 <div className="text-center space-y-2">
                     <WifiOff className="h-5 w-5 text-destructive mx-auto" />
                     <h1 className="text-base font-medium text-foreground">
@@ -46,7 +46,7 @@ export default function ConnectionErrorPage() {
                     </p>
                 </div>
 
-                {/* Error details */}
+                {                   }
                 <div className="space-y-4">
                     <Alert variant="destructive">
                         <AlertTriangle className="h-4 w-4" />
@@ -84,7 +84,7 @@ export default function ConnectionErrorPage() {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
+                {                    }
                 <div className="flex gap-3 justify-center">
                     <Button
                         onClick={handleRetry}

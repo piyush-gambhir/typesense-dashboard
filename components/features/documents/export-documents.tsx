@@ -30,7 +30,7 @@ import { ProgressBar } from '@/components/common/progress-bar';
 const jsonToCsv = (jsonData: Record<string, unknown>[]) => {
     const keys = Object.keys(jsonData[0]);
     const csvRows = [
-        keys.join(','), // header row
+        keys.join(','),
         ...jsonData.map((row) => keys.map((key) => row[key]).join(',')),
     ];
     return csvRows.join('\n');
@@ -91,14 +91,14 @@ export default function ExportDocuments({
             const collectionData = parseJsonl(response);
 
             if (selectedFormat === 'json') {
-                // Export as formatted JSON file
+
                 const jsonFormatted = JSON.stringify(collectionData, null, 2);
                 blob = new Blob([jsonFormatted], {
                     type: 'application/json',
                 });
                 fileName += '.json';
             } else if (selectedFormat === 'jsonl') {
-                // Export as JSONL
+
                 const jsonlData = collectionData.map((doc) =>
                     JSON.stringify(doc),
                 );
@@ -107,14 +107,14 @@ export default function ExportDocuments({
                 });
                 fileName += '.jsonl';
             } else if (selectedFormat === 'csv') {
-                // Export as CSV
+
                 const csvData = jsonToCsv(collectionData);
                 blob = new Blob([csvData], {
                     type: 'text/csv',
                 });
                 fileName += '.csv';
             } else if (selectedFormat === 'xml') {
-                // Export as XML
+
                 const xmlData = jsonToXml(collectionData);
                 blob = new Blob([xmlData], {
                     type: 'application/xml',
@@ -226,7 +226,7 @@ export default function ExportDocuments({
                             </Select>
                         </div>
 
-                        {/* Progress Bar */}
+                        {                  }
                         {isExporting && (
                             <div className="space-y-2">
                                 <ProgressBar

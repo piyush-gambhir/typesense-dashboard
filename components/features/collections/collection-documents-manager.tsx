@@ -31,7 +31,7 @@ export default function CollectionDocumentsManager({
 
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            {/* Header */}
+            {            }
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-muted/30 rounded-lg">
@@ -48,7 +48,7 @@ export default function CollectionDocumentsManager({
                 </div>
             </div>
 
-            {/* Overview Stats */}
+            {                    }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="border border-border/50 hover:shadow-md transition-shadow">
                     <CardHeader className="pb-3">
@@ -116,7 +116,7 @@ export default function CollectionDocumentsManager({
                 </Card>
             </div>
 
-            {/* Tabbed Interface */}
+            {                      }
             <Tabs
                 value={activeTab}
                 onValueChange={setActiveTab}

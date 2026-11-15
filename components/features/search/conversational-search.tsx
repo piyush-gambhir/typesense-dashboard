@@ -95,7 +95,7 @@ export default function ConversationalSearch({
             const result = await listNLSearchModels();
             if (result.success && result.data) {
                 setAvailableModels(result.data);
-                // Set default model if available
+
                 const defaultModel = result.data.find((m: NLSearchModel) =>
                     m.collections?.includes(collectionName),
                 );
@@ -177,7 +177,7 @@ export default function ConversationalSearch({
 
         let currentConversation = conversation;
 
-        // Create conversation if it doesn't exist
+
         if (!currentConversation) {
             currentConversation = await createNewConversation();
             if (!currentConversation) return;
@@ -194,7 +194,7 @@ export default function ConversationalSearch({
         setInputMessage('');
         setIsSearching(true);
 
-        // Add searching placeholder
+
         const searchingMessage: ChatMessage = {
             id: `searching-${Date.now()}`,
             role: 'assistant',
@@ -227,7 +227,7 @@ export default function ConversationalSearch({
                     llmResponse: searchResult.data.llm_response,
                 };
 
-                // Remove searching message and add real response
+
                 setMessages((prev) =>
                     prev
                         .filter((msg) => !msg.isSearching)
@@ -239,7 +239,7 @@ export default function ConversationalSearch({
                     description: `Found ${searchResult.data.search_results.found} results in ${searchResult.data.search_results.search_time_ms}ms`,
                 });
             } else {
-                // Remove searching message and show error
+
                 setMessages((prev) => prev.filter((msg) => !msg.isSearching));
                 toast({
                     title: 'Search Failed',
@@ -249,7 +249,7 @@ export default function ConversationalSearch({
                 });
             }
         } catch {
-            // Remove searching message and show error
+
             setMessages((prev) => prev.filter((msg) => !msg.isSearching));
             toast({
                 title: 'Error',
@@ -284,7 +284,7 @@ export default function ConversationalSearch({
 
     return (
         <div className="flex flex-col gap-y-4">
-            {/* Header and Settings */}
+            {                         }
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-lg font-medium">
@@ -394,7 +394,7 @@ export default function ConversationalSearch({
                 </div>
             )}
 
-            {/* Messages */}
+            {              }
             <div className="border rounded-lg min-h-[400px] max-h-[600px] overflow-hidden">
                 <ScrollArea className="h-full p-4">
                     {messages.length === 0 ? (
@@ -454,7 +454,7 @@ export default function ConversationalSearch({
                                             </p>
                                         </div>
 
-                                        {/* Debug Information */}
+                                        {                       }
                                         {debugMode && message.llmResponse && (
                                             <div className="mt-2 p-2 bg-muted rounded text-xs">
                                                 <div className="font-medium mb-1">
@@ -486,7 +486,7 @@ export default function ConversationalSearch({
                                             </div>
                                         )}
 
-                                        {/* Search Results */}
+                                        {                    }
                                         {message.searchResults &&
                                             message.searchResults.length >
                                                 0 && (
@@ -544,7 +544,7 @@ export default function ConversationalSearch({
                 </ScrollArea>
             </div>
 
-            {/* Input */}
+            {           }
             <div className="flex gap-2">
                 <Input
                     ref={inputRef}

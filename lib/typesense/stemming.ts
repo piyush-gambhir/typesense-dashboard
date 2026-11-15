@@ -10,7 +10,7 @@ export interface StemmingDictionary {
     words?: StemmingWord[];
 }
 
-// List all stemming dictionaries
+
 export async function listStemmingDictionaries() {
     try {
         const typesenseClient = getTypesenseClient();
@@ -33,7 +33,7 @@ export async function listStemmingDictionaries() {
     }
 }
 
-// Get a specific stemming dictionary
+
 export async function getStemmingDictionary(dictionaryId: string) {
     try {
         const typesenseClient = getTypesenseClient();
@@ -53,15 +53,15 @@ export async function getStemmingDictionary(dictionaryId: string) {
     }
 }
 
-// Import a stemming dictionary (create or replace)
-// Words should be an array of {word, root} objects
+
+
 export async function importStemmingDictionary(
     dictionaryId: string,
     words: StemmingWord[],
 ) {
     try {
         const typesenseClient = getTypesenseClient();
-        // The API expects JSONL format
+
         const jsonlBody = words
             .map((w) => JSON.stringify({ word: w.word, root: w.root }))
             .join('\n');

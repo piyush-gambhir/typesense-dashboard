@@ -144,7 +144,7 @@ export default function CreateCollectionUnified({
         ['int32', 'int64', 'float'].includes(field.type),
     );
 
-    // File upload handling for JSONL mode
+
     const handleFileChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
@@ -163,7 +163,7 @@ export default function CreateCollectionUnified({
             }
             setFile(selectedFile);
 
-            // Auto-extract collection name from filename
+
             const baseName = selectedFile.name.replace(/\.(json|jsonl)$/, '');
             setValue('name', baseName);
         }
@@ -174,7 +174,7 @@ export default function CreateCollectionUnified({
         setValue('name', '');
     };
 
-    // Validation for advanced mode
+
     const handleValidate = async () => {
         const formData = watch();
         setIsValidating(true);
@@ -184,7 +184,7 @@ export default function CreateCollectionUnified({
                 name: formData.name,
                 fields: formData.fields.map((field) => ({
                     ...field,
-                    type: field.type as any, // Type assertion for Typesense field types
+                    type: field.type as any,
                 })),
                 default_sorting_field: formData.default_sorting_field,
                 enable_nested_fields: formData.enable_nested_fields,
@@ -202,7 +202,7 @@ export default function CreateCollectionUnified({
         }
     };
 
-    // Manual creation
+
     const handleManualSubmit = async (data: FormData) => {
         setIsCreating(true);
 
@@ -241,7 +241,7 @@ export default function CreateCollectionUnified({
         }
     };
 
-    // JSONL creation
+
     const handleJsonlSubmit = async (data: FormData) => {
         if (!file) {
             toast({

@@ -70,7 +70,7 @@ interface NLConversationsProps {
 function NLConversationsSkeleton() {
     return (
         <div className="space-y-6">
-            {/* Header skeleton */}
+            {                     }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-80" />
@@ -79,7 +79,7 @@ function NLConversationsSkeleton() {
                 <Skeleton className="h-10 w-32" />
             </div>
 
-            {/* Filters skeleton */}
+            {                      }
             <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -89,7 +89,7 @@ function NLConversationsSkeleton() {
                 </CardContent>
             </Card>
 
-            {/* Table skeleton */}
+            {                    }
             <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-6">
                     <div className="space-y-4">
@@ -325,7 +325,7 @@ export default function NLConversations({
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
@@ -343,7 +343,7 @@ export default function NLConversations({
                 </Button>
             </div>
 
-            {/* Filters */}
+            {             }
             <Card className="relative overflow-hidden transition-all hover:shadow-md">
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -390,7 +390,7 @@ export default function NLConversations({
                 </CardContent>
             </Card>
 
-            {/* Content */}
+            {             }
             {filteredConversations.length === 0 ? (
                 <Card className="relative overflow-hidden transition-all hover:shadow-md">
                     <CardContent className="flex flex-col items-center justify-center py-12">
@@ -584,7 +584,7 @@ export default function NLConversations({
                 </Card>
             )}
 
-            {/* Dialogs */}
+            {             }
             <Dialog
                 open={isDeleteDialogOpen}
                 onOpenChange={setIsDeleteDialogOpen}

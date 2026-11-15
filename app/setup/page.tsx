@@ -98,7 +98,7 @@ export default function SetupPage() {
                 setConnectionConfigClient(config);
                 setConnectionSuccess(true);
 
-                // Redirect to dashboard after a short delay
+
                 setTimeout(() => {
                     router.push('/');
                 }, 1500);

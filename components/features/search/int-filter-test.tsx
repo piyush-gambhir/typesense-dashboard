@@ -16,7 +16,7 @@ interface TestField {
 }
 
 const IntFilterTest = () => {
-    // Simulate test data
+
     const testCollectionSchema = {
         fields: [
             { name: 'age', type: 'int32', facet: true },

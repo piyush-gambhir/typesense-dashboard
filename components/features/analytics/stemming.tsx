@@ -120,7 +120,7 @@ export default function Stemming() {
             return;
         }
 
-        // Parse words: expect "word:root" per line
+
         const lines = newWords
             .split('\n')
             .map((l) => l.trim())

@@ -8,8 +8,8 @@ export async function getCollections() {
     try {
         const typesenseClient = getTypesenseClient();
         const collections = await typesenseClient.collections().retrieve();
-        // Serialize to plain objects so data can safely cross the RSC boundary
-        // (the Typesense SDK may return class instances / non-plain prototypes)
+
+
         return {
             success: true,
             data: JSON.parse(JSON.stringify(collections)),
@@ -37,7 +37,7 @@ export async function getCollection(collectionName: string) {
             };
         }
 
-        // Serialize to plain objects so data can safely cross the RSC boundary
+
         return {
             success: true,
             data: JSON.parse(JSON.stringify(collection)),
@@ -70,12 +70,12 @@ export async function updateCollection(
     try {
         const typesenseClient = getTypesenseClient();
 
-        // Validate collection name
+
         if (!collectionName || typeof collectionName !== 'string') {
             throw new Error('Invalid collection name');
         }
 
-        // Check for valid collection name format (alphanumeric and underscores only)
+
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(collectionName)) {
             throw new Error(
                 `Collection name '${collectionName}' contains invalid characters. Use only letters, numbers, and underscores, starting with a letter or underscore`,
@@ -86,9 +86,9 @@ export async function updateCollection(
             .collections(collectionName)
             .retrieve();
 
-        // Check if we're trying to modify existing fields (which is not allowed)
+
         if (existingCollection.fields && schema.fields) {
-            // Find fields that exist in both but might have different types
+
             const modifiedFields = schema.fields.filter((newField: any) => {
                 const existingField = existingCollection.fields.find(
                     (f: any) => f.name === newField.name,
@@ -104,12 +104,12 @@ export async function updateCollection(
             }
         }
 
-        // For collection updates, we need to send only the fields array
-        // and any other specific properties that can be updated
+
+
         const updateData: Record<string, any> = {};
 
         if (schema.fields) {
-            // Validate fields before sending
+
             const validFieldTypes = [
                 'string',
                 'int32',
@@ -123,12 +123,12 @@ export async function updateCollection(
                 'bool[]',
             ];
 
-            // Get existing field names
+
             const existingFieldNames = existingCollection.fields.map(
                 (f: any) => f.name,
             );
 
-            // Filter to only include new fields (Typesense only allows adding new fields)
+
             const newFields = schema.fields.filter(
                 (field: any) => !existingFieldNames.includes(field.name),
             );
@@ -136,7 +136,7 @@ export async function updateCollection(
             if (newFields.length === 0) {
                 console.log('No new fields to add');
             } else {
-                // Check if we're trying to modify existing fields
+
                 const modifiedFields = schema.fields.filter((field: any) => {
                     const existingField = existingCollection.fields.find(
                         (f: any) => f.name === field.name,
@@ -163,14 +163,14 @@ export async function updateCollection(
                     newFields.map((f: any) => f.name),
                 );
 
-                // Format fields to match Typesense API expectations
+
                 updateData.fields = newFields.map((field: any) => {
-                    // Validate field name
+
                     if (!field.name || typeof field.name !== 'string') {
                         throw new Error(`Invalid field name: ${field.name}`);
                     }
 
-                    // Check for reserved field names
+
                     const reservedNames = ['id', '_id', 'id_'];
                     if (reservedNames.includes(field.name)) {
                         throw new Error(
@@ -178,14 +178,14 @@ export async function updateCollection(
                         );
                     }
 
-                    // Check for valid field name format (alphanumeric and underscores only)
+
                     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field.name)) {
                         throw new Error(
                             `Field name '${field.name}' contains invalid characters. Use only letters, numbers, and underscores, starting with a letter or underscore`,
                         );
                     }
 
-                    // Validate field type
+
                     if (!field.type || !validFieldTypes.includes(field.type)) {
                         throw new Error(
                             `Invalid field type: ${field.type} for field ${field.name}`,
@@ -213,16 +213,16 @@ export async function updateCollection(
             }
         }
 
-        // These collection options are fixed at creation time.
+
         for (const key of ['default_sorting_field', 'enable_nested_fields'] as const) {
             if (schema[key] !== undefined && schema[key] !== existingCollection[key]) {
                 throw new Error(`${key} cannot be changed on an existing collection`);
             }
         }
 
-        // Check if we have any data to update
+
         if (Object.keys(updateData).length === 0) {
-            return existingCollection; // Return the existing collection if nothing to update
+            return existingCollection;
         }
 
         const updatedCollection = await typesenseClient
@@ -232,13 +232,13 @@ export async function updateCollection(
     } catch (error) {
         console.error('Error updating collection:', error);
 
-        // Log more details about the error
+
         if (error instanceof Error) {
             console.error('Error message:', error.message);
             console.error('Error stack:', error.stack);
         }
 
-        // If it's a response error, try to get more details
+
         if (error && typeof error === 'object' && 'response' in error) {
             const responseError = error as any;
             console.error('Response status:', responseError.response?.status);
@@ -339,12 +339,12 @@ export async function createCollectionWithJsonl({
 }) {
     const typesenseClient = getTypesenseClient();
     try {
-        // Create schema with proper typing
+
         const schema: CollectionCreateSchema = {
             name: collectionName,
             fields: fields.map((field) => ({
                 name: field.name,
-                type: field.type as any, // Type assertion needed for string to FieldType conversion
+                type: field.type as any,
                 facet: field.facet,
             })),
         };
@@ -382,7 +382,7 @@ export async function createCollectionWithJsonl({
     }
 }
 
-// Get collection statistics
+
 export async function getCollectionStats(collectionName: string) {
     const typesenseClient = getTypesenseClient();
     try {
@@ -411,16 +411,16 @@ export async function getCollectionStats(collectionName: string) {
     }
 }
 
-// Get collection health status
+
 export async function getCollectionHealth(collectionName: string) {
     const typesenseClient = getTypesenseClient();
     try {
-        // Try to access the collection
+
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
 
-        // Try a simple search to check if collection is responsive
+
         const searchResult = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -453,14 +453,14 @@ export async function getCollectionHealth(collectionName: string) {
     }
 }
 
-// Validate collection schema
+
 export async function validateCollectionSchema(schema: CollectionCreateSchema) {
     const typesenseClient = getTypesenseClient();
     const errors: string[] = [];
     const warnings: string[] = [];
 
     try {
-        // Validate collection name
+
         if (!schema.name || typeof schema.name !== 'string') {
             errors.push('Collection name is required and must be a string');
         } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema.name)) {
@@ -469,7 +469,7 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
             );
         }
 
-        // Validate fields
+
         if (
             !schema.fields ||
             !Array.isArray(schema.fields) ||
@@ -497,7 +497,7 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
             const reservedNames = ['id', '_id', 'id_'];
 
             schema.fields.forEach((field, index) => {
-                // Check field name
+
                 if (!field.name || typeof field.name !== 'string') {
                     errors.push(
                         `Field ${index}: Name is required and must be a string`,
@@ -518,14 +518,14 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
                     fieldNames.add(field.name);
                 }
 
-                // Check field type
+
                 if (!field.type || !validFieldTypes.includes(field.type)) {
                     errors.push(
                         `Field ${index}: Invalid field type '${field.type}'`,
                     );
                 }
 
-                // Check for potential issues
+
                 if (field.type === 'auto' && field.facet) {
                     warnings.push(
                         `Field ${index}: Auto fields may not work well with faceting`,
@@ -540,7 +540,7 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
             });
         }
 
-        // Validate default sorting field
+
         if (schema.default_sorting_field) {
             const fieldExists = schema.fields?.some(
                 (f) => f.name === schema.default_sorting_field,
@@ -582,7 +582,7 @@ export async function validateCollectionSchema(schema: CollectionCreateSchema) {
     }
 }
 
-// Get collection configuration
+
 export async function getCollectionConfig(collectionName: string) {
     const typesenseClient = getTypesenseClient();
     try {
@@ -611,7 +611,7 @@ export async function getCollectionConfig(collectionName: string) {
     }
 }
 
-// Update collection configuration
+
 export async function updateCollectionConfig(
     collectionName: string,
     config: {
@@ -656,7 +656,7 @@ export async function updateCollectionConfig(
     }
 }
 
-// Get collection field details
+
 export async function getCollectionFields(collectionName: string) {
     const typesenseClient = getTypesenseClient();
     try {
@@ -668,10 +668,10 @@ export async function getCollectionFields(collectionName: string) {
             name: field.name,
             type: field.type,
             facet: field.facet || false,
-            index: field.index !== false, // Default to true if not specified
+            index: field.index !== false,
             optional: field.optional || false,
             sort: field.sort || false,
-            store: field.store !== false, // Default to true if not specified
+            store: field.store !== false,
         }));
 
         return {
@@ -687,7 +687,7 @@ export async function getCollectionFields(collectionName: string) {
     }
 }
 
-// Add new fields to collection
+
 export async function addCollectionFields(
     collectionName: string,
     fields: Array<{
@@ -705,7 +705,7 @@ export async function addCollectionFields(
 
         const validatedFields = fields.map((field) => ({
             name: field.name,
-            type: field.type as any, // Type assertion for FieldType
+            type: field.type as any,
             ...(field.facet !== undefined && { facet: field.facet }),
             ...(field.index !== undefined && { index: field.index }),
             ...(field.optional !== undefined && { optional: field.optional }),
@@ -730,16 +730,16 @@ export async function addCollectionFields(
     }
 }
 
-// Get collection backup (export with metadata)
+
 export async function backupCollection(collectionName: string) {
     const typesenseClient = getTypesenseClient();
     try {
-        // Get collection schema
+
         const collection = await typesenseClient
             .collections(collectionName)
             .retrieve();
 
-        // Export all documents
+
         const documents = await typesenseClient
             .collections(collectionName)
             .documents()
@@ -773,16 +773,16 @@ export async function backupCollection(collectionName: string) {
     }
 }
 
-// Restore collection from backup
+
 export async function restoreCollection(backup: any) {
     const typesenseClient = getTypesenseClient();
     try {
-        // Create collection with schema
+
         const newCollection = await typesenseClient
             .collections()
             .create(backup.collection_schema);
 
-        // Import documents
+
         if (backup.documents && backup.documents.length > 0) {
             const importResult = await typesenseClient
                 .collections(backup.collection_schema.name)

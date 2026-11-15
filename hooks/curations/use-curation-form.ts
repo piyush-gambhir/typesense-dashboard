@@ -28,7 +28,7 @@ export function useCurationForm(collectionName: string) {
     sortBy: '',
   });
 
-  // Input states for adding items
+
   const [forceIncludeInput, setForceIncludeInput] = useState('');
   const [forceIncludePosition, setForceIncludePosition] = useState('');
   const [forceExcludeInput, setForceExcludeInput] = useState('');

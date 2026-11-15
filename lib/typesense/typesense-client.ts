@@ -19,7 +19,7 @@ export function createTypesenseClient(config: TypesenseConnectionConfig): Client
 
 export function getTypesenseClient(): Client {
     if (!typesenseClient) {
-        // Try environment variables first
+
         const envConfig = getConnectionConfigFromEnv();
         const config = envConfig || getDefaultConnectionConfig();
         
@@ -29,10 +29,10 @@ export function getTypesenseClient(): Client {
     return typesenseClient;
 }
 
-// Reset client instance (useful for when connection config changes)
+
 export function resetTypesenseClient() {
     typesenseClient = null;
 }
 
-// Default export for backwards compatibility
+
 export default getTypesenseClient();

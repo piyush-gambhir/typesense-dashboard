@@ -132,7 +132,7 @@ export default function CollectionStats({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Health Status */}
+                {                   }
                 <Card>
                     <CardHeader className="pb-2">
                         <div className="flex items-center space-x-2">
@@ -165,7 +165,7 @@ export default function CollectionStats({
                     </CardContent>
                 </Card>
 
-                {/* Total Documents */}
+                {                     }
                 <Card>
                     <CardHeader className="pb-2">
                         <div className="flex items-center space-x-2">
@@ -185,7 +185,7 @@ export default function CollectionStats({
                     </CardContent>
                 </Card>
 
-                {/* Schema Version */}
+                {                    }
                 <Card>
                     <CardHeader className="pb-2">
                         <div className="flex items-center space-x-2">
@@ -203,7 +203,7 @@ export default function CollectionStats({
                     </CardContent>
                 </Card>
 
-                {/* Last Updated */}
+                {                  }
                 <Card>
                     <CardHeader className="pb-2">
                         <div className="flex items-center space-x-2">
@@ -228,7 +228,7 @@ export default function CollectionStats({
                 </Card>
             </div>
 
-            {/* Health Details */}
+            {                    }
             {health && (
                 <Card>
                     <CardHeader>

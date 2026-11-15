@@ -97,7 +97,7 @@ function CollectionCard({ collection, onViewDetails }: CollectionCardProps) {
             </CardHeader>
 
             <CardContent className="relative space-y-3 pb-4">
-                {/* Stats — flat inline row, no sub-cards */}
+                {                                             }
                 <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-border/40 pt-3">
                     <div className="flex items-center gap-1.5">
                         <FileText className="h-3 w-3 text-muted-foreground/60" />
@@ -122,7 +122,7 @@ function CollectionCard({ collection, onViewDetails }: CollectionCardProps) {
                     </div>
                 </div>
 
-                {/* Actions */}
+                {             }
                 <div className="flex gap-2">
                     <Link
                         href={`/collections/${collection.name}/search`}
@@ -305,7 +305,7 @@ export default function TypesenseCollections({
 
     return (
         <div className="container mx-auto px-6 py-6 space-y-6">
-            {/* Header */}
+            {            }
             <div className="flex items-center justify-between">
                 <div className="space-y-1">
                     <h1 className="text-2xl font-semibold">Collections</h1>
@@ -316,12 +316,12 @@ export default function TypesenseCollections({
                 <CreateCollectionDialog />
             </div>
 
-            {/* Stats Overview */}
+            {                    }
             <StatsOverview collections={collections} />
 
             <Separator className="bg-border/40" />
 
-            {/* Collections Grid */}
+            {                      }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {collections.map((collection) => (
                     <CollectionCard

@@ -106,7 +106,7 @@ export default function BulkOperations({
             let result;
 
             if (operation === 'delete') {
-                // Handle bulk delete by IDs
+
                 const ids = documentIds
                     .split('\n')
                     .map((id) => id.trim())
@@ -119,7 +119,7 @@ export default function BulkOperations({
                 setProgress(25);
                 result = await bulkDeleteDocuments(collectionName, ids);
             } else {
-                // Handle bulk create/update/upsert
+
                 const documents = await parseDocuments();
 
                 if (documents.length === 0) {
@@ -128,7 +128,7 @@ export default function BulkOperations({
 
                 setProgress(25);
 
-                // Validate documents if not delete operation
+
                 const validationResults = await Promise.all(
                     documents.map((doc) =>
                         validateDocument(collectionName, doc),
