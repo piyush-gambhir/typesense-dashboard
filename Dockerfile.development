@@ -1,4 +1,4 @@
-FROM node:26.13.0-alpine
+FROM node:26.13.1-alpine
 
 RUN npm install --global --allow-scripts=pnpm pnpm@12.15.0
 WORKDIR /app
